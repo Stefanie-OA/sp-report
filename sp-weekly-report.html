@@ -3,52 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SP Weekly Report | Outsource Accelerator</title>
+  <title>SP Weekly Report v3 | Outsource Accelerator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; color: #1a2332; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f9fafb; color: #111827; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
     /* ── Header ── */
     header {
-      background: #0f2744; color: white;
-      padding: 14px 28px; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 3px solid #1d6fa4; flex-shrink: 0; z-index: 200; position: relative;
+      background: #ffffff; color: #111827;
+      padding: 0 24px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #e5e7eb; flex-shrink: 0; z-index: 200; position: relative; height: 58px;
     }
-    header .brand   { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin-bottom: 2px; }
-    header h1       { font-size: 1.2rem; font-weight: 700; }
-    header .subtitle{ font-size: 0.78rem; opacity: 0.65; margin-top: 1px; }
+    header h1 { font-size: 0.92rem; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 8px; }
+    header .subtitle { font-size: 0.72rem; color: #6b7280; }
 
     /* ── Date Trigger ── */
     #dateTrigger {
       display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.28);
-      color: white; padding: 8px 14px; border-radius: 9px; cursor: pointer;
-      font-size: 0.875rem; font-weight: 500; white-space: nowrap; transition: background 0.15s;
+      background: #ffffff; border: 1.5px solid #e5e7eb;
+      color: #374151; padding: 7px 14px; border-radius: 8px; cursor: pointer;
+      font-size: 0.82rem; font-weight: 500; white-space: nowrap; transition: all 0.15s;
     }
-    #dateTrigger:hover { background: rgba(255,255,255,0.2); }
-    #dateTrigger .caret { font-size: 0.65rem; opacity: 0.7; }
+    #dateTrigger:hover { border-color: #2563eb; color: #2563eb; }
+    #dateTrigger .caret { font-size: 0.65rem; color: #9ca3af; }
 
     /* ── Picker Panel ── */
     .picker-wrapper { position: relative; }
     #pickerPanel {
-      position: absolute; top: calc(100% + 10px); right: 0;
-      background: white; border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+      position: absolute; top: calc(100% + 8px); right: 0;
+      background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.05);
       display: flex; overflow: hidden; min-width: 630px; z-index: 999;
     }
     #pickerPanel.hidden { display: none; }
-    .picker-presets { width: 145px; padding: 12px 0; border-right: 1px solid #e8edf2; flex-shrink: 0; }
+    .picker-presets { width: 145px; padding: 12px 0; border-right: 1px solid #e5e7eb; flex-shrink: 0; }
     .preset-item { padding: 9px 13px; cursor: pointer; font-size: 0.82rem; color: #374151; border-radius: 7px; margin: 2px 7px; }
-    .preset-item:hover { background: #f0f4f8; }
-    .preset-item.active { background: #0f2744; color: white; }
-    .preset-sep { height: 1px; background: #e8edf2; margin: 6px 13px; }
+    .preset-item:hover { background: #f3f4f6; }
+    .preset-item.active { background: #2563eb; color: white; }
+    .preset-sep { height: 1px; background: #e5e7eb; margin: 6px 13px; }
     .picker-cal { display: flex; gap: 0; padding: 18px 20px; }
     .cal-month { width: 252px; }
-    .cal-month + .cal-month { margin-left: 20px; padding-left: 20px; border-left: 1px solid #e8edf2; }
+    .cal-month + .cal-month { margin-left: 20px; padding-left: 20px; border-left: 1px solid #e5e7eb; }
     .cal-month-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .cal-month-name { font-weight: 700; font-size: 0.9rem; }
     .cal-nav-btn { background: none; border: none; cursor: pointer; color: #6b7280; width: 26px; height: 26px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-    .cal-nav-btn:hover { background: #f0f4f8; }
+    .cal-nav-btn:hover { background: #f3f4f6; }
     .cal-nav-btn.invisible { visibility: hidden; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
     .cal-dayname { font-size: 0.68rem; font-weight: 600; color: #9ca3af; text-align: center; padding: 3px 0 7px; }
@@ -61,109 +61,137 @@
     .cal-day.hover-s::before   { background: #eff6ff; left: 50%; }
     .cal-day.hover-e::before   { background: #eff6ff; right: 50%; }
     .day-inner { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; position: relative; z-index: 1; }
-    .cal-day:not(.future):not(.other):hover .day-inner { background: #e0e7ff; }
-    .cal-day.range-s .day-inner, .cal-day.range-e .day-inner, .cal-day.sel-only .day-inner { background: #0f2744 !important; color: white !important; }
-    .cal-day.today .day-inner { font-weight: 800; color: #1d4ed8; }
+    .cal-day:not(.future):not(.other):hover .day-inner { background: #dbeafe; }
+    .cal-day.range-s .day-inner, .cal-day.range-e .day-inner, .cal-day.sel-only .day-inner { background: #2563eb !important; color: white !important; }
+    .cal-day.today .day-inner { font-weight: 800; color: #2563eb; }
     .cal-day.today.range-s .day-inner, .cal-day.today.range-e .day-inner { color: white !important; }
     .cal-day.future .day-inner, .cal-day.other .day-inner { color: #d1d5db; }
     .cal-day.future, .cal-day.other { cursor: default; pointer-events: none; }
-    .picker-footer { display: flex; justify-content: flex-end; align-items: center; padding: 10px 20px 14px; border-top: 1px solid #e8edf2; gap: 8px; }
+    .picker-footer { display: flex; justify-content: flex-end; align-items: center; padding: 10px 20px 14px; border-top: 1px solid #e5e7eb; gap: 8px; }
     .picker-hint { font-size: 0.76rem; color: #9ca3af; margin-right: auto; }
-    .btn-cancel { padding: 6px 13px; border-radius: 7px; border: 1px solid #d1d5db; background: white; color: #374151; font-size: 0.82rem; cursor: pointer; }
+    .btn-cancel { padding: 6px 13px; border-radius: 7px; border: 1px solid #e5e7eb; background: white; color: #374151; font-size: 0.82rem; cursor: pointer; }
 
     /* ── App Body ── */
     .app-body { display: flex; flex: 1; overflow: hidden; }
 
     /* ── Sidebar ── */
     .sidebar {
-      width: 180px; background: white; border-right: 1px solid #e2e8f0;
-      padding: 20px 0; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+      width: 220px; background: #ffffff; border-right: 1px solid #e5e7eb;
+      flex-shrink: 0; display: flex; flex-direction: column; overflow-y: auto;
     }
-    .sidebar-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; padding: 0 16px 8px; margin-top: 8px; }
+    .sidebar-brand {
+      padding: 16px 16px 14px; border-bottom: 1px solid #e5e7eb;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .sidebar-brand-icon {
+      width: 34px; height: 34px; background: #2563eb; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      color: white; font-weight: 800; font-size: 0.78rem; letter-spacing: -0.5px;
+    }
+    .sidebar-brand-name { font-size: 0.78rem; font-weight: 700; color: #111827; line-height: 1.2; }
+    .sidebar-brand-sub  { font-size: 0.65rem; color: #6b7280; margin-top: 1px; }
+    .sidebar-nav { padding: 10px 0; flex: 1; }
+    .sidebar-label { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; padding: 0 14px 5px; margin-top: 10px; }
     .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 16px; cursor: pointer; font-size: 0.84rem; color: #4b5563;
-      border-left: 3px solid transparent; transition: all 0.12s; margin: 0 6px; border-radius: 8px;
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; cursor: pointer; font-size: 0.82rem; font-weight: 500; color: #4b5563;
+      border-radius: 7px; transition: all 0.1s; margin: 1px 8px;
     }
-    .nav-item:hover { background: #f0f4f8; color: #0f2744; }
-    .nav-item.active { background: #eff6ff; color: #0f2744; font-weight: 600; border-left: 3px solid #1d6fa4; border-radius: 0 8px 8px 0; margin-left: 0; padding-left: 13px; }
-    .nav-item svg { flex-shrink: 0; opacity: 0.7; }
-    .nav-item.active svg { opacity: 1; }
+    .nav-item:hover { background: #f3f4f6; color: #111827; }
+    .nav-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+    .nav-item svg { flex-shrink: 0; color: #9ca3af; }
+    .nav-item.active svg { color: #2563eb; }
 
     /* ── Main content area ── */
-    .main-content { flex: 1; overflow-y: auto; padding: 22px 28px 48px; }
+    .main-content { flex: 1; overflow-y: auto; padding: 24px 28px 48px; }
     .view { display: none; }
     .view.active { display: block; }
 
     /* ── Shared card styles ── */
-    .tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-    .tag-mtd  { background: #dbeafe; color: #1d4ed8; }
-    .tag-live { background: #dcfce7; color: #15803d; margin-left: 6px; }
+    .tag { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.03em; }
+    .tag-mtd  { background: #dbeafe; color: #2563eb; }
+    .tag-live { background: #dbeafe; color: #2563eb; margin-left: 6px; }
     .summary-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
-    .card { background: white; border-radius: 12px; padding: 16px 18px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); border-top: 4px solid transparent; }
-    .card.c-total  { border-top-color: #0f2744; }
-    .card.c-valid  { border-top-color: #16a34a; }
-    .card.c-prequal{ border-top-color: #d97706; }
+    .card { background: white; border-radius: 10px; padding: 18px 20px 14px; border: 1px solid #e5e7eb; border-top: 3px solid transparent; }
+    .card.c-total  { border-top-color: #2563eb; }
+    .card.c-valid  { border-top-color: #475569; }
+    .card.c-prequal{ border-top-color: #94a3b8; }
     .card.c-notbpo { border-top-color: #dc2626; }
-    .card.c-demo   { border-top-color: #6366f1; }
-    .card.c-calls  { border-top-color: #6366f1; }
-    .card.c-attended{ border-top-color: #16a34a; }
+    .card.c-demo   { border-top-color: #2563eb; }
+    .card.c-calls  { border-top-color: #2563eb; }
+    .card.c-attended{ border-top-color: #475569; }
     .card.c-noshow { border-top-color: #dc2626; }
-    .card.c-rate   { border-top-color: #0f2744; }
-    .card .lbl  { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 6px; }
-    .card .big  { font-size: 2rem; font-weight: 800; line-height: 1; }
-    .card.c-total  .big { color: #0f2744; }
-    .card.c-demo   .big { color: #6366f1; }
-    .card.c-valid  .big, .card.c-attended .big { color: #16a34a; }
-    .card.c-prequal .big { color: #d97706; }
-    .card.c-notbpo .big, .card.c-noshow .big  { color: #dc2626; }
-    .card.c-calls  .big { color: #6366f1; }
-    .card.c-rate   .big { color: #0f2744; }
+    .card.c-rate   { border-top-color: #2563eb; }
+    .card .lbl  { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.03em; color: #6b7280; margin-bottom: 8px; }
+    .card .big  { font-size: 1.85rem; font-weight: 800; line-height: 1; color: #111827; }
     .card .pct { font-size: 0.78rem; font-weight: 600; margin-top: 4px; }
-    .card .sub { font-size: 0.71rem; color: #94a3b8; margin-top: 3px; }
+    .card .sub { font-size: 0.7rem; color: #9ca3af; margin-top: 4px; }
     .charts-row { display: grid; gap: 12px; margin-bottom: 12px; }
     .two-col { grid-template-columns: 1fr 1fr; }
     .three-col { grid-template-columns: 1fr 1fr 1fr; }
-    .chart-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
-    .chart-card h3 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 14px; }
-    .table-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); margin-bottom: 12px; }
-    .table-card h3 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 12px; }
+    .chart-card { background: white; border-radius: 10px; padding: 18px 20px; border: 1px solid #e5e7eb; }
+    .chart-card h3 { font-size: 0.72rem; font-weight: 600; color: #374151; margin-bottom: 14px; }
+    .table-card { background: white; border-radius: 10px; padding: 18px 20px; border: 1px solid #e5e7eb; margin-bottom: 12px; }
+    .table-card h3 { font-size: 0.72rem; font-weight: 600; color: #374151; margin-bottom: 12px; }
     .table-card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .table-card-hdr h3 { margin-bottom: 0; }
     .tbl-filter-group { display: flex; align-items: center; gap: 6px; }
-    .tbl-filter-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
-    .tbl-filter-select { font-size: 0.76rem; font-weight: 600; color: #0f2744; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 7px; padding: 4px 10px; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; }
-    .tbl-filter-select:focus { border-color: #6366f1; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
-    thead th { text-align: left; padding: 7px 12px; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; border-bottom: 2px solid #e2e8f0; }
-    tbody td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; }
+    .tbl-filter-label { font-size: 0.65rem; font-weight: 600; color: #9ca3af; }
+    .tbl-filter-select { font-size: 0.76rem; font-weight: 500; color: #111827; background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 7px; padding: 4px 28px 4px 10px; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+    .tbl-filter-select:focus { border-color: #2563eb; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead th { text-align: left; padding: 8px 12px; font-size: 0.67rem; font-weight: 600; color: #9ca3af; border-bottom: 1px solid #e5e7eb; letter-spacing: 0.04em; text-transform: uppercase; }
+    tbody td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; color: #374151; }
     tbody tr:last-child td { border-bottom: none; }
-    .pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.73rem; font-weight: 700; }
-    .pill-green { background: #dcfce7; color: #15803d; }
-    .pill-amber { background: #fef3c7; color: #b45309; }
+    tbody tr:hover td { background: #f9fafb; }
+    .pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+    .pill-green { background: #dbeafe; color: #2563eb; }
+    .pill-amber { background: #e5e7eb; color: #475569; }
     .pill-red   { background: #fee2e2; color: #b91c1c; }
-    .pill-blue  { background: #dbeafe; color: #1d4ed8; }
-    .pill-gray  { background: #f1f5f9; color: #64748b; }
-    .pill-purple{ background: #ede9fe; color: #6d28d9; }
-    .view-title { font-size: 1rem; font-weight: 700; color: #0f2744; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .pill-blue  { background: #dbeafe; color: #2563eb; }
+    .pill-gray  { background: #f3f4f6; color: #6b7280; }
+    .pill-purple{ background: #eff6ff; color: #1e40af; }
+    .view-title { font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    /* ─── SP FORECAST TAB ──────────────────────────────────────────────── */
+    .fc-hero{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:18px 20px;margin-bottom:14px;}
+    .fc-progress-bar-bg{background:#e5e7eb;border-radius:99px;height:14px;overflow:hidden;position:relative;margin:8px 0 4px;}
+    .fc-progress-bar-cur{background:#1e40af;height:100%;border-radius:99px;transition:width .4s;}
+    .fc-progress-bar-proj{height:100%;border-radius:99px;position:absolute;top:0;left:0;background:rgba(37,99,235,.12);border:2px dashed #2563eb99;pointer-events:none;}
+    .fc-mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;}
+    .fc-mini-stat{background:#f9fafb;border-radius:8px;padding:10px 14px;border:1.5px solid #e5e7eb;}
+    .fc-mini-val{font-size:1.15rem;font-weight:800;color:#1e40af;}
+    .fc-mini-lbl{font-size:.68rem;color:#64748b;margin-top:2px;}
+    .fc-two-col{display:grid;grid-template-columns:1fr 1.7fr;gap:14px;margin-bottom:14px;align-items:start;}
+    .fc-chart-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:16px;}
+    .fc-chart-inner{height:210px;position:relative;}
+    .fc-avg-input{border:1px solid #e5e7eb;border-radius:5px;padding:4px 8px;font-size:.78rem;font-weight:700;color:#1e40af;background:#f9fafb;text-align:right;outline:none;width:90px;}
+    .fc-avg-input:focus{border-color:#2563eb;background:#fff;box-shadow:0 0 0 2px #dbeafe;}
+    .fc-n-input{border:1.5px solid #e5e7eb;border-radius:5px;padding:4px 2px;font-size:.8rem;font-weight:700;color:#1e40af;background:#f9fafb;text-align:center;outline:none;width:46px;}
+    .fc-n-input:focus{border-color:#2563eb;background:#fff;box-shadow:0 0 0 2px #dbeafe;}
+    .fc-n-input:not([value="0"]):not([value=""]){background:#eff6ff;border-color:#2563eb;}
+    .fc-row-ontrack td{background:#eff6ff;}
+    .fc-row-close td{background:#f3f4f6;}
+    .fc-totals-row td{background:#f9fafb;font-weight:700;border-top:2px solid #e5e7eb;}
+    .fc-reset-btn{font-size:.72rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:4px 12px;border-radius:4px;cursor:pointer;color:#64748b;}
+    .fc-reset-btn:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
     /* ─── SOURCE PARTNERS TAB ──────────────────────────────────────────── */
     .sp-donut-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
     .sp-donut-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:14px;}
-    .sp-donut-card h3{font-size:.8rem;font-weight:700;color:#0f2744;margin:0 0 8px;}
+    .sp-donut-card h3{font-size:.8rem;font-weight:700;color:#1e40af;margin:0 0 8px;}
     .sp-donut-inner{height:140px;position:relative;}
     .sp-filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
-    .sp-group-hdr td{background:#f0f4f9!important;padding:8px 14px;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0f2744;border-left:4px solid #0f2744;}
+    .sp-group-hdr td{background:#f0f4f9!important;padding:8px 14px;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1e40af;border-left:4px solid #1e40af;}
     .sp-group-desc{font-weight:400;color:#64748b;text-transform:none;letter-spacing:0;margin-left:8px;font-size:.74rem;}
-    .sp-row{border-left:4px solid #e2e8f0;transition:border-color .15s;}
+    .sp-row{border-left:4px solid #e5e7eb;transition:border-color .15s;}
     .sp-row.risk-high{border-left-color:#dc2626;}
-    .sp-row.risk-medium{border-left-color:#f59e0b;}
-    .sp-row.risk-low{border-left-color:#16a34a;}
+    .sp-row.risk-medium{border-left-color:#64748b;}
+    .sp-row.risk-low{border-left-color:#2563eb;}
     .sp-row td{vertical-align:top;padding:8px 12px;font-size:.8rem;}
     .sp-ce{min-height:18px;padding:3px 5px;border-radius:4px;outline:none;cursor:text;white-space:pre-wrap;font-size:.77rem;line-height:1.45;color:#334155;}
-    .sp-ce:focus{background:#fffbeb;box-shadow:0 0 0 2px #fde68a;}
-    .sp-ce:empty::before{content:attr(data-ph);color:#cbd5e1;pointer-events:none;}
+    .sp-ce:focus{background:#eff6ff;box-shadow:0 0 0 2px #dbeafe;}
+    .sp-ce:empty::before{content:attr(data-ph);color:#d1d5db;pointer-events:none;}
     .sp-sel{border:none;font-size:.72rem;font-weight:700;cursor:pointer;padding:3px 10px;border-radius:99px;outline:none;-webkit-appearance:none;appearance:none;width:100%;}
-    .sp-reset-btn{font-size:.72rem;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 12px;border-radius:4px;cursor:pointer;color:#64748b;margin-left:auto;}
+    .sp-reset-btn{font-size:.72rem;background:#f3f4f6;border:1px solid #e5e7eb;padding:4px 12px;border-radius:4px;cursor:pointer;color:#64748b;margin-left:auto;}
     .sp-reset-btn:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
   </style>
 </head>
@@ -171,10 +199,12 @@
 
 <!-- ═══ HEADER ══════════════════════════════════════════════════════════════ -->
 <header>
-  <div>
-    <div class="brand">Outsource Accelerator · Client Services</div>
-    <h1>SP Weekly Report <span class="tag tag-live">Live</span></h1>
-    <div class="subtitle" id="viewSubtitle">CS Leads · Source Partner Report</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <h1>SP Weekly Report</h1>
+    <span class="tag tag-live">Live</span>
+    <span style="color:#d1d5db;font-size:0.85rem;">|</span>
+    <span class="subtitle" id="viewSubtitle">CS Leads · Source Partner Report</span>
+    <span id="_diag" style="font-size:0.65rem;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:4px;margin-left:8px">Loading...</span>
   </div>
   <div class="picker-wrapper" id="pickerWrapper">
     <button id="dateTrigger" onclick="togglePicker()">
@@ -213,22 +243,35 @@
 
   <!-- ── Sidebar ── -->
   <nav class="sidebar">
-    <div class="sidebar-label">Reports</div>
-    <div class="nav-item active" data-view="cs-leads" onclick="showView('cs-leads')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      CS Leads
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">OA</div>
+      <div>
+        <div class="sidebar-brand-name">Outsource Accelerator</div>
+        <div class="sidebar-brand-sub">Client Services</div>
+      </div>
     </div>
-    <div class="nav-item" data-view="demo-calls" onclick="showView('demo-calls')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.6 1.31h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l1.05-1.05a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      Demo Calls
-    </div>
-    <div class="nav-item" data-view="active-partners" onclick="showView('active-partners')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
-      Active Partners
-    </div>
-    <div class="nav-item" data-view="source-partners" onclick="showView('source-partners')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      Source Partners
+    <div class="sidebar-nav">
+      <div class="sidebar-label">Reports</div>
+      <div class="nav-item active" data-view="cs-leads" onclick="showView('cs-leads')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        CS Leads
+      </div>
+      <div class="nav-item" data-view="demo-calls" onclick="showView('demo-calls')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.6 1.31h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l1.05-1.05a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Demo Calls
+      </div>
+      <div class="nav-item" data-view="active-partners" onclick="showView('active-partners')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        Active Partners
+      </div>
+      <div class="nav-item" data-view="source-partners" onclick="showView('source-partners')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Source Partners
+      </div>
+      <div class="nav-item" data-view="sp-forecast" onclick="showView('sp-forecast')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        SP Forecast
+      </div>
     </div>
   </nav>
 
@@ -249,12 +292,12 @@
         <div class="card c-valid">
           <div class="lbl">Valid BPO</div>
           <div class="big" id="statValid">—</div>
-          <div class="pct" id="statValidPct" style="color:#16a34a"></div>
+          <div class="pct" id="statValidPct" style="color:#475569"></div>
         </div>
         <div class="card c-prequal">
           <div class="lbl">Prequalification Issues</div>
           <div class="big" id="statPrequal">—</div>
-          <div class="pct" id="statPrequalPct" style="color:#d97706"></div>
+          <div class="pct" id="statPrequalPct" style="color:#94a3b8"></div>
         </div>
         <div class="card c-notbpo">
           <div class="lbl">Not a BPO</div>
@@ -267,7 +310,7 @@
         <div class="card c-demo">
           <div class="lbl">Demo Call Booked (Same Month)</div>
           <div class="big" id="statDemoBooked">—</div>
-          <div class="pct" id="statDemoBookedPct" style="color:#6366f1"></div>
+          <div class="pct" id="statDemoBookedPct" style="color:#2563eb"></div>
         </div>
         <div class="card" style="border-top-color:#94a3b8">
           <div class="lbl">Not Yet Booked</div>
@@ -301,7 +344,7 @@
             <tr><td>No Business Email</td>       <td id="pdNoEmail">—</td><td id="pdNoEmailPct">—</td></tr>
             <tr><td>Inactive / No Website</td>   <td id="pdInactive">—</td><td id="pdInactivePct">—</td></tr>
             <tr><td>Unverified Email</td>        <td id="pdUnverified">—</td><td id="pdUnverifiedPct">—</td></tr>
-            <tr style="font-weight:700;background:#fefce8">
+            <tr style="font-weight:700;background:#eff6ff">
               <td>Total</td><td id="pdTotal">—</td><td id="pdTotalPct">—</td>
             </tr>
           </tbody>
@@ -343,7 +386,7 @@
         <div class="card c-attended">
           <div class="lbl">Attended</div>
           <div class="big" id="dcAttended">—</div>
-          <div class="pct" id="dcAttendedPct" style="color:#16a34a"></div>
+          <div class="pct" id="dcAttendedPct" style="color:#475569"></div>
         </div>
         <div class="card c-noshow">
           <div class="lbl">No Show</div>
@@ -357,7 +400,31 @@
         </div>
       </div>
 
-      <!-- Per-person + deal status -->
+      <!-- Deal Status Distribution -->
+      <div class="chart-card" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div>
+            <h3 style="margin-bottom:3px">Deal Status Distribution</h3>
+            <div style="font-size:0.65rem;color:#94a3b8">CS Pipeline snapshot &middot; Closed Won = Active subscriptions only</div>
+          </div>
+          <div style="display:flex;gap:20px">
+            <div style="text-align:right">
+              <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">Total Pipeline</div>
+              <div id="dsTotalCount" style="font-size:1.15rem;font-weight:800;color:#111827">—</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">Nurture Pool</div>
+              <div id="dsNurtureCount" style="font-size:1.15rem;font-weight:800;color:#2563eb">—</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start">
+          <div style="position:relative;height:260px"><canvas id="dcDealChart"></canvas></div>
+          <div id="dsBreakdownTable"></div>
+        </div>
+      </div>
+
+      <!-- Per-person + deal status by person -->
       <div class="charts-row two-col">
         <div class="chart-card">
           <h3>Calls per Person</h3>
@@ -389,14 +456,6 @@
           </thead>
           <tbody id="dcPersonTable"></tbody>
         </table>
-      </div>
-
-      <!-- Deal status doughnut -->
-      <div class="charts-row" style="margin-bottom:12px">
-        <div class="chart-card">
-          <h3>Deal Status Distribution <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">(Closed Won = Active subscriptions only)</span></h3>
-          <div style="height:250px"><canvas id="dcDealChart"></canvas></div>
-        </div>
       </div>
 
       <!-- Deal Status breakdown table -->
@@ -434,29 +493,29 @@
 
     <!-- ════ ACTIVE PARTNERS VIEW ════════════════════════════════════════════ -->
     <div id="active-partners-view" class="view">
-      <div class="view-title">Active Partners <span class="tag" style="background:#16a34a;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:20px;font-weight:600;vertical-align:middle">99 Active</span></div>
+      <div class="view-title">Active Partners <span class="tag" style="background:#1e40af;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:20px;font-weight:600;vertical-align:middle">97 Active</span></div>
 
       <!-- Summary cards -->
       <div class="summary-grid">
-        <div class="card" style="border-top-color:#0f2744">
+        <div class="card" style="border-top-color:#1e40af">
           <div class="lbl">Total Active Partners</div>
-          <div class="big">99</div>
+          <div class="big">97</div>
           <div class="sub">CS - Subscription Status: Active</div>
         </div>
-        <div class="card" style="border-top-color:#16a34a">
+        <div class="card" style="border-top-color:#2563eb">
           <div class="lbl">MRR</div>
-          <div class="big">$167,957</div>
+          <div class="big">$148,853</div>
           <div class="sub">across paying partners</div>
         </div>
-        <div class="card" style="border-top-color:#6366f1">
+        <div class="card" style="border-top-color:#475569">
           <div class="lbl">Partners with Revenue</div>
-          <div class="big">69</div>
-          <div class="pct" style="color:#6366f1">70% of total</div>
+          <div class="big">71</div>
+          <div class="pct" style="color:#475569">73% of total</div>
         </div>
-        <div class="card" style="border-top-color:#d97706">
+        <div class="card" style="border-top-color:#94a3b8">
           <div class="lbl">Avg Revenue / Paying</div>
-          <div class="big">$2,434</div>
-          <div class="sub">among 69 with revenue</div>
+          <div class="big">$2,096</div>
+          <div class="sub">among 71 with revenue</div>
         </div>
       </div>
 
@@ -532,17 +591,17 @@
 <!-- ══ Source Partners View ══════════════════════════════════════════════════ -->
 <div id="source-partners-view" class="view">
   <div class="view-title">Source Partners
-    <span style="font-size:.75rem;background:#0f2744;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600">22 Active SPs</span>
+    <span style="font-size:.75rem;background:#1e40af;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600">22 Active SPs</span>
   </div>
 
   <!-- Summary Cards -->
   <div class="summary-grid" style="margin-bottom:14px">
-    <div class="card" style="border-top-color:#0f2744">
+    <div class="card" style="border-top-color:#1e40af">
       <div class="lbl">Total Source Partners</div>
       <div class="big">22</div>
       <div class="sub">CS Subscription = Source Partner</div>
     </div>
-    <div class="card" style="border-top-color:#6366f1">
+    <div class="card" style="border-top-color:#2563eb">
       <div class="lbl">Total DC Target</div>
       <div class="big" id="spCardDC">390</div>
       <div class="sub">demo calls / month target</div>
@@ -552,7 +611,7 @@
       <div class="big" id="spCardHighRisk">—</div>
       <div class="sub">partners flagged high churn risk</div>
     </div>
-    <div class="card" style="border-top-color:#f59e0b">
+    <div class="card" style="border-top-color:#94a3b8">
       <div class="lbl">Actions Pending</div>
       <div class="big" id="spCardActions">—</div>
       <div class="sub">partners with open action items</div>
@@ -614,6 +673,79 @@
         </tr>
       </thead>
       <tbody id="spTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══ SP Forecast View ═══════════════════════════════════════════════════════ -->
+<div id="sp-forecast-view" class="view">
+  <div class="view-title">SP Forecast
+    <span style="font-size:.75rem;background:#2563eb;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600">$300k Target · Dec 2026</span>
+    <button class="fc-reset-btn" style="margin-left:auto" onclick="fcResetData()">↺ Reset Forecast</button>
+  </div>
+
+  <!-- Hero progress block (rendered by JS) -->
+  <div class="fc-hero" id="fcSummaryBlock"></div>
+
+  <!-- Two-column: Assumptions + Chart -->
+  <div class="fc-two-col">
+    <div class="table-card" style="margin-bottom:0">
+      <div class="table-card-hdr">
+        <h3>Revenue Assumptions</h3>
+        <span style="font-size:.7rem;color:#94a3b8">Avg MRR per new partner — edit to adjust</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Subscription</th>
+            <th style="text-align:center">Partners</th>
+            <th style="text-align:right">MRR</th>
+            <th style="text-align:right">Computed Avg</th>
+            <th style="text-align:right">Forecast Avg ✏</th>
+          </tr>
+        </thead>
+        <tbody id="fcAssumptionsBody"></tbody>
+      </table>
+    </div>
+    <div class="fc-chart-wrap">
+      <div style="font-size:.78rem;font-weight:700;color:#1e40af;margin-bottom:10px">MRR Trajectory vs $300k Target</div>
+      <div class="fc-chart-inner"><canvas id="fcTrajectoryChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Monthly forecast table -->
+  <div class="table-card">
+    <div class="table-card-hdr">
+      <h3>Monthly New Partner Plan</h3>
+      <span style="font-size:.7rem;color:#94a3b8">Enter planned new partners per month — projections update live</span>
+    </div>
+    <table style="table-layout:fixed;width:100%">
+      <colgroup>
+        <col style="width:10%">
+        <col style="width:7%">
+        <col style="width:7%">
+        <col style="width:7%">
+        <col style="width:7%">
+        <col style="width:13%">
+        <col style="width:14%">
+        <col style="width:14%">
+        <col style="width:11%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th style="text-align:center">SP<br><span style="font-weight:400;font-size:.68rem;color:#94a3b8">new</span></th>
+          <th style="text-align:center">MH-SB<br><span style="font-weight:400;font-size:.68rem;color:#94a3b8">new</span></th>
+          <th style="text-align:center">Sales Hub<br><span style="font-weight:400;font-size:.68rem;color:#94a3b8">new</span></th>
+          <th style="text-align:center">Mktg Hub<br><span style="font-weight:400;font-size:.68rem;color:#94a3b8">new</span></th>
+          <th style="text-align:right">MRR Added</th>
+          <th style="text-align:right">Projected MRR</th>
+          <th style="text-align:right">Gap to $300k</th>
+          <th style="text-align:center">Status</th>
+        </tr>
+      </thead>
+      <tbody id="fcTableBody"></tbody>
     </table>
   </div>
 </div>
@@ -880,26 +1012,26 @@ const DS_DEALS = [
   {p:'rochelle',d:'2026-04-29',co:'Brand Vantage',ds:'Keen – Needs Internal Discussion'},
 ];
 const DS_STATUSES = [
-  {key:'Closed won',                       label:'Closed Won',           color:'#0f2744'},
-  {key:'Decision Maker Bought-in',         label:'DM Bought-in',         color:'#16a34a'},
-  {key:'Keen – Needs Internal Discussion', label:'Keen – Needs Discuss.',color:'#6366f1'},
-  {key:'With hesitations',                 label:'With Hesitations',     color:'#d97706'},
-  {key:'Not the decision maker',           label:'Not the DM',           color:'#f59e0b'},
-  {key:'Early Stage Startup',              label:'Early Stage',          color:'#7c3aed'},
+  {key:'Closed won',                       label:'Closed Won',           color:'#1e40af'},
+  {key:'Decision Maker Bought-in',         label:'DM Bought-in',         color:'#2563eb'},
+  {key:'Keen – Needs Internal Discussion', label:'Keen – Needs Discuss.',color:'#475569'},
+  {key:'With hesitations',                 label:'With Hesitations',     color:'#64748b'},
+  {key:'Not the decision maker',           label:'Not the DM',           color:'#94a3b8'},
+  {key:'Early Stage Startup',              label:'Early Stage',          color:'#d1d5db'},
   {key:'Not interested',                   label:'Not Interested',       color:'#dc2626'},
-  {key:'',                                 label:'No Status',            color:'#e2e8f0'},
+  {key:'',                                 label:'No Status',            color:'#e5e7eb'},
 ];
 
 // ─── ACTIVE PARTNERS (268 CS - Closed Won deals) ─────────────────────────────
 // n: company name, sub: subscription type, o: owner key, rev: revenue ($)
 const AP_SUBS = [
-  {key:'Source Partner',          label:'Source Partner',     color:'#0f2744'},
-  {key:'Marketing Hub - Source Boost',label:'MH - Source Boost',color:'#6366f1'},
-  {key:'Sales Hub',               label:'Sales Hub',          color:'#16a34a'},
+  {key:'Source Partner',          label:'Source Partner',     color:'#1e40af'},
+  {key:'Marketing Hub - Source Boost',label:'MH - Source Boost',color:'#2563eb'},
+  {key:'Sales Hub',               label:'Sales Hub',          color:'#475569'},
   {key:'Standard',                label:'Standard',           color:'#64748b'},
-  {key:'Marketing Hub',           label:'Marketing Hub',      color:'#d97706'},
-  {key:'Marketing Hub - Standard',label:'MH - Standard',      color:'#7c3aed'},
-  {key:'',                        label:'No Subscription',    color:'#e2e8f0'},
+  {key:'Marketing Hub',           label:'Marketing Hub',      color:'#94a3b8'},
+  {key:'Marketing Hub - Standard',label:'MH - Standard',      color:'#d1d5db'},
+  {key:'',                        label:'No Subscription',    color:'#e5e7eb'},
 ];
 const AP_PARTNERS = [
   {n:'123Employee',sub:'Standard',o:'judy',rev:0},
@@ -917,33 +1049,32 @@ const AP_PARTNERS = [
   {n:'CCIG Group',sub:'Standard',o:'stef',rev:0},
   {n:'CDM Direct',sub:'Sales Hub',o:'rochelle',rev:100},
   {n:'Cebu Telenet',sub:'Source Partner',o:'judy',rev:6070},
+  {n:'Clark Outsourcing - Client Services',sub:'Marketing Hub',o:'judy',rev:348},
   {n:'Cloudstaff',sub:'Standard',o:'stef',rev:0},
   {n:'ConnectOS',sub:'Marketing Hub - Source Boost',o:'stef',rev:7089},
-  {n:'Connext',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:1000},
-  {n:'Contactpoint 360',sub:'Marketing Hub - Source Boost',o:'judy',rev:1249},
-  {n:'Corpshore Solutions',sub:'Marketing Hub - Source Boost',o:'stef',rev:1249},
+  {n:'Connext',sub:'Standard',o:'rochelle',rev:1000},
+  {n:'Contactpoint 360',sub:'Marketing Hub - Source Boost',o:'judy',rev:499},
+  {n:'Corpshore Solutions',sub:'Marketing Hub - Source Boost',o:'stef',rev:499},
   {n:'CS-PAC Global Solutions',sub:'Source Partner',o:'rochelle',rev:3499},
-  {n:'Eastvantage',sub:'Source Partner',o:'che',rev:6070},
   {n:'Eastvantage - Client Services',sub:'Source Partner',o:'judy',rev:6070},
   {n:'EffectiveSoft',sub:'Standard',o:'stef',rev:100},
   {n:'Elaxis',sub:'Standard',o:'rochelle',rev:100},
   {n:'Enezync',sub:'Standard',o:'rochelle',rev:100},
-  {n:'Epic Outsourcing',sub:'Sales Hub',o:'stef',rev:0},
+  {n:'Epic Outsourcing',sub:'Sales Hub',o:'stef',rev:199},
   {n:'Expedock',sub:'Source Partner',o:'judy',rev:3499},
   {n:'FBSPL',sub:'Standard',o:'stef',rev:0},
   {n:'Gloov Outsourcing',sub:'Standard',o:'judy',rev:100},
-  {n:'Goodland BPO',sub:'Sales Hub',o:'rochelle',rev:299},
-  {n:'H Connect International',sub:'Standard',o:'rochelle',rev:600},
-  {n:'HGS',sub:'Source Partner',o:'che',rev:6070},
-  {n:'HGS OSS',sub:'Source Partner',o:'che',rev:3135},
-  {n:'HGS UK',sub:'Source Partner',o:'che',rev:3135},
+  {n:'Goodland BPO',sub:'Sales Hub',o:'rochelle',rev:199},
+  {n:'H Connect International',sub:'Standard',o:'rochelle',rev:0},
+  {n:'HGS',sub:'Source Partner',o:'che',rev:0},
+  {n:'HGS OSS',sub:'Source Partner',o:'che',rev:0},
+  {n:'HGS UK',sub:'Source Partner',o:'che',rev:6070},
   {n:'Hinduja Global Solutions - UK - Client Services',sub:'Source Partner',o:'che',rev:0},
   {n:'HOPLA',sub:'Source Partner',o:'rochelle',rev:6599},
   {n:'Hugo',sub:'Marketing Hub - Source Boost',o:'judy',rev:490},
   {n:'iFive',sub:'Standard',o:'judy',rev:100},
-  {n:'IIMI Intelligent Image Management Inc.',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:600},
-  {n:'Imperative Business Ventures Limited',sub:'Standard',o:'stef',rev:0},
-  {n:'Innovative Work Solutions - Client Services',sub:'Sales Hub',o:'judy',rev:0},
+  {n:'IIMI Intelligent Image Management Inc.',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:0},
+  {n:'Innovative Work Solutions - Client Services',sub:'Sales Hub',o:'judy',rev:199},
   {n:'Innovature',sub:'Standard',o:'stef',rev:0},
   {n:'Innowise',sub:'Marketing Hub - Source Boost',o:'stef',rev:499},
   {n:'IntegratedOS',sub:'Source Partner',o:'stef',rev:3135},
@@ -951,21 +1082,20 @@ const AP_PARTNERS = [
   {n:'ISTA Solutions',sub:'Standard',o:'judy',rev:0},
   {n:'iTransition',sub:'Standard',o:'judy',rev:100},
   {n:'Kamel BPO',sub:'Standard',o:'rochelle',rev:100},
-  {n:'Kinetic Innovative Staffing',sub:'Marketing Hub',o:'rochelle',rev:0},
+  {n:'Kinetic Innovative Staffing',sub:'Marketing Hub',o:'rochelle',rev:29},
   {n:'LAdmins',sub:'Marketing Hub',o:'judy',rev:316},
-  {n:'Lynk Global',sub:'Sales Hub',o:'rochelle',rev:100},
-  {n:'Multinational Holdings',sub:'Sales Hub',o:'rochelle',rev:0},
+  {n:'Lynk Global',sub:'Marketing Hub',o:'rochelle',rev:100},
+  {n:'Multinational Holdings',sub:'Sales Hub',o:'rochelle',rev:199},
   {n:'NQX',sub:'Standard',o:'judy',rev:100},
   {n:'OfficePartners360',sub:'Standard',o:'judy',rev:0},
   {n:'Origo BPO',sub:'Standard',o:'rochelle',rev:100},
   {n:'Outposter',sub:'Source Partner',o:'stef',rev:20650},
-  {n:'Outsourcea',sub:'Sales Hub',o:'rochelle',rev:0},
+  {n:'Outsourcea',sub:'Marketing Hub',o:'rochelle',rev:0},
   {n:'Outsourced',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:590},
   {n:'Outsourced Global',sub:'Standard',o:'rochelle',rev:1100},
-  {n:'Pandr',sub:'Source Partner',o:'stef',rev:6599},
-  {n:'Pandr - Call Center',sub:'Source Partner',o:'stef',rev:3135},
+  {n:'Pandr',sub:'Source Partner',o:'stef',rev:3999},
   {n:'Paragon Outsourcing',sub:'Standard',o:'judy',rev:0},
-  {n:'Parkes BPO',sub:'Sales Hub',o:'rochelle',rev:0},
+  {n:'Parkes BPO',sub:'Sales Hub',o:'rochelle',rev:199},
   {n:'Peak Outsourcing',sub:'Standard',o:'judy',rev:100},
   {n:'Peak Support',sub:'Marketing Hub - Standard',o:'judy',rev:29},
   {n:'Pentwater',sub:'Source Partner',o:'stef',rev:3499},
@@ -975,7 +1105,7 @@ const AP_PARTNERS = [
   {n:'Prima Systems',sub:'Standard',o:'stef',rev:100},
   {n:'Remote Employee',sub:'Source Partner',o:'stef',rev:7089},
   {n:'Remote Latinos',sub:'Standard',o:'judy',rev:100},
-  {n:'Remote People',sub:'Marketing Hub - Source Boost',o:'judy',rev:0},
+  {n:'Remote People',sub:'Marketing Hub - Source Boost',o:'judy',rev:199},
   {n:'Remotify',sub:'Standard',o:'rochelle',rev:100},
   {n:'Sagan Passport',sub:'Standard',o:'judy',rev:100},
   {n:'Satellite Office',sub:'Source Partner',o:'stef',rev:3499},
@@ -989,15 +1119,15 @@ const AP_PARTNERS = [
   {n:'Snapscale',sub:'Standard',o:'judy',rev:100},
   {n:'Sourcefit',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:3625},
   {n:'Staff Outsourcing',sub:'Standard',o:'judy',rev:100},
+  {n:'Success Link Outsourcing US',sub:'Sales Hub',o:'rochelle',rev:0},
   {n:'SummitNext',sub:'Standard',o:'rochelle',rev:100},
-  {n:'Talent First',sub:'Standard',o:'stef',rev:0},
   {n:'Talent Forge Group',sub:'Standard',o:'rochelle',rev:100},
   {n:'The Remote Group',sub:'Sales Hub',o:'rochelle',rev:100},
-  {n:'Thrivin',sub:'Sales Hub',o:'judy',rev:299},
-  {n:'Tison',sub:'Sales Hub',o:'stef',rev:0},
+  {n:'Thrivin',sub:'Sales Hub',o:'judy',rev:199},
+  {n:'Tison',sub:'Marketing Hub',o:'stef',rev:0},
   {n:'VA Platinum Pty Ltd',sub:'Source Partner',o:'rochelle',rev:7698},
   {n:'Virtual Latinos',sub:'Standard',o:'rochelle',rev:0},
-  {n:'VirtualStaff.ph',sub:'Marketing Hub - Source Boost',o:'judy',rev:0},
+  {n:'VirtualStaff.ph',sub:'Marketing Hub - Source Boost',o:'judy',rev:499},
   {n:'vizx international staffing solutions',sub:'Standard',o:'judy',rev:100},
   {n:'Xceed',sub:'Standard',o:'stef',rev:0},
   {n:'ZigZag (Outposter)',sub:'Source Partner',o:'stef',rev:0},
@@ -1005,14 +1135,14 @@ const AP_PARTNERS = [
 
 // ─── DEAL STATUS DATA (CS Pipeline, Apr 1 – May 6; Closed Won = Active subs only) ──
 const DEAL_STAGES = [
-  {label:'Closed Won (Active)',        v:97,  color:'#0f2744'},
-  {label:'No Status Set',              v:37,  color:'#cbd5e1'},
-  {label:'With Hesitations',           v:11,  color:'#d97706'},
-  {label:'Not the Decision Maker',     v:8,   color:'#f59e0b'},
-  {label:'Decision Maker Bought-in',   v:7,   color:'#16a34a'},
-  {label:'Keen – Needs Discussion',    v:6,   color:'#6366f1'},
+  {label:'Closed Won (Active)',        v:97,  color:'#1e40af'},
+  {label:'No Status Set',              v:37,  color:'#e5e7eb'},
+  {label:'With Hesitations',           v:11,  color:'#64748b'},
+  {label:'Not the Decision Maker',     v:8,   color:'#94a3b8'},
+  {label:'Decision Maker Bought-in',   v:7,   color:'#2563eb'},
+  {label:'Keen – Needs Discussion',    v:6,   color:'#475569'},
   {label:'Not Interested',             v:3,   color:'#dc2626'},
-  {label:'Early Stage Startup',        v:1,   color:'#94a3b8'},
+  {label:'Early Stage Startup',        v:1,   color:'#d1d5db'},
 ];
 
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
@@ -1059,11 +1189,11 @@ function csTrend(recs,s,e){
 
 // ─── DEMO CALLS LOGIC ────────────────────────────────────────────────────────
 const PERSONS = [
-  {key:'judy',     label:'Judy',     color:'#6366f1'},
-  {key:'stef',     label:'Stef',     color:'#0f2744'},
-  {key:'che',      label:'Che',      color:'#d97706'},
-  {key:'rochelle', label:'Rochelle', color:'#16a34a'},
-  {key:'discovery',label:'Discovery',color:'#94a3b8'},
+  {key:'judy',     label:'Judy',     color:'#2563eb'},
+  {key:'stef',     label:'Stef',     color:'#1e40af'},
+  {key:'che',      label:'Che',      color:'#64748b'},
+  {key:'rochelle', label:'Rochelle', color:'#94a3b8'},
+  {key:'discovery',label:'Discovery',color:'#d1d5db'},
 ];
 function dcFilter(s,e){ return MEETINGS.filter(r=>r.d>=s&&r.d<=e); }
 function dcStats(recs){
@@ -1116,9 +1246,73 @@ function dsStats(s,e){
   return out;
 }
 
+// ─── DEAL STATUS BREAKDOWN ────────────────────────────────────────────────────
+function dsRenderBreakdown(){
+  const total=DEAL_STAGES.reduce((a,d)=>a+d.v,0);
+  const nurture=DEAL_STAGES.filter(d=>d.label!=='Closed Won (Active)').reduce((a,d)=>a+d.v,0);
+  const PRIORITY={
+    'Closed Won (Active)':{label:'Active',bg:'#dbeafe',c:'#1e40af'},
+    'Decision Maker Bought-in':{label:'High',bg:'#1e40af',c:'#fff'},
+    'Keen – Needs Discussion':{label:'High',bg:'#1e40af',c:'#fff'},
+    'With Hesitations':{label:'Med',bg:'#e5e7eb',c:'#475569'},
+    'Not the Decision Maker':{label:'Med',bg:'#e5e7eb',c:'#475569'},
+    'No Status Set':{label:'Low',bg:'#f3f4f6',c:'#94a3b8'},
+    'Early Stage Startup':{label:'Low',bg:'#f3f4f6',c:'#94a3b8'},
+    'Not Interested':{label:'Disq.',bg:'#fee2e2',c:'#dc2626'},
+  };
+  const highPri=(DEAL_STAGES.find(d=>d.label==='Decision Maker Bought-in')||{v:0}).v
+               +(DEAL_STAGES.find(d=>d.label==='Keen – Needs Discussion')||{v:0}).v;
+  document.getElementById('dsTotalCount').textContent=total;
+  document.getElementById('dsNurtureCount').textContent=nurture;
+  document.getElementById('dsBreakdownTable').innerHTML=`
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="text-align:left;padding:5px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Status</th>
+        <th style="text-align:right;padding:5px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Count</th>
+        <th style="text-align:right;padding:5px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Share</th>
+        <th style="text-align:center;padding:5px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Nurture</th>
+      </tr></thead>
+      <tbody>
+        ${DEAL_STAGES.map(d=>{
+          const pct=total?((d.v/total)*100).toFixed(1):'0';
+          const pr=PRIORITY[d.label]||{label:'Low',bg:'#f3f4f6',c:'#94a3b8'};
+          const barW=total?Math.round((d.v/total)*100):0;
+          return`<tr>
+            <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                <span style="width:8px;height:8px;border-radius:50%;background:${d.color};display:inline-block;flex-shrink:0"></span>
+                <span style="font-size:0.77rem;font-weight:500;color:#374151">${d.label}</span>
+              </div>
+              <div style="height:3px;background:#f3f4f6;border-radius:2px;overflow:hidden;margin-left:16px">
+                <div style="height:100%;width:${barW}%;background:${d.color};border-radius:2px"></div>
+              </div>
+            </td>
+            <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;font-size:0.82rem;color:#111827;vertical-align:top">${d.v}</td>
+            <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-size:0.77rem;color:#64748b;vertical-align:top">${pct}%</td>
+            <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center;vertical-align:top">
+              <span style="padding:2px 8px;border-radius:99px;font-size:0.62rem;font-weight:700;background:${pr.bg};color:${pr.c}">${pr.label}</span>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:10px;padding:9px 12px;background:#eff6ff;border-radius:7px;font-size:0.7rem;color:#475569;border-left:3px solid #2563eb">
+      Focus on <strong style="color:#1e40af">${highPri} High-priority leads</strong> (DM Bought-in + Keen) — closest to converting. Address <strong>${(DEAL_STAGES.find(d=>d.label==='With Hesitations')||{v:0}).v} hesitations</strong> and <strong>${(DEAL_STAGES.find(d=>d.label==='No Status Set')||{v:0}).v} untagged leads</strong> next.
+    </div>`;
+}
+
 // ─── CHARTS ───────────────────────────────────────────────────────────────────
-Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
-Chart.defaults.font.size=11;
+if(typeof Chart==='undefined'){
+  document.addEventListener('DOMContentLoaded',function(){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js';
+    s.onload=function(){bootCharts();};
+    document.head.appendChild(s);
+  });
+}else{
+  Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+  Chart.defaults.font.size=11;
+}
 let csDonut,csWaterfall,csTrend2,dcPerson,dcTrend2,dcDeal,dcDealPerson;
 let apSubCount,apSubRev,apOwnerCount,apOwnerRev;
 
@@ -1130,7 +1324,7 @@ function initAll(){
   csDonut=new Chart(document.getElementById('csDonutChart'),{type:'doughnut',data:{
     labels:['Valid BPO','Not a BPO-looking','No Business Email','Inactive/No Website','Unverified Email','Not a BPO'],
     datasets:[{data:[csS.valid,csS.pd.notLook,csS.pd.noEmail,csS.pd.inactive,csS.pd.unverified,csS.notBPO],
-      backgroundColor:['#16a34a','#d97706','#fbbf24','#fde68a','#fef9c3','#dc2626'],
+      backgroundColor:['#1e40af','#475569','#64748b','#94a3b8','#d1d5db','#dc2626'],
       borderWidth:3,borderColor:'#fff',hoverOffset:6}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
       plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
@@ -1139,19 +1333,19 @@ function initAll(){
   csWaterfall=new Chart(document.getElementById('csWaterfallChart'),{type:'bar',data:{
     labels:['Total Inquiries','− Not a BPO','− Prequalification','Valid BPO'],
     datasets:[{data:[[0,csS.total],[csS.total-csS.notBPO,csS.total],[csS.valid,csS.total-csS.notBPO],[0,csS.valid]],
-      backgroundColor:['#0f2744','#dc2626','#d97706','#16a34a'],borderRadius:5,borderSkipped:false}]},
+      backgroundColor:['#1e40af','#dc2626','#94a3b8','#475569'],borderRadius:5,borderSkipped:false}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`  ${Math.abs(ctx.raw[1]-ctx.raw[0])} contacts`}}},
-      scales:{x:{min:0,max:Math.max(csS.total+3,10),grid:{color:'#f1f5f9'}},y:{grid:{display:false}}}}});
+      scales:{x:{min:0,max:Math.max(csS.total+3,10),grid:{color:'#f3f4f6'}},y:{grid:{display:false}}}}});
 
   csTrend2=new Chart(document.getElementById('csTrendChart'),{type:'bar',data:{
     labels:td.labels,
-    datasets:[{label:'Valid BPO',data:td.v,backgroundColor:'#16a34a',stack:'s',borderRadius:3},
-              {label:'Prequalification',data:td.p,backgroundColor:'#f59e0b',stack:'s'},
+    datasets:[{label:'Valid BPO',data:td.v,backgroundColor:'#475569',stack:'s',borderRadius:3},
+              {label:'Prequalification',data:td.p,backgroundColor:'#94a3b8',stack:'s'},
               {label:'Not a BPO',data:td.n,backgroundColor:'#dc2626',stack:'s'}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'top',labels:{font:{size:10},padding:12,boxWidth:10,usePointStyle:true}}},
-      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'}}}}});
 
   // Demo calls charts (init with no data, updated when rendered)
   const dcR=dcFilter(state.startDate,state.endDate);
@@ -1161,33 +1355,33 @@ function initAll(){
   dcPerson=new Chart(document.getElementById('dcPersonChart'),{type:'bar',data:{
     labels:PERSONS.map(p=>p.label),
     datasets:[
-      {label:'Attended',data:PERSONS.map(p=>dcS.byPerson[p.key].a),backgroundColor:'#16a34a',stack:'s',borderRadius:3},
+      {label:'Attended',data:PERSONS.map(p=>dcS.byPerson[p.key].a),backgroundColor:'#475569',stack:'s',borderRadius:3},
       {label:'No Show', data:PERSONS.map(p=>dcS.byPerson[p.key].n),backgroundColor:'#dc2626',stack:'s'},
-      {label:'Canceled',data:PERSONS.map(p=>dcS.byPerson[p.key].c),backgroundColor:'#f59e0b',stack:'s'},
-      {label:'Scheduled',data:PERSONS.map(p=>dcS.byPerson[p.key].s),backgroundColor:'#94a3b8',stack:'s'},
+      {label:'Canceled',data:PERSONS.map(p=>dcS.byPerson[p.key].c),backgroundColor:'#94a3b8',stack:'s'},
+      {label:'Scheduled',data:PERSONS.map(p=>dcS.byPerson[p.key].s),backgroundColor:'#d1d5db',stack:'s'},
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'top',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}}},
-      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'}}}}});
 
   dcTrend2=new Chart(document.getElementById('dcTrendChart'),{type:'bar',data:{
     labels:dct.labels,
     datasets:[
-      {label:'Attended', data:dct.a,backgroundColor:'#16a34a',stack:'s',borderRadius:3},
+      {label:'Attended', data:dct.a,backgroundColor:'#475569',stack:'s',borderRadius:3},
       {label:'No Show',  data:dct.n,backgroundColor:'#dc2626',stack:'s'},
-      {label:'Canceled', data:dct.c,backgroundColor:'#f59e0b',stack:'s'},
-      {label:'Scheduled',data:dct.s,backgroundColor:'#94a3b8',stack:'s'},
+      {label:'Canceled', data:dct.c,backgroundColor:'#94a3b8',stack:'s'},
+      {label:'Scheduled',data:dct.s,backgroundColor:'#d1d5db',stack:'s'},
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'top',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}}},
-      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'}}}}});
 
   dcDeal=new Chart(document.getElementById('dcDealChart'),{type:'doughnut',data:{
     labels:DEAL_STAGES.map(d=>d.label),
     datasets:[{data:DEAL_STAGES.map(d=>d.v),backgroundColor:DEAL_STAGES.map(d=>d.color),borderWidth:3,borderColor:'#fff',hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
-      plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
-      tooltip:{callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.parsed}`}}}}});
+    options:{responsive:true,maintainAspectRatio:false,cutout:'64%',
+      plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return`  ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(1):0}%)`;}}}}}});
 
   const dsInit=dsStats(state.startDate,state.endDate);
   dcDealPerson=new Chart(document.getElementById('dcDealPersonChart'),{type:'bar',data:{
@@ -1201,7 +1395,7 @@ function initAll(){
     }))},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'right',labels:{font:{size:9},padding:6,boxWidth:8,usePointStyle:true}}},
-      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'}}}}});
 
   // ── Active Partners charts (static — not date-filtered) ──────────────────
   const apSubLabels=AP_SUBS.map(s=>s.label);
@@ -1210,7 +1404,7 @@ function initAll(){
   const apSubRevs=AP_SUBS.map(s=>AP_PARTNERS.filter(p=>p.sub===s.key).reduce((a,r)=>a+r.rev,0));
   const apOwners=PERSONS.filter(p=>p.key!=='discovery');
   const apOwnerLabels=apOwners.map(p=>p.label);
-  const apOwnerColors={'judy':'#0f2744','stef':'#6366f1','che':'#16a34a','rochelle':'#d97706'};
+  const apOwnerColors={'judy':'#2563eb','stef':'#1e40af','che':'#64748b','rochelle':'#94a3b8'};
 
   apSubCount=new Chart(document.getElementById('apSubCountChart'),{type:'doughnut',data:{
     labels:apSubLabels,
@@ -1225,7 +1419,7 @@ function initAll(){
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
       plugins:{legend:{display:false},
                tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toLocaleString()}`}}},
-      scales:{x:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{callback:v=>'$'+v.toLocaleString()}},y:{grid:{display:false}}}}});
+      scales:{x:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{callback:v=>'$'+v.toLocaleString()}},y:{grid:{display:false}}}}});
 
   const apOwnerCountData=AP_SUBS.map(s=>({
     label:s.label,backgroundColor:s.color,stack:'s',
@@ -1236,7 +1430,7 @@ function initAll(){
     labels:apOwnerLabels,datasets:apOwnerCountData},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'right',labels:{font:{size:9},padding:6,boxWidth:8,usePointStyle:true}}},
-      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'}}}}});
 
   apOwnerRev=new Chart(document.getElementById('apOwnerRevChart'),{type:'bar',data:{
     labels:apOwnerLabels,
@@ -1247,7 +1441,7 @@ function initAll(){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},
                tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toLocaleString()}`}}},
-      scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{callback:v=>'$'+v.toLocaleString()}}}}});
+      scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{callback:v=>'$'+v.toLocaleString()}}}}});
 
   renderApTable();
   updateAll();
@@ -1257,7 +1451,7 @@ function renderApTable(){
   const subF=document.getElementById('apSubFilter').value;
   const ownerF=document.getElementById('apOwnerFilter').value;
   const ownerLabels={'judy':'Judy','stef':'Stef','che':'Che','rochelle':'Rochelle','other':'Other'};
-  const ownerColors={'judy':'#0f2744','stef':'#6366f1','che':'#16a34a','rochelle':'#d97706','other':'#94a3b8'};
+  const ownerColors={'judy':'#2563eb','stef':'#1e40af','che':'#64748b','rochelle':'#94a3b8','other':'#d1d5db'};
   const subColorMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.color]));
   const subLabelMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.label]));
   const rows=AP_PARTNERS
@@ -1266,15 +1460,15 @@ function renderApTable(){
   const tbody=document.getElementById('apPartnerTable');
   if(!tbody)return;
   tbody.innerHTML=rows.map(r=>{
-    const sc=subColorMap[r.sub]||'#e2e8f0';
+    const sc=subColorMap[r.sub]||'#e5e7eb';
     const sl=subLabelMap[r.sub]||'No Subscription';
     const oc=ownerColors[r.o]||'#94a3b8';
     const ol=ownerLabels[r.o]||r.o;
     const revStr=r.rev>0?'$'+r.rev.toLocaleString():'—';
-    const pillText=r.rev>0?`<strong style="color:#16a34a">${revStr}</strong>`:`<span style="color:#94a3b8">—</span>`;
+    const pillText=r.rev>0?`<strong style="color:#1e40af">${revStr}</strong>`:`<span style="color:#94a3b8">—</span>`;
     return`<tr>
       <td><strong>${r.n}</strong></td>
-      <td><span class="pill" style="background:${sc};color:${sc==='#e2e8f0'?'#475569':'#fff'}">${sl}</span></td>
+      <td><span class="pill" style="background:${sc};color:${sc==='#e5e7eb'?'#475569':'#fff'}">${sl}</span></td>
       <td><span class="pill" style="background:${oc};color:#fff">${ol}</span></td>
       <td>${pillText}</td>
     </tr>`;
@@ -1390,7 +1584,7 @@ function updateAll(){
     const bp=dcS.byPerson[p.key];
     const dec=bp.a+bp.n;
     const rateStr=dec>0?Math.round((bp.a/dec)*100)+'%':'—';
-    const rateColor=dec===0?'#94a3b8':bp.a/dec>=0.8?'#16a34a':bp.a/dec>=0.6?'#d97706':'#dc2626';
+    const rateColor=dec===0?'#94a3b8':bp.a/dec>=0.8?'#2563eb':bp.a/dec>=0.6?'#64748b':'#dc2626';
     return`<tr>
       <td><strong>${p.label}</strong></td>
       <td>${bp.total}</td>
@@ -1413,13 +1607,13 @@ function updateAll(){
   // Deal Status breakdown table
   const dsRows=DS_DEALS.filter(r=>r.d>=state.startDate&&r.d<=state.endDate&&(state.dsDealStatusFilter==='all'||r.ds===state.dsDealStatusFilter))
     .slice().sort((a,b)=>b.d.localeCompare(a.d));
-  const personBadgeColors={judy:'#0f2744',stef:'#6366f1',che:'#16a34a',rochelle:'#d97706'};
+  const personBadgeColors={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
   document.getElementById('dsDealTable').innerHTML=dsRows.map(r=>{
     const person=PERSONS.find(p=>p.key===r.p);
     const personLabel=person?person.label:r.p;
     const pColor=personBadgeColors[r.p]||'#64748b';
     const st=DS_STATUSES.find(s=>s.key===r.ds)||DS_STATUSES[DS_STATUSES.length-1];
-    const pillStyle=st.key===''?'background:#f1f5f9;color:#64748b':'background:'+st.color+';color:'+(st.color==='#e2e8f0'||st.color==='#f59e0b'?'#1e293b':'#fff');
+    const pillStyle=st.key===''?'background:#f3f4f6;color:#64748b':'background:'+st.color+';color:'+(st.color==='#e5e7eb'||st.color==='#d1d5db'||st.color==='#d1d5db'?'#1e40af':'#fff');
     return`<tr>
       <td>${r.d}</td>
       <td><strong>${r.co||'—'}</strong></td>
@@ -1441,9 +1635,10 @@ window.showView=function(view){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelector(`[data-view="${view}"]`).classList.add('active');
   state.activeView=view;
-  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report'};
+  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report','sp-forecast':'SP Forecast · $300k by Dec 2026'};
   document.getElementById('viewSubtitle').textContent=labels[view]||view;
-  document.getElementById('pickerWrapper').style.display=view==='source-partners'?'none':'';
+  const hidePicker=['source-partners','sp-forecast'];
+  document.getElementById('pickerWrapper').style.display=hidePicker.includes(view)?'none':'';
 };
 
 // ─── PRESETS ─────────────────────────────────────────────────────────────────
@@ -1551,19 +1746,202 @@ function openPicker(){
 window.closePicker=function(){state.pickerOpen=false;document.getElementById('pickerPanel').classList.add('hidden');};
 document.addEventListener('click',e=>{if(state.pickerOpen&&!document.getElementById('pickerWrapper').contains(e.target))closePicker();});
 
+// ─── SP FORECAST ─────────────────────────────────────────────────────────────
+const FC_TARGET = 300000;
+const FC_MONTHS = [
+  {key:'2026-05',label:'May 2026'}, {key:'2026-06',label:'Jun 2026'},
+  {key:'2026-07',label:'Jul 2026'}, {key:'2026-08',label:'Aug 2026'},
+  {key:'2026-09',label:'Sep 2026'}, {key:'2026-10',label:'Oct 2026'},
+  {key:'2026-11',label:'Nov 2026'}, {key:'2026-12',label:'Dec 2026'},
+];
+const FC_TYPES = [
+  {key:'Source Partner',               label:'Source Partner',   short:'SP',    color:'#1e40af'},
+  {key:'Marketing Hub - Source Boost', label:'MH - Source Boost',short:'MH-SB', color:'#2563eb'},
+  {key:'Sales Hub',                    label:'Sales Hub',        short:'SH',    color:'#475569'},
+  {key:'Marketing Hub',                label:'Marketing Hub',    short:'MH',    color:'#94a3b8'},
+];
+
+let fcAvgRev={};
+let fcMonthly={};
+let fcChart=null;
+
+function fcComputeDefaults(){
+  const d={};
+  FC_TYPES.forEach(t=>{
+    const paying=AP_PARTNERS.filter(p=>p.sub===t.key&&p.rev>0);
+    d[t.key]=paying.length>0?Math.round(paying.reduce((s,p)=>s+p.rev,0)/paying.length):0;
+  });
+  return d;
+}
+
+function fcLoadData(){
+  const defaults=fcComputeDefaults();
+  const mDef={};
+  FC_MONTHS.forEach(m=>{mDef[m.key]={};FC_TYPES.forEach(t=>{mDef[m.key][t.key]=0;});});
+  try{
+    const sa=localStorage.getItem('fcAvgRev');
+    fcAvgRev=sa?{...defaults,...JSON.parse(sa)}:{...defaults};
+    const sm=localStorage.getItem('fcMonthly');
+    if(sm){const p=JSON.parse(sm);FC_MONTHS.forEach(m=>{mDef[m.key]={...mDef[m.key],...(p[m.key]||{})};});}
+    fcMonthly=mDef;
+  }catch(e){fcAvgRev={...defaults};fcMonthly=mDef;}
+}
+
+function fcSaveData(){
+  localStorage.setItem('fcAvgRev',JSON.stringify(fcAvgRev));
+  localStorage.setItem('fcMonthly',JSON.stringify(fcMonthly));
+}
+
+window.fcResetData=function(){
+  if(!confirm('Reset all forecast inputs to defaults?'))return;
+  localStorage.removeItem('fcAvgRev');localStorage.removeItem('fcMonthly');
+  fcLoadData();fcRenderAll();
+};
+
+function fcBaseMRR(){return AP_PARTNERS.reduce((s,p)=>s+p.rev,0);}
+
+function fcProjections(){
+  const base=fcBaseMRR();let running=base;
+  return FC_MONTHS.map(m=>{
+    const types=FC_TYPES.map(t=>{const n=(fcMonthly[m.key]||{})[t.key]||0;return{key:t.key,n,add:n*(fcAvgRev[t.key]||0)};});
+    const totalAdd=types.reduce((s,t)=>s+t.add,0);
+    running+=totalAdd;
+    return{month:m.key,label:m.label,types,totalAdd,projectedMRR:Math.round(running),gap:Math.round(FC_TARGET-running)};
+  });
+}
+
+function fcRenderSummary(){
+  const base=fcBaseMRR();
+  const projs=fcProjections();
+  const finalMRR=projs[projs.length-1].projectedMRR;
+  const gap=FC_TARGET-base;
+  const curPct=Math.min(100,Math.round((base/FC_TARGET)*100));
+  const projPct=Math.min(100,Math.round((finalMRR/FC_TARGET)*100));
+  const onTrack=finalMRR>=FC_TARGET;
+  const el=document.getElementById('fcSummaryBlock');if(!el)return;
+  el.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+      <div><div style="font-size:.72rem;color:#64748b;margin-bottom:2px">Current MRR</div><div style="font-size:1.6rem;font-weight:800;color:#1e40af">$${base.toLocaleString()}</div></div>
+      <div style="text-align:center"><div style="font-size:.72rem;color:#64748b;margin-bottom:2px">Today</div><div style="font-size:1.1rem;font-weight:700;color:#64748b">${curPct}% of goal</div></div>
+      <div style="text-align:right"><div style="font-size:.72rem;color:#64748b;margin-bottom:2px">Target · Dec 2026</div><div style="font-size:1.6rem;font-weight:800;color:#2563eb">$${FC_TARGET.toLocaleString()}</div></div>
+    </div>
+    <div class="fc-progress-bar-bg">
+      <div class="fc-progress-bar-proj" style="width:${projPct}%"></div>
+      <div class="fc-progress-bar-cur" style="width:${curPct}%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.68rem;color:#94a3b8;margin-top:3px">
+      <span>$0</span>
+      <span style="color:#2563eb;font-weight:600">Projected: $${finalMRR.toLocaleString()} (${projPct}%)</span>
+      <span>$${FC_TARGET.toLocaleString()}</span>
+    </div>
+    <div class="fc-mini-stats">
+      <div class="fc-mini-stat"><div class="fc-mini-val">$${gap.toLocaleString()}</div><div class="fc-mini-lbl">Gap to Close</div></div>
+      <div class="fc-mini-stat"><div class="fc-mini-val">${FC_MONTHS.length}</div><div class="fc-mini-lbl">Months Left (May–Dec)</div></div>
+      <div class="fc-mini-stat"><div class="fc-mini-val">$${Math.round(gap/FC_MONTHS.length).toLocaleString()}</div><div class="fc-mini-lbl">MRR Increase Needed/Mo</div></div>
+      <div class="fc-mini-stat" style="border-color:${onTrack?'#2563eb':'#dc2626'}">
+        <div class="fc-mini-val" style="color:${onTrack?'#2563eb':'#dc2626'}">$${finalMRR.toLocaleString()}</div>
+        <div class="fc-mini-lbl">${onTrack?'✓ On Track':'Projected Dec MRR'}</div>
+      </div>
+    </div>`;
+}
+
+function fcRenderAssumptions(){
+  const el=document.getElementById('fcAssumptionsBody');if(!el)return;
+  el.innerHTML=FC_TYPES.map(t=>{
+    const all=AP_PARTNERS.filter(p=>p.sub===t.key);
+    const paying=all.filter(p=>p.rev>0);
+    const totalRev=paying.reduce((s,p)=>s+p.rev,0);
+    const computed=paying.length>0?Math.round(totalRev/paying.length):0;
+    const forecast=fcAvgRev[t.key]||0;
+    return`<tr>
+      <td><span class="pill" style="background:${t.color};color:#fff;font-size:.72rem">${t.label}</span></td>
+      <td style="text-align:center;color:#64748b">${all.length}</td>
+      <td style="text-align:right;font-weight:600">$${totalRev.toLocaleString()}</td>
+      <td style="text-align:right;color:#94a3b8;font-size:.75rem">$${computed.toLocaleString()}</td>
+      <td style="text-align:right"><input type="number" class="fc-avg-input" value="${forecast}" min="0" step="100" onchange="fcUpdateAvg('${t.key}',+this.value)"></td>
+    </tr>`;
+  }).join('');
+}
+
+function fcRenderTable(){
+  const projs=fcProjections();
+  const el=document.getElementById('fcTableBody');if(!el)return;
+  const totals={};FC_TYPES.forEach(t=>{totals[t.key]=0;});
+  let rows=projs.map(p=>{
+    FC_TYPES.forEach(t=>{totals[t.key]+=(p.types.find(x=>x.key===t.key)||{n:0}).n;});
+    const typeInputs=FC_TYPES.map(t=>{
+      const n=(fcMonthly[p.month]||{})[t.key]||0;
+      return`<td style="text-align:center"><input type="number" class="fc-n-input" value="${n}" min="0" onchange="fcUpdateMonthly('${p.month}','${t.key}',+this.value)"></td>`;
+    }).join('');
+    const onTrack=p.gap<=0;
+    const close=p.gap>0&&p.gap<30000;
+    const rc=onTrack?'fc-row-ontrack':close?'fc-row-close':'';
+    const gapTxt=onTrack?`<span style="color:#2563eb;font-weight:700">✓ Met</span>`:`<span style="color:${p.gap<50000?'#64748b':'#dc2626'};font-weight:600">−$${p.gap.toLocaleString()}</span>`;
+    const pct=Math.min(100,Math.round((p.projectedMRR/FC_TARGET)*100));
+    const dot=onTrack?'🟢':close?'🟡':'🔴';
+    return`<tr class="${rc}">
+      <td style="font-weight:700;color:#1e40af">${p.label}</td>${typeInputs}
+      <td style="text-align:right;color:#2563eb;font-weight:600">${p.totalAdd>0?'+$'+p.totalAdd.toLocaleString():'—'}</td>
+      <td style="text-align:right;font-weight:800;color:#1e40af">$${p.projectedMRR.toLocaleString()}</td>
+      <td style="text-align:right">${gapTxt}</td>
+      <td style="text-align:center;font-size:.75rem">${dot} ${pct}%</td>
+    </tr>`;
+  }).join('');
+  const totalInputs=FC_TYPES.map(t=>`<td style="text-align:center;font-weight:700;color:${t.color}">${totals[t.key]||'—'}</td>`).join('');
+  rows+=`<tr class="fc-totals-row"><td style="font-size:.73rem;color:#64748b">TOTAL NEW</td>${totalInputs}<td colspan="4"></td></tr>`;
+  el.innerHTML=rows;
+}
+
+function fcInitChart(){
+  const base=fcBaseMRR();
+  const projs=fcProjections();
+  const labels=['Today',...FC_MONTHS.map(m=>m.label.replace(' 2026',''))];
+  const mrrLine=[base,...projs.map(p=>p.projectedMRR)];
+  const targetLine=new Array(labels.length).fill(FC_TARGET);
+  fcChart=new Chart(document.getElementById('fcTrajectoryChart'),{type:'line',data:{labels,datasets:[
+    {label:'Projected MRR',data:mrrLine,borderColor:'#1e40af',backgroundColor:'rgba(15,39,68,.07)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#1e40af',pointHoverRadius:6},
+    {label:'$300k Target',data:targetLine,borderColor:'#2563eb',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false},
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:10},padding:12,boxWidth:10,usePointStyle:true}},
+             tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: $${ctx.raw.toLocaleString()}`}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:10}}},
+            y:{grid:{color:'#f3f4f6'},ticks:{callback:v=>'$'+Math.round(v/1000)+'k',font:{size:10}}}}}});
+}
+
+function fcUpdateChart(){
+  if(!fcChart)return;
+  const projs=fcProjections();
+  fcChart.data.datasets[0].data=[fcBaseMRR(),...projs.map(p=>p.projectedMRR)];
+  fcChart.update();
+}
+
+function fcRenderAll(){
+  fcRenderSummary();fcRenderAssumptions();fcRenderTable();fcUpdateChart();
+}
+
+window.fcUpdateAvg=function(key,val){
+  fcAvgRev[key]=Math.max(0,val||0);fcSaveData();fcRenderAll();
+};
+
+window.fcUpdateMonthly=function(month,type,val){
+  if(!fcMonthly[month])fcMonthly[month]={};
+  fcMonthly[month][type]=Math.max(0,val||0);
+  fcSaveData();fcRenderSummary();fcRenderTable();fcUpdateChart();
+};
+
 // ─── SOURCE PARTNERS ─────────────────────────────────────────────────────────
 const SP_RISK_OPTS=[
   {key:'high',  label:'High Risk',    color:'#dc2626',bg:'#fee2e2'},
-  {key:'medium',label:'Medium',       color:'#b45309',bg:'#fef3c7'},
-  {key:'low',   label:'Low Risk',     color:'#16a34a',bg:'#dcfce7'},
-  {key:'',      label:'Not Assessed', color:'#64748b',bg:'#f1f5f9'},
+  {key:'medium',label:'Medium',       color:'#64748b',bg:'#e5e7eb'},
+  {key:'low',   label:'Low Risk',     color:'#2563eb',bg:'#dbeafe'},
+  {key:'',      label:'Not Assessed', color:'#94a3b8',bg:'#f3f4f6'},
 ];
 const SP_SENT_OPTS=[
-  {key:'positive', label:'Positive', color:'#16a34a',bg:'#dcfce7'},
-  {key:'neutral',  label:'Neutral',  color:'#1d4ed8',bg:'#dbeafe'},
-  {key:'at-risk',  label:'At Risk',  color:'#b45309',bg:'#fef3c7'},
+  {key:'positive', label:'Positive', color:'#1e40af',bg:'#dbeafe'},
+  {key:'neutral',  label:'Neutral',  color:'#64748b',bg:'#f3f4f6'},
+  {key:'at-risk',  label:'At Risk',  color:'#475569',bg:'#e5e7eb'},
   {key:'negative', label:'Negative', color:'#dc2626',bg:'#fee2e2'},
-  {key:'',         label:'Not Set',  color:'#64748b',bg:'#f1f5f9'},
+  {key:'',         label:'Not Set',  color:'#64748b',bg:'#f3f4f6'},
 ];
 const SP_GROUPS=[
   {id:'new-sp', label:'New SP',          desc:'Recently onboarded Source Partners'},
@@ -1651,7 +2029,7 @@ function spRenderTable(){
       const rOpts=SP_RISK_OPTS.map(o=>`<option value="${o.key}"${o.key===r.risk?' selected':''}>${o.label}</option>`).join('');
       const sOpts=SP_SENT_OPTS.map(o=>`<option value="${o.key}"${o.key===r.sent?' selected':''}>${o.label}</option>`).join('');
       html+=`<tr class="sp-row ${rc}" id="sp-row-${r.id}">
-        <td style="font-weight:600;color:#1e293b">${spEsc(r.n)}</td>
+        <td style="font-weight:600;color:#1e40af">${spEsc(r.n)}</td>
         <td style="text-align:center;color:#64748b;font-weight:600">${r.dc}</td>
         <td><select class="sp-sel" style="background:${ro.bg};color:${ro.color}" onchange="spChangeRisk('${r.id}',this.value)">${rOpts}</select></td>
         <td><select class="sp-sel" style="background:${so.bg};color:${so.color}" onchange="spChangeSent('${r.id}',this.value)">${sOpts}</select></td>
@@ -1733,11 +2111,35 @@ function spUpdateCharts(){
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-spLoadData();
-initAll();
-spRenderTable();
-spInitCharts();
-spUpdateSummary();
+function bootCharts(){
+  var diag=document.getElementById('_diag');
+  var chartOK=typeof Chart!=='undefined';
+  if(diag)diag.textContent='Chart.js: '+(chartOK?'loaded':'NOT loaded')+' | v3';
+  if(chartOK){
+    Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+    Chart.defaults.font.size=11;
+  }
+  fcLoadData();
+  spLoadData();
+  try{
+    initAll();
+    dsRenderBreakdown();
+    spRenderTable();
+    spInitCharts();
+    spUpdateSummary();
+    fcRenderSummary();
+    fcRenderAssumptions();
+    fcRenderTable();
+    fcInitChart();
+    if(diag)diag.style.display='none';
+  }catch(e){
+    console.error('Dashboard init error:',e);
+    if(diag)diag.textContent='Error: '+e.message;
+    var mc=document.querySelector('.main-content');
+    if(mc)mc.insertAdjacentHTML('afterbegin','<div style="background:#fee2e2;color:#b91c1c;padding:12px 16px;border-radius:8px;margin:16px;font-size:0.8rem"><strong>Load error:</strong> '+e.message+'</div>');
+  }
+}
+bootCharts();
 </script>
 </body>
 </html>
