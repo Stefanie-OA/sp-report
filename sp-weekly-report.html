@@ -424,6 +424,40 @@
         </div>
       </div>
 
+      <!-- Monthly Sign-ups -->
+      <div class="table-card" style="margin-bottom:14px">
+        <div class="table-card-hdr">
+          <div>
+            <h3>Monthly Sign-ups</h3>
+            <div style="font-size:0.65rem;color:#94a3b8">All deals closed within the selected period &middot; based on HubSpot Close Date</div>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center">
+            <div style="text-align:right">
+              <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">New Sign-ups</div>
+              <div id="suCount" style="font-size:1.15rem;font-weight:800;color:#111827">—</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">New MRR</div>
+              <div id="suMRR" style="font-size:1.15rem;font-weight:800;color:#1e40af">—</div>
+            </div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Subscription</th>
+              <th>Close Date</th>
+              <th>Demo Call Date</th>
+              <th>Owner</th>
+              <th style="text-align:right">Revenue</th>
+              <th style="text-align:center">Status</th>
+            </tr>
+          </thead>
+          <tbody id="suTable"></tbody>
+        </table>
+      </div>
+
       <!-- Per-person + deal status by person -->
       <div class="charts-row two-col">
         <div class="chart-card">
@@ -946,14 +980,14 @@ const MEETINGS = [
 const DS_DEALS = [
   // Judy (78367246)
   {p:'judy',d:'2026-04-01',co:'Robotronics.ai',ds:''},
-  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'Closed won'},
+  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'Closed won',cd:'2026-04-13'},
   {p:'judy',d:'2026-04-06',co:'Finserve Global',ds:'Decision Maker Bought-in'},
   {p:'judy',d:'2026-04-06',co:'Trainonex Solutions',ds:''},
   {p:'judy',d:'2026-04-06',co:'Fusion CX',ds:'Not the decision maker'},
   {p:'judy',d:'2026-04-07',co:'Titan Clarity',ds:''},
   {p:'judy',d:'2026-04-07',co:'Alorica',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-08',co:'123Employee',ds:'Closed won'},
-  {p:'judy',d:'2026-04-08',co:'Snapscale',ds:'Closed won'},
+  {p:'judy',d:'2026-04-08',co:'123Employee',ds:'Closed won',cd:'2021-09-01'},
+  {p:'judy',d:'2026-04-08',co:'Snapscale',ds:'Closed won',cd:'2022-10-12'},
   {p:'judy',d:'2026-04-08',co:'Avata Technologies',ds:'With hesitations'},
   {p:'judy',d:'2026-04-08',co:'Aadi Business Solution',ds:''},
   {p:'judy',d:'2026-04-10',co:'Innopact',ds:'Not the decision maker'},
@@ -964,11 +998,11 @@ const DS_DEALS = [
   {p:'judy',d:'2026-04-15',co:'SkyOS BPO',ds:''},
   {p:'judy',d:'2026-04-16',co:'Peak Support',ds:''},
   {p:'judy',d:'2026-04-16',co:'CreaThink Solutions',ds:''},
-  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'Closed won'},
+  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'Closed won',cd:'2023-11-01'},
   {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:'Not the decision maker'},
   {p:'judy',d:'2026-04-17',co:'Prime Bridge Solutions',ds:'Decision Maker Bought-in'},
   {p:'judy',d:'2026-04-17',co:'Prestige OSS',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'Closed won'},
+  {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'Closed won',cd:'2026-02-01'},
   {p:'judy',d:'2026-04-22',co:'EmpireOne Group',ds:'With hesitations'},
   {p:'judy',d:'2026-04-22',co:'Coderland',ds:'With hesitations'},
   {p:'judy',d:'2026-04-22',co:'Revelo',ds:'Not interested'},
@@ -978,9 +1012,9 @@ const DS_DEALS = [
   {p:'judy',d:'2026-04-24',co:'Exordiom',ds:'Early Stage Startup'},
   {p:'judy',d:'2026-04-27',co:'Ekinova',ds:'Not the decision maker'},
   {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'Decision Maker Bought-in'},
-  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'Closed won'},
-  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'Closed won'},
-  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'Closed won'},
+  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'Closed won',cd:'2026-04-23'},
+  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'Closed won',cd:'2026-04-08'},
+  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'Closed won',cd:'2026-04-01'},
   // Stef (635230480)
   {p:'stef',d:'2026-04-01',co:'Virtual Experts PH',ds:''},
   {p:'stef',d:'2026-04-07',co:'Complete BPO',ds:'Decision Maker Bought-in'},
@@ -990,7 +1024,7 @@ const DS_DEALS = [
   {p:'stef',d:'2026-04-23',co:'Ellora – Outsourced Team',ds:''},
   {p:'stef',d:'2026-04-23',co:'Kyniska',ds:''},
   {p:'stef',d:'2026-04-23',co:'Gobro Web Services',ds:''},
-  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'Closed won'},
+  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'Closed won',cd:'2026-01-06'},
   // Che (635230465)
   {p:'che',d:'2026-04-01',co:'Sparkbridge',ds:''},
   {p:'che',d:'2026-04-06',co:'Outsource Accelerator',ds:''},
@@ -1134,15 +1168,45 @@ const AP_PARTNERS = [
 ];
 
 // ─── DEAL STATUS DATA (CS Pipeline, Apr 1 – May 6; Closed Won = Active subs only) ──
-const DEAL_STAGES = [
-  {label:'Closed Won (Active)',        v:97,  color:'#1e40af'},
-  {label:'No Status Set',              v:37,  color:'#e5e7eb'},
-  {label:'With Hesitations',           v:11,  color:'#64748b'},
-  {label:'Not the Decision Maker',     v:8,   color:'#94a3b8'},
-  {label:'Decision Maker Bought-in',   v:7,   color:'#2563eb'},
-  {label:'Keen – Needs Discussion',    v:6,   color:'#475569'},
-  {label:'Not Interested',             v:3,   color:'#dc2626'},
-  {label:'Early Stage Startup',        v:1,   color:'#d1d5db'},
+const DS_STAGE_MAP = [
+  {key:'Closed won',                       label:'Closed Won (Active)',      color:'#1e40af'},
+  {key:'Decision Maker Bought-in',         label:'Decision Maker Bought-in', color:'#2563eb'},
+  {key:'Keen – Needs Internal Discussion', label:'Keen – Needs Discussion',  color:'#475569'},
+  {key:'With hesitations',                 label:'With Hesitations',         color:'#64748b'},
+  {key:'Not the decision maker',           label:'Not the Decision Maker',   color:'#94a3b8'},
+  {key:'Early Stage Startup',              label:'Early Stage Startup',      color:'#d1d5db'},
+  {key:'Not interested',                   label:'Not Interested',           color:'#dc2626'},
+  {key:'',                                 label:'No Status Set',            color:'#e5e7eb'},
+];
+function computeDealStages(s,e){
+  const recs=DS_DEALS.filter(r=>r.d>=s&&r.d<=e);
+  return DS_STAGE_MAP.map(m=>({
+    label:m.label,color:m.color,
+    v:m.key==='Closed won'
+      ? recs.filter(r=>r.ds==='Closed won'&&r.cd&&r.cd>=s&&r.cd<=e).length
+      : recs.filter(r=>r.ds===m.key).length
+  })).filter(d=>d.v>0);
+}
+
+// ─── MONTHLY SIGN-UPS (close date in period, regardless of demo call date) ────
+const SIGNUPS = [
+  {n:'Pandr - Call Center',      sub:'Source Partner',               o:'stef',    rev:3135, cd:'2026-04-01', dc:null,         active:false},
+  {n:'Eastvantage',              sub:'Source Partner',               o:'judy',    rev:6070, cd:'2026-04-01', dc:null,         active:true},
+  {n:'Corpshore Solutions',      sub:'Marketing Hub - Source Boost', o:'stef',    rev:499,  cd:'2026-04-02', dc:null,         active:true},
+  {n:'Thrivin',                  sub:'Sales Hub',                    o:'judy',    rev:199,  cd:'2026-04-08', dc:null,         active:true},
+  {n:'SEBPO',                    sub:'Marketing Hub - Standard',     o:'judy',    rev:0,    cd:'2026-04-13', dc:'2026-04-15', active:true},
+  {n:'Peak Support',             sub:'Marketing Hub - Standard',     o:'judy',    rev:29,   cd:'2026-04-15', dc:'2026-04-13', active:true},
+  {n:'Hinduja Global Solutions', sub:'Source Partner',               o:'che',     rev:0,    cd:'2026-04-15', dc:null,         active:true},
+  {n:'Contactpoint 360',         sub:'Marketing Hub - Source Boost', o:'judy',    rev:499,  cd:'2026-04-23', dc:'2026-04-29', active:true},
+  {n:'Goodland BPO',             sub:'Sales Hub',                    o:'rochelle',rev:199,  cd:'2026-04-01', dc:null,         active:true},
+  {n:'ZigZag (Outposter)',       sub:'Source Partner',               o:'stef',    rev:5801, cd:'2026-04-01', dc:null,         active:true},
+  {n:'HGS UK',                   sub:'Source Partner',               o:'che',     rev:6070, cd:'2026-04-01', dc:null,         active:true},
+  {n:'Intelliworx PH',           sub:'Source Partner',               o:'judy',    rev:3499, cd:'2026-04-01', dc:null,         active:true},
+  // May 2026
+  {n:'Innovative Work Solutions',sub:'Sales Hub',                    o:'judy',    rev:199,  cd:'2026-05-04', dc:'2026-04-21', active:true},
+  {n:'Clark Outsourcing',        sub:'Marketing Hub',                o:'judy',    rev:348,  cd:'2026-05-06', dc:'2026-04-23', active:true},
+  {n:'ContactPlus Spike',        sub:'Sales Hub',                    o:'judy',    rev:199,  cd:'2026-05-07', dc:'2026-03-17', active:true},
+  {n:'Success Link Outsourcing', sub:'Sales Hub',                    o:'rochelle',rev:364,  cd:'2026-05-07', dc:'2026-04-22', active:true},
 ];
 
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
@@ -1248,8 +1312,9 @@ function dsStats(s,e){
 
 // ─── DEAL STATUS BREAKDOWN ────────────────────────────────────────────────────
 function dsRenderBreakdown(){
-  const total=DEAL_STAGES.reduce((a,d)=>a+d.v,0);
-  const nurture=DEAL_STAGES.filter(d=>d.label!=='Closed Won (Active)').reduce((a,d)=>a+d.v,0);
+  const stages=computeDealStages(state.startDate,state.endDate);
+  const total=stages.reduce((a,d)=>a+d.v,0);
+  const nurture=stages.filter(d=>d.label!=='Closed Won (Active)').reduce((a,d)=>a+d.v,0);
   const PRIORITY={
     'Closed Won (Active)':{label:'Active',bg:'#dbeafe',c:'#1e40af'},
     'Decision Maker Bought-in':{label:'High',bg:'#1e40af',c:'#fff'},
@@ -1260,8 +1325,8 @@ function dsRenderBreakdown(){
     'Early Stage Startup':{label:'Low',bg:'#f3f4f6',c:'#94a3b8'},
     'Not Interested':{label:'Disq.',bg:'#fee2e2',c:'#dc2626'},
   };
-  const highPri=(DEAL_STAGES.find(d=>d.label==='Decision Maker Bought-in')||{v:0}).v
-               +(DEAL_STAGES.find(d=>d.label==='Keen – Needs Discussion')||{v:0}).v;
+  const highPri=(stages.find(d=>d.label==='Decision Maker Bought-in')||{v:0}).v
+               +(stages.find(d=>d.label==='Keen – Needs Discussion')||{v:0}).v;
   document.getElementById('dsTotalCount').textContent=total;
   document.getElementById('dsNurtureCount').textContent=nurture;
   document.getElementById('dsBreakdownTable').innerHTML=`
@@ -1273,8 +1338,8 @@ function dsRenderBreakdown(){
         <th style="text-align:center;padding:5px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Nurture</th>
       </tr></thead>
       <tbody>
-        ${DEAL_STAGES.map(d=>{
-          const pct=total?((d.v/total)*100).toFixed(1):'0';
+        ${stages.length===0?`<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:16px">No demo calls in selected range</td></tr>`:stages.map(d=>{
+          const p=total?((d.v/total)*100).toFixed(1):'0';
           const pr=PRIORITY[d.label]||{label:'Low',bg:'#f3f4f6',c:'#94a3b8'};
           const barW=total?Math.round((d.v/total)*100):0;
           return`<tr>
@@ -1288,7 +1353,7 @@ function dsRenderBreakdown(){
               </div>
             </td>
             <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;font-size:0.82rem;color:#111827;vertical-align:top">${d.v}</td>
-            <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-size:0.77rem;color:#64748b;vertical-align:top">${pct}%</td>
+            <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:right;font-size:0.77rem;color:#64748b;vertical-align:top">${p}%</td>
             <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;text-align:center;vertical-align:top">
               <span style="padding:2px 8px;border-radius:99px;font-size:0.62rem;font-weight:700;background:${pr.bg};color:${pr.c}">${pr.label}</span>
             </td>
@@ -1296,9 +1361,41 @@ function dsRenderBreakdown(){
         }).join('')}
       </tbody>
     </table>
-    <div style="margin-top:10px;padding:9px 12px;background:#eff6ff;border-radius:7px;font-size:0.7rem;color:#475569;border-left:3px solid #2563eb">
-      Focus on <strong style="color:#1e40af">${highPri} High-priority leads</strong> (DM Bought-in + Keen) — closest to converting. Address <strong>${(DEAL_STAGES.find(d=>d.label==='With Hesitations')||{v:0}).v} hesitations</strong> and <strong>${(DEAL_STAGES.find(d=>d.label==='No Status Set')||{v:0}).v} untagged leads</strong> next.
-    </div>`;
+    ${stages.length>0?`<div style="margin-top:10px;padding:9px 12px;background:#eff6ff;border-radius:7px;font-size:0.7rem;color:#475569;border-left:3px solid #2563eb">
+      Focus on <strong style="color:#1e40af">${highPri} High-priority leads</strong> (DM Bought-in + Keen) — closest to converting. Address <strong>${(stages.find(d=>d.label==='With Hesitations')||{v:0}).v} hesitations</strong> and <strong>${(stages.find(d=>d.label==='No Status Set')||{v:0}).v} untagged leads</strong> next.
+    </div>`:''}`;
+}
+
+// ─── SIGN-UPS RENDER ─────────────────────────────────────────────────────────
+function renderSignups(){
+  const s=state.startDate,e=state.endDate;
+  const recs=SIGNUPS.filter(r=>r.cd>=s&&r.cd<=e).slice().sort((a,b)=>b.cd.localeCompare(a.cd));
+  const suCount=document.getElementById('suCount');
+  const suMRR=document.getElementById('suMRR');
+  const mrr=recs.reduce((a,r)=>a+r.rev,0);
+  if(suCount)suCount.textContent=recs.length;
+  if(suMRR)suMRR.textContent=mrr>0?'$'+mrr.toLocaleString():'$0';
+  const subMap=Object.fromEntries(AP_SUBS.map(a=>[a.key,{label:a.label,color:a.color}]));
+  const ownerLabel={judy:'Judy',stef:'Stef',che:'Che',rochelle:'Rochelle'};
+  const ownerColor={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
+  const tbody=document.getElementById('suTable');
+  if(!tbody)return;
+  tbody.innerHTML=recs.length===0
+    ?'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:14px">No sign-ups in selected range</td></tr>'
+    :recs.map(r=>{
+      const sub=subMap[r.sub]||{label:r.sub,color:'#e5e7eb'};
+      const oc=ownerColor[r.o]||'#94a3b8';
+      const ol=ownerLabel[r.o]||r.o;
+      return`<tr>
+        <td><strong>${r.n}</strong></td>
+        <td><span class="pill" style="background:${sub.color};color:#fff">${sub.label}</span></td>
+        <td>${r.cd}</td>
+        <td>${r.dc||'—'}</td>
+        <td><span class="pill" style="background:${oc};color:#fff">${ol}</span></td>
+        <td style="text-align:right;font-weight:700;color:#1e40af">${r.rev>0?'$'+r.rev.toLocaleString():'—'}</td>
+        <td style="text-align:center"><span class="pill" style="${r.active?'background:#dbeafe;color:#1e40af':'background:#fee2e2;color:#dc2626'}">${r.active?'Active':'Inactive'}</span></td>
+      </tr>`;
+    }).join('');
 }
 
 // ─── CHARTS ───────────────────────────────────────────────────────────────────
@@ -1376,9 +1473,10 @@ function initAll(){
       plugins:{legend:{position:'top',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}}},
       scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'}}}}});
 
+  const initStages=computeDealStages(state.startDate,state.endDate);
   dcDeal=new Chart(document.getElementById('dcDealChart'),{type:'doughnut',data:{
-    labels:DEAL_STAGES.map(d=>d.label),
-    datasets:[{data:DEAL_STAGES.map(d=>d.v),backgroundColor:DEAL_STAGES.map(d=>d.color),borderWidth:3,borderColor:'#fff',hoverOffset:6}]},
+    labels:initStages.map(d=>d.label),
+    datasets:[{data:initStages.map(d=>d.v),backgroundColor:initStages.map(d=>d.color),borderWidth:3,borderColor:'#fff',hoverOffset:6}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'64%',
       plugins:{legend:{display:false},
       tooltip:{callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return`  ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(1):0}%)`;}}}}}});
@@ -1603,6 +1701,15 @@ function updateAll(){
     dcDealPerson.data.datasets[i].data=dsPersonKeys.map(pk=>dsD[pk][s.key]||0);
   });
   dcDealPerson.update();
+
+  // Deal Status Distribution doughnut — recompute from filtered DS_DEALS
+  const dsDynamic=computeDealStages(state.startDate,state.endDate);
+  dcDeal.data.labels=dsDynamic.map(d=>d.label);
+  dcDeal.data.datasets[0].data=dsDynamic.map(d=>d.v);
+  dcDeal.data.datasets[0].backgroundColor=dsDynamic.map(d=>d.color);
+  dcDeal.update();
+  dsRenderBreakdown();
+  renderSignups();
 
   // Deal Status breakdown table
   const dsRows=DS_DEALS.filter(r=>r.d>=state.startDate&&r.d<=state.endDate&&(state.dsDealStatusFilter==='all'||r.ds===state.dsDealStatusFilter))
@@ -2124,6 +2231,7 @@ function bootCharts(){
   try{
     initAll();
     dsRenderBreakdown();
+    renderSignups();
     spRenderTable();
     spInitCharts();
     spUpdateSummary();
