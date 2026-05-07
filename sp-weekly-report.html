@@ -458,6 +458,56 @@
         </table>
       </div>
 
+      <!-- SP Renewal Line-up -->
+      <div class="table-card" style="margin-bottom:14px">
+        <div class="table-card-hdr">
+          <div>
+            <h3>New SP Line-up</h3>
+            <div style="font-size:0.65rem;color:#94a3b8">Upcoming scheduled sign-ups</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Subscription</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#f3f4f6">
+              <td colspan="2" style="padding:7px 14px;font-size:0.7rem;font-weight:700;color:#1e40af;letter-spacing:0.03em">May 15, 2026</td>
+            </tr>
+            <tr>
+              <td><strong>HGS UK</strong></td>
+              <td><span class="pill" style="background:#1e40af;color:#fff">Source Partner</span></td>
+            </tr>
+            <tr>
+              <td><strong>ContactPlus Spike</strong></td>
+              <td><span class="pill" style="background:#475569;color:#fff">Source Call</span></td>
+            </tr>
+            <tr>
+              <td><strong>Complete BPO</strong></td>
+              <td><span class="pill" style="background:#475569;color:#fff">Source Call</span></td>
+            </tr>
+            <tr style="background:#f3f4f6">
+              <td colspan="2" style="padding:7px 14px;font-size:0.7rem;font-weight:700;color:#1e40af;letter-spacing:0.03em">June 1, 2026</td>
+            </tr>
+            <tr>
+              <td><strong>KMC Solutions</strong></td>
+              <td><span class="pill" style="background:#1e40af;color:#fff">Source Partner</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ellora BPO</strong></td>
+              <td><span class="pill" style="background:#1e40af;color:#fff">Source Partner</span></td>
+            </tr>
+            <tr>
+              <td><strong>GoBro</strong></td>
+              <td><span class="pill" style="background:#1e40af;color:#fff">Source Partner</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- Per-person + deal status by person -->
       <div class="charts-row two-col">
         <div class="chart-card">
@@ -789,7 +839,7 @@
 
 <script>
 // ─── SHARED STATE ─────────────────────────────────────────────────────────────
-const TODAY = '2026-05-06';
+const TODAY = new Date().toISOString().slice(0,10);
 const state = {
   startDate: '2026-05-01', endDate: TODAY,
   activePreset: 'mtd', activeView: 'cs-leads',
