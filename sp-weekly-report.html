@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SP Weekly Report | Outsource Accelerator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; color: #1a2332; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── Header ── */
+    header {
+      background: #0f2744; color: white;
+      padding: 14px 28px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #1d6fa4; flex-shrink: 0; z-index: 200; position: relative;
+    }
+    header .brand   { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin-bottom: 2px; }
+    header h1       { font-size: 1.2rem; font-weight: 700; }
+    header .subtitle{ font-size: 0.78rem; opacity: 0.65; margin-top: 1px; }
+
+    /* ── Date Trigger ── */
+    #dateTrigger {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.28);
+      color: white; padding: 8px 14px; border-radius: 9px; cursor: pointer;
+      font-size: 0.875rem; font-weight: 500; white-space: nowrap; transition: background 0.15s;
+    }
+    #dateTrigger:hover { background: rgba(255,255,255,0.2); }
+    #dateTrigger .caret { font-size: 0.65rem; opacity: 0.7; }
+
+    /* ── Picker Panel ── */
+    .picker-wrapper { position: relative; }
+    #pickerPanel {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: white; border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+      display: flex; overflow: hidden; min-width: 630px; z-index: 999;
+    }
+    #pickerPanel.hidden { display: none; }
+    .picker-presets { width: 145px; padding: 12px 0; border-right: 1px solid #e8edf2; flex-shrink: 0; }
+    .preset-item { padding: 9px 13px; cursor: pointer; font-size: 0.82rem; color: #374151; border-radius: 7px; margin: 2px 7px; }
+    .preset-item:hover { background: #f0f4f8; }
+    .preset-item.active { background: #0f2744; color: white; }
+    .preset-sep { height: 1px; background: #e8edf2; margin: 6px 13px; }
+    .picker-cal { display: flex; gap: 0; padding: 18px 20px; }
+    .cal-month { width: 252px; }
+    .cal-month + .cal-month { margin-left: 20px; padding-left: 20px; border-left: 1px solid #e8edf2; }
+    .cal-month-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-month-name { font-weight: 700; font-size: 0.9rem; }
+    .cal-nav-btn { background: none; border: none; cursor: pointer; color: #6b7280; width: 26px; height: 26px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .cal-nav-btn:hover { background: #f0f4f8; }
+    .cal-nav-btn.invisible { visibility: hidden; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+    .cal-dayname { font-size: 0.68rem; font-weight: 600; color: #9ca3af; text-align: center; padding: 3px 0 7px; }
+    .cal-day { position: relative; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
+    .cal-day::before { content: ''; position: absolute; inset: 2px 0; z-index: 0; }
+    .cal-day.in-range::before  { background: #dbeafe; }
+    .cal-day.range-s::before   { background: #dbeafe; left: 50%; }
+    .cal-day.range-e::before   { background: #dbeafe; right: 50%; }
+    .cal-day.hover-range::before { background: #eff6ff; }
+    .cal-day.hover-s::before   { background: #eff6ff; left: 50%; }
+    .cal-day.hover-e::before   { background: #eff6ff; right: 50%; }
+    .day-inner { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; position: relative; z-index: 1; }
+    .cal-day:not(.future):not(.other):hover .day-inner { background: #e0e7ff; }
+    .cal-day.range-s .day-inner, .cal-day.range-e .day-inner, .cal-day.sel-only .day-inner { background: #0f2744 !important; color: white !important; }
+    .cal-day.today .day-inner { font-weight: 800; color: #1d4ed8; }
+    .cal-day.today.range-s .day-inner, .cal-day.today.range-e .day-inner { color: white !important; }
+    .cal-day.future .day-inner, .cal-day.other .day-inner { color: #d1d5db; }
+    .cal-day.future, .cal-day.other { cursor: default; pointer-events: none; }
+    .picker-footer { display: flex; justify-content: flex-end; align-items: center; padding: 10px 20px 14px; border-top: 1px solid #e8edf2; gap: 8px; }
+    .picker-hint { font-size: 0.76rem; color: #9ca3af; margin-right: auto; }
+    .btn-cancel { padding: 6px 13px; border-radius: 7px; border: 1px solid #d1d5db; background: white; color: #374151; font-size: 0.82rem; cursor: pointer; }
+
+    /* ── App Body ── */
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 180px; background: white; border-right: 1px solid #e2e8f0;
+      padding: 20px 0; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+    }
+    .sidebar-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; padding: 0 16px 8px; margin-top: 8px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; cursor: pointer; font-size: 0.84rem; color: #4b5563;
+      border-left: 3px solid transparent; transition: all 0.12s; margin: 0 6px; border-radius: 8px;
+    }
+    .nav-item:hover { background: #f0f4f8; color: #0f2744; }
+    .nav-item.active { background: #eff6ff; color: #0f2744; font-weight: 600; border-left: 3px solid #1d6fa4; border-radius: 0 8px 8px 0; margin-left: 0; padding-left: 13px; }
+    .nav-item svg { flex-shrink: 0; opacity: 0.7; }
+    .nav-item.active svg { opacity: 1; }
+
+    /* ── Main content area ── */
+    .main-content { flex: 1; overflow-y: auto; padding: 22px 28px 48px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Shared card styles ── */
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tag-mtd  { background: #dbeafe; color: #1d4ed8; }
+    .tag-live { background: #dcfce7; color: #15803d; margin-left: 6px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+    .card { background: white; border-radius: 12px; padding: 16px 18px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); border-top: 4px solid transparent; }
+    .card.c-total  { border-top-color: #0f2744; }
+    .card.c-valid  { border-top-color: #16a34a; }
+    .card.c-prequal{ border-top-color: #d97706; }
+    .card.c-notbpo { border-top-color: #dc2626; }
+    .card.c-demo   { border-top-color: #6366f1; }
+    .card.c-calls  { border-top-color: #6366f1; }
+    .card.c-attended{ border-top-color: #16a34a; }
+    .card.c-noshow { border-top-color: #dc2626; }
+    .card.c-rate   { border-top-color: #0f2744; }
+    .card .lbl  { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 6px; }
+    .card .big  { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .card.c-total  .big { color: #0f2744; }
+    .card.c-demo   .big { color: #6366f1; }
+    .card.c-valid  .big, .card.c-attended .big { color: #16a34a; }
+    .card.c-prequal .big { color: #d97706; }
+    .card.c-notbpo .big, .card.c-noshow .big  { color: #dc2626; }
+    .card.c-calls  .big { color: #6366f1; }
+    .card.c-rate   .big { color: #0f2744; }
+    .card .pct { font-size: 0.78rem; font-weight: 600; margin-top: 4px; }
+    .card .sub { font-size: 0.71rem; color: #94a3b8; margin-top: 3px; }
+    .charts-row { display: grid; gap: 12px; margin-bottom: 12px; }
+    .two-col { grid-template-columns: 1fr 1fr; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr; }
+    .chart-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .chart-card h3 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 14px; }
+    .table-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); margin-bottom: 12px; }
+    .table-card h3 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; margin-bottom: 12px; }
+    .table-card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .table-card-hdr h3 { margin-bottom: 0; }
+    .tbl-filter-group { display: flex; align-items: center; gap: 6px; }
+    .tbl-filter-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
+    .tbl-filter-select { font-size: 0.76rem; font-weight: 600; color: #0f2744; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 7px; padding: 4px 10px; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; }
+    .tbl-filter-select:focus { border-color: #6366f1; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    thead th { text-align: left; padding: 7px 12px; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+    tbody td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; }
+    tbody tr:last-child td { border-bottom: none; }
+    .pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 0.73rem; font-weight: 700; }
+    .pill-green { background: #dcfce7; color: #15803d; }
+    .pill-amber { background: #fef3c7; color: #b45309; }
+    .pill-red   { background: #fee2e2; color: #b91c1c; }
+    .pill-blue  { background: #dbeafe; color: #1d4ed8; }
+    .pill-gray  { background: #f1f5f9; color: #64748b; }
+    .pill-purple{ background: #ede9fe; color: #6d28d9; }
+    .view-title { font-size: 1rem; font-weight: 700; color: #0f2744; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    /* ─── SOURCE PARTNERS TAB ──────────────────────────────────────────── */
+    .sp-donut-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+    .sp-donut-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:14px;}
+    .sp-donut-card h3{font-size:.8rem;font-weight:700;color:#0f2744;margin:0 0 8px;}
+    .sp-donut-inner{height:140px;position:relative;}
+    .sp-filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+    .sp-group-hdr td{background:#f0f4f9!important;padding:8px 14px;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0f2744;border-left:4px solid #0f2744;}
+    .sp-group-desc{font-weight:400;color:#64748b;text-transform:none;letter-spacing:0;margin-left:8px;font-size:.74rem;}
+    .sp-row{border-left:4px solid #e2e8f0;transition:border-color .15s;}
+    .sp-row.risk-high{border-left-color:#dc2626;}
+    .sp-row.risk-medium{border-left-color:#f59e0b;}
+    .sp-row.risk-low{border-left-color:#16a34a;}
+    .sp-row td{vertical-align:top;padding:8px 12px;font-size:.8rem;}
+    .sp-ce{min-height:18px;padding:3px 5px;border-radius:4px;outline:none;cursor:text;white-space:pre-wrap;font-size:.77rem;line-height:1.45;color:#334155;}
+    .sp-ce:focus{background:#fffbeb;box-shadow:0 0 0 2px #fde68a;}
+    .sp-ce:empty::before{content:attr(data-ph);color:#cbd5e1;pointer-events:none;}
+    .sp-sel{border:none;font-size:.72rem;font-weight:700;cursor:pointer;padding:3px 10px;border-radius:99px;outline:none;-webkit-appearance:none;appearance:none;width:100%;}
+    .sp-reset-btn{font-size:.72rem;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 12px;border-radius:4px;cursor:pointer;color:#64748b;margin-left:auto;}
+    .sp-reset-btn:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5;}
+  </style>
+</head>
+<body>
+
+<!-- ═══ HEADER ══════════════════════════════════════════════════════════════ -->
+<header>
+  <div>
+    <div class="brand">Outsource Accelerator · Client Services</div>
+    <h1>SP Weekly Report <span class="tag tag-live">Live</span></h1>
+    <div class="subtitle" id="viewSubtitle">CS Leads · Source Partner Report</div>
+  </div>
+  <div class="picker-wrapper" id="pickerWrapper">
+    <button id="dateTrigger" onclick="togglePicker()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span id="triggerLabel">May 1 – May 6, 2026</span>
+      <span class="caret">▾</span>
+    </button>
+    <div id="pickerPanel" class="hidden">
+      <div class="picker-presets">
+        <div class="preset-item active" data-preset="mtd"    onclick="setPreset('mtd')">Month to Date</div>
+        <div class="preset-item"        data-preset="lm"     onclick="setPreset('lm')">Last Month</div>
+        <div class="preset-sep"></div>
+        <div class="preset-item"        data-preset="7d"     onclick="setPreset('7d')">Last 7 Days</div>
+        <div class="preset-item"        data-preset="14d"    onclick="setPreset('14d')">Last 14 Days</div>
+        <div class="preset-item"        data-preset="30d"    onclick="setPreset('30d')">Last 30 Days</div>
+        <div class="preset-item"        data-preset="90d"    onclick="setPreset('90d')">Last 90 Days</div>
+        <div class="preset-sep"></div>
+        <div class="preset-item"        data-preset="custom" id="customPresetItem">Custom Range</div>
+      </div>
+      <div style="display:flex;flex-direction:column;flex:1">
+        <div class="picker-cal">
+          <div class="cal-month" id="calLeft"></div>
+          <div class="cal-month" id="calRight"></div>
+        </div>
+        <div class="picker-footer">
+          <span class="picker-hint" id="pickerHint">Select a preset, or click any date to start a custom range.</span>
+          <button class="btn-cancel" onclick="closePicker()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ APP BODY ═════════════════════════════════════════════════════════════ -->
+<div class="app-body">
+
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Reports</div>
+    <div class="nav-item active" data-view="cs-leads" onclick="showView('cs-leads')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      CS Leads
+    </div>
+    <div class="nav-item" data-view="demo-calls" onclick="showView('demo-calls')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.6 1.31h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l1.05-1.05a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Demo Calls
+    </div>
+    <div class="nav-item" data-view="active-partners" onclick="showView('active-partners')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      Active Partners
+    </div>
+    <div class="nav-item" data-view="source-partners" onclick="showView('source-partners')">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Source Partners
+    </div>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <div class="main-content">
+
+    <!-- ════ CS LEADS VIEW ════════════════════════════════════════════════ -->
+    <div id="cs-leads-view" class="view active">
+      <div class="view-title">
+        CS Leads <span class="tag tag-mtd" id="csTagLabel">MTD</span>
+      </div>
+      <div class="summary-grid">
+        <div class="card c-total">
+          <div class="lbl">Total Inquiries</div>
+          <div class="big" id="statTotal">—</div>
+          <div class="sub" id="statTotalSub"></div>
+        </div>
+        <div class="card c-valid">
+          <div class="lbl">Valid BPO</div>
+          <div class="big" id="statValid">—</div>
+          <div class="pct" id="statValidPct" style="color:#16a34a"></div>
+        </div>
+        <div class="card c-prequal">
+          <div class="lbl">Prequalification Issues</div>
+          <div class="big" id="statPrequal">—</div>
+          <div class="pct" id="statPrequalPct" style="color:#d97706"></div>
+        </div>
+        <div class="card c-notbpo">
+          <div class="lbl">Not a BPO</div>
+          <div class="big" id="statNotBPO">—</div>
+          <div class="pct" id="statNotBPOPct" style="color:#dc2626"></div>
+        </div>
+      </div>
+      <!-- Demo Booked row -->
+      <div class="summary-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+        <div class="card c-demo">
+          <div class="lbl">Demo Call Booked (Same Month)</div>
+          <div class="big" id="statDemoBooked">—</div>
+          <div class="pct" id="statDemoBookedPct" style="color:#6366f1"></div>
+        </div>
+        <div class="card" style="border-top-color:#94a3b8">
+          <div class="lbl">Not Yet Booked</div>
+          <div class="big" id="statNotBooked">—</div>
+          <div class="pct" id="statNotBookedPct" style="color:#94a3b8"></div>
+        </div>
+      </div>
+
+      <div class="charts-row two-col">
+        <div class="chart-card">
+          <h3>CS Lead Status Breakdown</h3>
+          <div style="height:250px"><canvas id="csDonutChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Lead Funnel (Waterfall)</h3>
+          <div style="height:250px"><canvas id="csWaterfallChart"></canvas></div>
+        </div>
+      </div>
+      <div class="charts-row" style="margin-bottom:12px">
+        <div class="chart-card">
+          <h3 id="csTrendTitle">Daily CS Inquiries by Status</h3>
+          <div style="height:210px"><canvas id="csTrendChart"></canvas></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <h3>Prequalification Issues — Detail</h3>
+        <table>
+          <thead><tr><th>Reason</th><th>Count</th><th>% of Total</th></tr></thead>
+          <tbody>
+            <tr><td>Does not look like a BPO</td><td id="pdNotLook">—</td><td id="pdNotLookPct">—</td></tr>
+            <tr><td>No Business Email</td>       <td id="pdNoEmail">—</td><td id="pdNoEmailPct">—</td></tr>
+            <tr><td>Inactive / No Website</td>   <td id="pdInactive">—</td><td id="pdInactivePct">—</td></tr>
+            <tr><td>Unverified Email</td>        <td id="pdUnverified">—</td><td id="pdUnverifiedPct">—</td></tr>
+            <tr style="font-weight:700;background:#fefce8">
+              <td>Total</td><td id="pdTotal">—</td><td id="pdTotalPct">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-card">
+        <div class="table-card-hdr">
+          <h3>Demo Call — Contact List</h3>
+          <div class="tbl-filter-group">
+            <span class="tbl-filter-label">Demo Call Status</span>
+            <select class="tbl-filter-select" id="demoTableFilter" onchange="setDemoTableFilter(this.value)">
+              <option value="booked">Demo Call Booked</option>
+              <option value="notbooked">Not Yet Booked</option>
+            </select>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr id="demoBookedTableHead">
+              <th>Inquiry Date</th><th>Name</th><th>Company</th><th>CS Lead Status</th>
+            </tr>
+          </thead>
+          <tbody id="demoBookedTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ DEMO CALLS VIEW ══════════════════════════════════════════════ -->
+    <div id="demo-calls-view" class="view">
+      <div class="view-title">Demo Calls <span class="tag tag-mtd" id="dcTagLabel">MTD</span></div>
+
+      <!-- Summary cards -->
+      <div class="summary-grid">
+        <div class="card c-calls">
+          <div class="lbl">Total Booked</div>
+          <div class="big" id="dcTotal">—</div>
+          <div class="sub" id="dcTotalSub"></div>
+        </div>
+        <div class="card c-attended">
+          <div class="lbl">Attended</div>
+          <div class="big" id="dcAttended">—</div>
+          <div class="pct" id="dcAttendedPct" style="color:#16a34a"></div>
+        </div>
+        <div class="card c-noshow">
+          <div class="lbl">No Show</div>
+          <div class="big" id="dcNoShow">—</div>
+          <div class="pct" id="dcNoShowPct" style="color:#dc2626"></div>
+        </div>
+        <div class="card c-rate">
+          <div class="lbl">Show-up Rate</div>
+          <div class="big" id="dcRate">—</div>
+          <div class="sub">excl. canceled &amp; scheduled</div>
+        </div>
+      </div>
+
+      <!-- Per-person + deal status -->
+      <div class="charts-row two-col">
+        <div class="chart-card">
+          <h3>Calls per Person</h3>
+          <div style="height:250px"><canvas id="dcPersonChart"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-bottom:0">
+          <h3>Deal Status by Person</h3>
+          <div style="height:250px"><canvas id="dcDealPersonChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Daily/Weekly trend -->
+      <div class="charts-row" style="margin-bottom:12px">
+        <div class="chart-card">
+          <h3 id="dcTrendTitle">Daily Demo Calls by Outcome</h3>
+          <div style="height:200px"><canvas id="dcTrendChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Per-person breakdown table -->
+      <div class="table-card">
+        <h3>Individual Breakdown</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Team Member</th><th>Total Booked</th><th>Attended</th>
+              <th>No Show</th><th>Canceled</th><th>Scheduled</th><th>Show-up Rate</th>
+            </tr>
+          </thead>
+          <tbody id="dcPersonTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Deal status doughnut -->
+      <div class="charts-row" style="margin-bottom:12px">
+        <div class="chart-card">
+          <h3>Deal Status Distribution <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">(Closed Won = Active subscriptions only)</span></h3>
+          <div style="height:250px"><canvas id="dcDealChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Deal Status breakdown table -->
+      <div class="table-card">
+        <div class="table-card-hdr">
+          <h3>Demo Call — Deal Status List</h3>
+          <div class="tbl-filter-group">
+            <span class="tbl-filter-label">Deal Status</span>
+            <select class="tbl-filter-select" id="dsDealStatusFilter" onchange="setDsDealStatusFilter(this.value)">
+              <option value="all">All</option>
+              <option value="Closed won">Closed Won</option>
+              <option value="Decision Maker Bought-in">DM Bought-in</option>
+              <option value="Keen – Needs Internal Discussion">Keen – Needs Discuss.</option>
+              <option value="With hesitations">With Hesitations</option>
+              <option value="Not the decision maker">Not the DM</option>
+              <option value="Early Stage Startup">Early Stage</option>
+              <option value="Not interested">Not Interested</option>
+              <option value="">No Status</option>
+            </select>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Demo Call Date</th>
+              <th>Company Name</th>
+              <th>Deal Owner</th>
+              <th>Deal Status</th>
+            </tr>
+          </thead>
+          <tbody id="dsDealTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ ACTIVE PARTNERS VIEW ════════════════════════════════════════════ -->
+    <div id="active-partners-view" class="view">
+      <div class="view-title">Active Partners <span class="tag" style="background:#16a34a;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:20px;font-weight:600;vertical-align:middle">99 Active</span></div>
+
+      <!-- Summary cards -->
+      <div class="summary-grid">
+        <div class="card" style="border-top-color:#0f2744">
+          <div class="lbl">Total Active Partners</div>
+          <div class="big">99</div>
+          <div class="sub">CS - Subscription Status: Active</div>
+        </div>
+        <div class="card" style="border-top-color:#16a34a">
+          <div class="lbl">MRR</div>
+          <div class="big">$167,957</div>
+          <div class="sub">across paying partners</div>
+        </div>
+        <div class="card" style="border-top-color:#6366f1">
+          <div class="lbl">Partners with Revenue</div>
+          <div class="big">69</div>
+          <div class="pct" style="color:#6366f1">70% of total</div>
+        </div>
+        <div class="card" style="border-top-color:#d97706">
+          <div class="lbl">Avg Revenue / Paying</div>
+          <div class="big">$2,434</div>
+          <div class="sub">among 69 with revenue</div>
+        </div>
+      </div>
+
+      <!-- Subscription + Revenue breakdown (two-col) -->
+      <div class="charts-row two-col">
+        <div class="chart-card">
+          <h3>Subscription Breakdown <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">by partner count</span></h3>
+          <div style="height:250px"><canvas id="apSubCountChart"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-bottom:0">
+          <h3>Revenue by Subscription <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">total $ per plan</span></h3>
+          <div style="height:250px"><canvas id="apSubRevChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Partners & Revenue by Owner (two-col) -->
+      <div class="charts-row two-col">
+        <div class="chart-card">
+          <h3>Partners by Owner <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">stacked by subscription</span></h3>
+          <div style="height:250px"><canvas id="apOwnerCountChart"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-bottom:0">
+          <h3>Revenue by Owner</h3>
+          <div style="height:250px"><canvas id="apOwnerRevChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Partner list table -->
+      <div class="table-card">
+        <div class="table-card-hdr">
+          <h3>Active Partner List</h3>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Subscription</span>
+              <select class="tbl-filter-select" id="apSubFilter" onchange="setApFilter()">
+                <option value="all">All</option>
+                <option value="Source Partner">Source Partner</option>
+                <option value="Marketing Hub - Source Boost">MH - Source Boost</option>
+                <option value="Sales Hub">Sales Hub</option>
+                <option value="Standard">Standard</option>
+                <option value="Marketing Hub">Marketing Hub</option>
+                <option value="Marketing Hub - Standard">MH - Standard</option>
+                <option value="">No Subscription</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Owner</span>
+              <select class="tbl-filter-select" id="apOwnerFilter" onchange="setApFilter()">
+                <option value="all">All</option>
+                <option value="judy">Judy</option>
+                <option value="stef">Stef</option>
+                <option value="che">Che</option>
+                <option value="rochelle">Rochelle</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Subscription</th>
+              <th>Deal Owner</th>
+              <th>Revenue</th>
+            </tr>
+          </thead>
+          <tbody id="apPartnerTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+
+<!-- ══ Source Partners View ══════════════════════════════════════════════════ -->
+<div id="source-partners-view" class="view">
+  <div class="view-title">Source Partners
+    <span style="font-size:.75rem;background:#0f2744;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600">22 Active SPs</span>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid" style="margin-bottom:14px">
+    <div class="card" style="border-top-color:#0f2744">
+      <div class="lbl">Total Source Partners</div>
+      <div class="big">22</div>
+      <div class="sub">CS Subscription = Source Partner</div>
+    </div>
+    <div class="card" style="border-top-color:#6366f1">
+      <div class="lbl">Total DC Target</div>
+      <div class="big" id="spCardDC">390</div>
+      <div class="sub">demo calls / month target</div>
+    </div>
+    <div class="card" style="border-top-color:#dc2626">
+      <div class="lbl">High Risk</div>
+      <div class="big" id="spCardHighRisk">—</div>
+      <div class="sub">partners flagged high churn risk</div>
+    </div>
+    <div class="card" style="border-top-color:#f59e0b">
+      <div class="lbl">Actions Pending</div>
+      <div class="big" id="spCardActions">—</div>
+      <div class="sub">partners with open action items</div>
+    </div>
+  </div>
+
+  <!-- Donut charts -->
+  <div class="sp-donut-wrap">
+    <div class="sp-donut-card">
+      <h3>Churn Risk Distribution</h3>
+      <div class="sp-donut-inner"><canvas id="spRiskChart"></canvas></div>
+    </div>
+    <div class="sp-donut-card">
+      <h3>Sentiment Distribution</h3>
+      <div class="sp-donut-inner"><canvas id="spSentChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Filter + reset row -->
+  <div class="sp-filter-row">
+    <span class="tbl-filter-label">Risk</span>
+    <select class="tbl-filter-select" id="spRiskFilter" onchange="spApplyFilter()">
+      <option value="all">All Risk</option>
+      <option value="high">High Risk</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low Risk</option>
+      <option value="">Not Assessed</option>
+    </select>
+    <span class="tbl-filter-label">Group</span>
+    <select class="tbl-filter-select" id="spGroupFilter" onchange="spApplyFilter()">
+      <option value="all">All Groups</option>
+      <option value="new-sp">New SP</option>
+      <option value="sp2">SP 2.0</option>
+      <option value="hybrid">Hybrid → SP 2.0</option>
+      <option value="il">IL → SP 2.0</option>
+    </select>
+    <button class="sp-reset-btn" onclick="spResetData()">↺ Reset to Defaults</button>
+  </div>
+
+  <!-- Editable grouped table -->
+  <div class="table-card">
+    <table style="table-layout:fixed;width:100%">
+      <colgroup>
+        <col style="width:17%">
+        <col style="width:6%">
+        <col style="width:11%">
+        <col style="width:11%">
+        <col style="width:28%">
+        <col style="width:27%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Source Partner</th>
+          <th style="text-align:center">DC Target</th>
+          <th>Churn Risk</th>
+          <th>Sentiment</th>
+          <th>Notes / Feedback</th>
+          <th>Action Item</th>
+        </tr>
+      </thead>
+      <tbody id="spTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-body -->
+
+<script>
+// ─── SHARED STATE ─────────────────────────────────────────────────────────────
+const TODAY = '2026-05-06';
+const state = {
+  startDate: '2026-05-01', endDate: TODAY,
+  activePreset: 'mtd', activeView: 'cs-leads',
+  pickerOpen: false, pickStep: 0, pickStart: null, pickHover: null,
+  calLeftYear: 2026, calLeftMonth: 4,
+  demoTableFilter: 'booked',
+  dsDealStatusFilter: 'all',
+};
+
+// ─── CS LEADS DATA (207 records) ──────────────────────────────────────────────
+const CS_RECORDS = [
+  {"d":"2026-05-06","s":"Valid BPO"},{"d":"2026-05-05","s":"Prequalification - No Business Email"},
+  {"d":"2026-05-05","s":"Valid BPO"},{"d":"2026-05-05","s":"Valid BPO"},
+  {"d":"2026-05-05","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-05-04","s":"Prequalification - No Business Email"},{"d":"2026-05-04","s":"Valid BPO"},
+  {"d":"2026-05-04","s":"Valid BPO"},{"d":"2026-05-04","s":"Valid BPO"},{"d":"2026-05-04","s":"Not a BPO"},
+  {"d":"2026-05-03","s":"Prequalification - No Business Email"},
+  {"d":"2026-05-02","s":"Prequalification - Does not look like a BPO"},{"d":"2026-05-02","s":"Valid BPO"},
+  {"d":"2026-05-02","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-05-01","s":"Prequalification - Does not look like a BPO"},{"d":"2026-05-01","s":"Not a BPO"},{"d":"2026-05-01","s":"Valid BPO"},
+  {"d":"2026-04-30","s":"Not a BPO"},{"d":"2026-04-30","s":"Prequalification - No Business Email"},{"d":"2026-04-30","s":"Valid BPO"},
+  {"d":"2026-04-29","s":"Valid BPO"},{"d":"2026-04-29","s":"Not a BPO"},{"d":"2026-04-29","s":"Valid BPO"},{"d":"2026-04-29","s":"Valid BPO"},{"d":"2026-04-29","s":"Valid BPO"},{"d":"2026-04-29","s":"Valid BPO"},{"d":"2026-04-29","s":"Valid BPO"},{"d":"2026-04-29","s":"Valid BPO"},
+  {"d":"2026-04-28","s":"Valid BPO"},{"d":"2026-04-28","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-28","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-28","s":"Valid BPO"},{"d":"2026-04-28","s":"Valid BPO"},{"d":"2026-04-28","s":"Valid BPO"},{"d":"2026-04-28","s":"Valid BPO"},{"d":"2026-04-28","s":"Valid BPO"},
+  {"d":"2026-04-27","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-27","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-27","s":"Valid BPO"},{"d":"2026-04-27","s":"Valid BPO"},{"d":"2026-04-27","s":"Prequalification - No Business Email"},{"d":"2026-04-27","s":"Prequalification - Unverified Email"},{"d":"2026-04-27","s":"Valid BPO"},{"d":"2026-04-27","s":"Not a BPO"},{"d":"2026-04-27","s":"Prequalification - No Business Email"},
+  {"d":"2026-04-26","s":"Prequalification - No Business Email"},{"d":"2026-04-26","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-04-25","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-25","s":"Valid BPO"},
+  {"d":"2026-04-24","s":"Not a BPO"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Prequalification - No Business Email"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Valid BPO"},{"d":"2026-04-24","s":"Not a BPO"},{"d":"2026-04-24","s":"Not a BPO"},{"d":"2026-04-24","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Not a BPO"},{"d":"2026-04-23","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-23","s":"Valid BPO"},{"d":"2026-04-23","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-23","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-23","s":"Valid BPO"},
+  {"d":"2026-04-22","s":"Not a BPO"},{"d":"2026-04-22","s":"Not a BPO"},{"d":"2026-04-22","s":"Valid BPO"},{"d":"2026-04-22","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-22","s":"Valid BPO"},{"d":"2026-04-22","s":"Valid BPO"},{"d":"2026-04-22","s":"Valid BPO"},{"d":"2026-04-22","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-22","s":"Valid BPO"},{"d":"2026-04-22","s":"Valid BPO"},
+  {"d":"2026-04-21","s":"Valid BPO"},{"d":"2026-04-21","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-21","s":"Not a BPO"},{"d":"2026-04-21","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-21","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-21","s":"Prequalification - Unverified Email"},{"d":"2026-04-21","s":"Not a BPO"},{"d":"2026-04-21","s":"Valid BPO"},
+  {"d":"2026-04-20","s":"Valid BPO"},{"d":"2026-04-20","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-20","s":"Valid BPO"},{"d":"2026-04-20","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-20","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-20","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-04-18","s":"Valid BPO"},{"d":"2026-04-18","s":"Prequalification - Unverified Email"},{"d":"2026-04-18","s":"Prequalification - Unverified Email"},{"d":"2026-04-18","s":"Valid BPO"},{"d":"2026-04-18","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-04-17","s":"Valid BPO"},{"d":"2026-04-17","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-17","s":"Valid BPO"},{"d":"2026-04-17","s":"Valid BPO"},{"d":"2026-04-17","s":"Prequalification - No Business Email"},{"d":"2026-04-17","s":"Valid BPO"},{"d":"2026-04-17","s":"Valid BPO"},{"d":"2026-04-17","s":"Valid BPO"},
+  {"d":"2026-04-16","s":"Valid BPO"},{"d":"2026-04-16","s":"Valid BPO"},{"d":"2026-04-16","s":"Valid BPO"},{"d":"2026-04-16","s":"Valid BPO"},{"d":"2026-04-16","s":"Prequalification - No Business Email"},{"d":"2026-04-16","s":"Valid BPO"},{"d":"2026-04-16","s":"Prequalification - No Business Email"},{"d":"2026-04-16","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-04-15","s":"Not a BPO"},{"d":"2026-04-15","s":"Valid BPO"},{"d":"2026-04-15","s":"Valid BPO"},{"d":"2026-04-15","s":"Valid BPO"},{"d":"2026-04-15","s":"Not a BPO"},{"d":"2026-04-15","s":"Valid BPO"},{"d":"2026-04-15","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-15","s":"Valid BPO"},{"d":"2026-04-15","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-15","s":"Valid BPO"},
+  {"d":"2026-04-14","s":"Not a BPO"},{"d":"2026-04-14","s":"Not a BPO"},{"d":"2026-04-14","s":"Valid BPO"},{"d":"2026-04-14","s":"Not a BPO"},{"d":"2026-04-14","s":"Valid BPO"},{"d":"2026-04-14","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-14","s":"Not a BPO"},{"d":"2026-04-14","s":"Valid BPO"},{"d":"2026-04-14","s":"Valid BPO"},{"d":"2026-04-14","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-14","s":"Prequalification - No Business Email"},
+  {"d":"2026-04-13","s":"Not a BPO"},{"d":"2026-04-13","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-13","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-13","s":"Prequalification - No Business Email"},
+  {"d":"2026-04-12","s":"Prequalification - No Business Email"},
+  {"d":"2026-04-11","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-11","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-11","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-11","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-11","s":"Valid BPO"},
+  {"d":"2026-04-10","s":"Not a BPO"},{"d":"2026-04-10","s":"Valid BPO"},{"d":"2026-04-10","s":"Valid BPO"},{"d":"2026-04-10","s":"Not a BPO"},{"d":"2026-04-10","s":"Valid BPO"},{"d":"2026-04-10","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-10","s":"Valid BPO"},
+  {"d":"2026-04-09","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-09","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-09","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-09","s":"Valid BPO"},{"d":"2026-04-09","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-09","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-09","s":"Valid BPO"},{"d":"2026-04-09","s":"Not a BPO"},{"d":"2026-04-09","s":"Prequalification - Does not look like a BPO"},
+  {"d":"2026-04-08","s":"Valid BPO"},{"d":"2026-04-08","s":"Not a BPO"},{"d":"2026-04-08","s":"Valid BPO"},{"d":"2026-04-08","s":"Valid BPO"},{"d":"2026-04-08","s":"Valid BPO"},{"d":"2026-04-08","s":"Not a BPO"},{"d":"2026-04-08","s":"Valid BPO"},{"d":"2026-04-08","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-08","s":"Valid BPO"},
+  {"d":"2026-04-07","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-07","s":"Valid BPO"},{"d":"2026-04-07","s":"Prequalification - No Business Email"},{"d":"2026-04-07","s":"Prequalification - No Business Email"},{"d":"2026-04-07","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-07","s":"Valid BPO"},
+  {"d":"2026-04-06","s":"Prequalification - No Business Email"},{"d":"2026-04-06","s":"Valid BPO"},{"d":"2026-04-06","s":"Not a BPO"},{"d":"2026-04-06","s":"Prequalification - No Business Email"},{"d":"2026-04-06","s":"Valid BPO"},{"d":"2026-04-06","s":"Valid BPO"},{"d":"2026-04-06","s":"Valid BPO"},{"d":"2026-04-06","s":"Valid BPO"},{"d":"2026-04-06","s":"Valid BPO"},
+  {"d":"2026-04-05","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-05","s":"Not a BPO"},
+  {"d":"2026-04-03","s":"Valid BPO"},{"d":"2026-04-03","s":"Prequalification - Inactive/No Website"},
+  {"d":"2026-04-02","s":"Valid BPO"},{"d":"2026-04-02","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-02","s":"Prequalification - Does not look like a BPO"},{"d":"2026-04-02","s":"Valid BPO"},{"d":"2026-04-02","s":"Not a BPO"},{"d":"2026-04-02","s":"Prequalification - Unverified Email"},
+  {"d":"2026-04-01","s":"Valid BPO"},{"d":"2026-04-01","s":"Prequalification - Unverified Email"},{"d":"2026-04-01","s":"Valid BPO"},{"d":"2026-04-01","s":"Not a BPO"},{"d":"2026-04-01","s":"Prequalification - Inactive/No Website"},{"d":"2026-04-01","s":"Valid BPO"},{"d":"2026-04-01","s":"Valid BPO"},{"d":"2026-04-01","s":"Prequalification - Does not look like a BPO"},
+];
+
+// ─── CS LEADS BOOKED FOR DEMO SAME MONTH (61 records) ────────────────────────
+// sub: CS - Subscription Status from HubSpot deal (empty = not yet set)
+const CS_DEMO_BOOKED = [
+  {d:"2026-04-01",n:"Dulce Chiongson",co:"Virtual Experts PH",s:"Valid BPO",sub:""},
+  {d:"2026-04-01",n:"Salman Ali",co:"Robotronics.ai",s:"Valid BPO",sub:""},
+  {d:"2026-04-01",n:"Enrique Labayen",co:"Alorica",s:"Valid BPO",sub:""},
+  {d:"2026-04-03",n:"Scott Jones",co:"SEBPO",s:"Valid BPO",sub:"Active"},
+  {d:"2026-04-06",n:"Vishnu B H",co:"Trainonex Solutions",s:"Valid BPO",sub:""},
+  {d:"2026-04-06",n:"Aaditya Gadal",co:"Finserve Global",s:"Valid BPO",sub:""},
+  {d:"2026-04-06",n:"Barbara Atillo",co:"Fusion CX",s:"Valid BPO",sub:""},
+  {d:"2026-04-07",n:"Carina Ramos",co:"Titan Clarity",s:"Valid BPO",sub:""},
+  {d:"2026-04-08",n:"Francis Gomez",co:"Complete BPO",s:"Valid BPO",sub:""},
+  {d:"2026-04-08",n:"Himanshu Kumar",co:"Aadi Business Solution",s:"Valid BPO",sub:""},
+  {d:"2026-04-09",n:"Mayuresh Kumar Sinha",co:"Innopact Technologies",s:"Prequalification - Inactive/No Website",sub:""},
+  {d:"2026-04-09",n:"Dinesh Saravanan",co:"Avata Technologies",s:"Valid BPO",sub:""},
+  {d:"2026-04-09",n:"Royce Marcus",co:"Revelo",s:"Valid BPO",sub:""},
+  {d:"2026-04-10",n:"Walter Sabrin",co:"Vensure Employer Solutions",s:"Valid BPO",sub:""},
+  {d:"2026-04-10",n:"Aarchit Ranjan",co:"Black Seedspire Technologies",s:"Valid BPO",sub:""},
+  {d:"2026-04-11",n:"Simran Arora",co:"Releaf Claim",s:"Prequalification - Does not look like a BPO",sub:""},
+  {d:"2026-04-11",n:"John Baptista",co:"Pristine E Tele Services",s:"Prequalification - Does not look like a BPO",sub:""},
+  {d:"2026-04-11",n:"Travis Smith",co:"Talent Connect Recruitment",s:"Valid BPO",sub:""},
+  {d:"2026-04-14",n:"Marjorie Penalosa",co:"KMC Solutions",s:"Valid BPO",sub:""},
+  {d:"2026-04-14",n:"Omid Rokni",co:"Cost Solution Pty Ltd",s:"Prequalification - Does not look like a BPO",sub:""},
+  {d:"2026-04-14",n:"Gaurav Luthra",co:"SkyOS BPO",s:"Valid BPO",sub:""},
+  {d:"2026-04-15",n:"Divanshu Guleria",co:"Netsmartz",s:"Valid BPO",sub:""},
+  {d:"2026-04-15",n:"Dasar Saraqi",co:"DialX",s:"Valid BPO",sub:""},
+  {d:"2026-04-16",n:"Marina Behmann",co:"Innovative Work Solutions",s:"Valid BPO",sub:"Active"},
+  {d:"2026-04-16",n:"Umar Khalid",co:"Resource Consulting Management",s:"Valid BPO",sub:""},
+  {d:"2026-04-17",n:"Ali Khan",co:"MB Group",s:"Valid BPO",sub:""},
+  {d:"2026-04-17",n:"Mahnoor Ali",co:"Prestige OSS",s:"Valid BPO",sub:""},
+  {d:"2026-04-18",n:"Mimi Arguelles",co:"SuccessLink Outsourcing",s:"Valid BPO",sub:""},
+  {d:"2026-04-18",n:"Amede Deane",co:"Prime Bridge Solutions",s:"Valid BPO",sub:""},
+  {d:"2026-04-20",n:"Nishath Tanveer",co:"Global IT Finest",s:"Prequalification - Does not look like a BPO",sub:""},
+  {d:"2026-04-20",n:"Vikram Arora",co:"ICCS Digx",s:"Valid BPO",sub:""},
+  {d:"2026-04-22",n:"Ryan Shrestha",co:"CnerG",s:"Valid BPO",sub:""},
+  {d:"2026-04-22",n:"Shey Salcedo",co:"Clark Outsourcing",s:"Valid BPO",sub:""},
+  {d:"2026-04-22",n:"Chirag Koshti",co:"CapActix",s:"Valid BPO",sub:""},
+  {d:"2026-04-22",n:"Danny Schaffer",co:"BackerIT Innovation",s:"Valid BPO",sub:""},
+  {d:"2026-04-22",n:"Harneet Singh",co:"Excelsior Servicez",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-22",n:"Sergio Murillo",co:"Coderland",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-23",n:"Furqan Chohdary",co:"Kyniska",s:"Valid BPO",sub:""},
+  {d:"2026-04-23",n:"Amerein Marie Tapia",co:"GoBro PH",s:"Valid BPO",sub:""},
+  {d:"2026-04-23",n:"Rajan Arora",co:"Ellora Inc.",s:"Valid BPO",sub:""},
+  {d:"2026-04-23",n:"Naomi Munyasya",co:"HeyDelegate",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-23",n:"Dean Toro",co:"Global Impact Sourcing",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-24",n:"Neej Parikh",co:"Exordiom",s:"Valid BPO",sub:""},
+  {d:"2026-04-24",n:"Ayaan Ahmad",co:"Alvi Global Enterprises",s:"Valid BPO",sub:""},
+  {d:"2026-04-24",n:"Sahil Chand",co:"Proficient Customer Solutions",s:"Valid BPO",sub:""},
+  {d:"2026-04-24",n:"Mike Snyder",co:"External Input",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-24",n:"Anton Vukic",co:"Afrishore BPO",s:"Valid BPO",sub:"Active"},
+  {d:"2026-04-27",n:"Fateen Banday",co:"Ekinova Business Solutions",s:"Valid BPO",sub:""},
+  {d:"2026-04-27",n:"Yaniv Varochik",co:"Aidey",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-27",n:"Terry Woltman",co:"External Input",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-28",n:"Jasmin Jurvakainen",co:"yoummday",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-28",n:"Henry Wallace",co:"Outsourced",s:"Valid BPO",sub:"Active"},
+  {d:"2026-04-29",n:"Damian Paklos",co:"yoummday GmbH",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-04-29",n:"Elizabeth Kara",co:"OneHalf",s:"Valid BPO",sub:""},
+  {d:"2026-04-29",n:"Fawad Nasir",co:"EmpireOne BPO",s:"Valid BPO",sub:""},
+  {d:"2026-04-29",n:"Anthony Ross",co:"Brand Vantage",s:"Valid BPO",sub:""},
+  {d:"2026-04-29",n:"Louis Siebrits",co:"Resolv Global",s:"Valid BPO",sub:"Inactive"},
+  {d:"2026-05-01",n:"Gavin Luka",co:"MIFIN Services Philippines",s:"Valid BPO",sub:""},
+  {d:"2026-05-02",n:"Brian Magbanua",co:"Staff Hero",s:"Valid BPO",sub:""},
+  {d:"2026-05-06",n:"Ravi Shanker",co:"WGS India",s:"Valid BPO",sub:""},
+];
+
+// ─── DEMO CALLS DATA (117 records) ────────────────────────────────────────────
+// t: stef/che/judy/rochelle/discovery  o: a=attended, n=noshow, c=canceled, s=scheduled, r=rescheduled
+const MEETINGS = [
+  {"d":"2026-05-14","t":"discovery","o":"s"},{"d":"2026-05-13","t":"discovery","o":"s"},
+  {"d":"2026-05-12","t":"discovery","o":"s"},{"d":"2026-05-11","t":"discovery","o":"s"},
+  {"d":"2026-05-11","t":"discovery","o":"s"},{"d":"2026-05-08","t":"discovery","o":"s"},
+  {"d":"2026-05-08","t":"discovery","o":"s"},{"d":"2026-05-08","t":"rochelle","o":"s"},
+  {"d":"2026-05-07","t":"discovery","o":"s"},{"d":"2026-05-07","t":"discovery","o":"s"},
+  {"d":"2026-05-06","t":"discovery","o":"s"},{"d":"2026-05-06","t":"discovery","o":"s"},
+  {"d":"2026-05-06","t":"discovery","o":"s"},{"d":"2026-05-06","t":"discovery","o":"s"},
+  {"d":"2026-05-06","t":"discovery","o":"s"},{"d":"2026-05-06","t":"stef","o":"s"},
+  {"d":"2026-05-06","t":"rochelle","o":"s"},
+  {"d":"2026-04-30","t":"discovery","o":"c"},{"d":"2026-04-30","t":"discovery","o":"s"},
+  {"d":"2026-04-30","t":"discovery","o":"s"},{"d":"2026-04-30","t":"che","o":"c"},
+  {"d":"2026-04-30","t":"rochelle","o":"a"},{"d":"2026-04-30","t":"rochelle","o":""},
+  {"d":"2026-04-29","t":"discovery","o":"s"},{"d":"2026-04-29","t":"discovery","o":"r"},
+  {"d":"2026-04-29","t":"judy","o":"a"},{"d":"2026-04-29","t":"judy","o":"a"},
+  {"d":"2026-04-29","t":"judy","o":"a"},{"d":"2026-04-29","t":"che","o":"a"},
+  {"d":"2026-04-29","t":"discovery","o":"s"},
+  {"d":"2026-04-28","t":"judy","o":"a"},{"d":"2026-04-28","t":"judy","o":"r"},
+  {"d":"2026-04-28","t":"judy","o":"a"},{"d":"2026-04-28","t":"discovery","o":"c"},
+  {"d":"2026-04-28","t":"stef","o":"a"},
+  {"d":"2026-04-27","t":"rochelle","o":"a"},{"d":"2026-04-27","t":"discovery","o":"a"},
+  {"d":"2026-04-27","t":"judy","o":"a"},{"d":"2026-04-27","t":"judy","o":"a"},
+  {"d":"2026-04-27","t":"judy","o":"a"},{"d":"2026-04-27","t":"judy","o":"a"},
+  {"d":"2026-04-27","t":"stef","o":"a"},{"d":"2026-04-27","t":"stef","o":"a"},
+  {"d":"2026-04-24","t":"judy","o":"a"},{"d":"2026-04-24","t":"judy","o":"a"},
+  {"d":"2026-04-24","t":"judy","o":"a"},{"d":"2026-04-24","t":"discovery","o":"c"},
+  {"d":"2026-04-24","t":"che","o":"a"},{"d":"2026-04-24","t":"stef","o":"a"},
+  {"d":"2026-04-23","t":"stef","o":"n"},{"d":"2026-04-23","t":"judy","o":"a"},
+  {"d":"2026-04-23","t":"judy","o":"a"},{"d":"2026-04-23","t":"rochelle","o":"a"},
+  {"d":"2026-04-22","t":"che","o":"n"},{"d":"2026-04-22","t":"discovery","o":"c"},
+  {"d":"2026-04-22","t":"che","o":"a"},{"d":"2026-04-22","t":"stef","o":"a"},
+  {"d":"2026-04-21","t":"rochelle","o":"a"},{"d":"2026-04-21","t":"discovery","o":"c"},
+  {"d":"2026-04-21","t":"judy","o":"a"},{"d":"2026-04-21","t":"discovery","o":"a"},
+  {"d":"2026-04-21","t":"judy","o":"n"},
+  {"d":"2026-04-20","t":"discovery","o":"c"},{"d":"2026-04-20","t":"judy","o":"a"},
+  {"d":"2026-04-20","t":"discovery","o":"c"},{"d":"2026-04-20","t":"judy","o":"a"},
+  {"d":"2026-04-20","t":"stef","o":"a"},
+  {"d":"2026-04-17","t":"judy","o":"n"},{"d":"2026-04-17","t":"judy","o":"n"},
+  {"d":"2026-04-16","t":"discovery","o":"s"},{"d":"2026-04-16","t":"discovery","o":"s"},
+  {"d":"2026-04-16","t":"judy","o":"a"},{"d":"2026-04-16","t":"che","o":"a"},
+  {"d":"2026-04-16","t":"discovery","o":"c"},
+  {"d":"2026-04-15","t":"judy","o":"a"},{"d":"2026-04-15","t":"judy","o":"a"},
+  {"d":"2026-04-15","t":"judy","o":"a"},{"d":"2026-04-15","t":"stef","o":"n"},
+  {"d":"2026-04-15","t":"che","o":"a"},{"d":"2026-04-15","t":"stef","o":"a"},
+  {"d":"2026-04-15","t":"stef","o":"a"},
+  {"d":"2026-04-14","t":"judy","o":"a"},{"d":"2026-04-14","t":"discovery","o":"a"},
+  {"d":"2026-04-14","t":"judy","o":"n"},{"d":"2026-04-14","t":"judy","o":"a"},
+  {"d":"2026-04-14","t":"stef","o":"a"},{"d":"2026-04-14","t":"stef","o":"a"},
+  {"d":"2026-04-13","t":"discovery","o":"c"},{"d":"2026-04-13","t":"judy","o":"n"},
+  {"d":"2026-04-13","t":"judy","o":"n"},{"d":"2026-04-13","t":"judy","o":"a"},
+  {"d":"2026-04-13","t":"stef","o":"a"},
+  {"d":"2026-04-10","t":"discovery","o":"c"},{"d":"2026-04-10","t":"discovery","o":"c"},
+  {"d":"2026-04-10","t":"judy","o":"a"},{"d":"2026-04-10","t":"judy","o":"a"},
+  {"d":"2026-04-10","t":"judy","o":"n"},{"d":"2026-04-10","t":"discovery","o":"c"},
+  {"d":"2026-04-10","t":"judy","o":"n"},{"d":"2026-04-10","t":"discovery","o":"c"},
+  {"d":"2026-04-09","t":"stef","o":"a"},
+  {"d":"2026-04-08","t":"discovery","o":"s"},
+  {"d":"2026-04-07","t":"judy","o":"a"},{"d":"2026-04-07","t":"judy","o":"n"},
+  {"d":"2026-04-07","t":"judy","o":"a"},{"d":"2026-04-07","t":"judy","o":"n"},
+  {"d":"2026-04-07","t":"stef","o":"a"},
+  {"d":"2026-04-06","t":"judy","o":"n"},{"d":"2026-04-06","t":"judy","o":"n"},
+  {"d":"2026-04-06","t":"stef","o":"n"},{"d":"2026-04-06","t":"stef","o":"a"},
+  {"d":"2026-04-05","t":"che","o":"a"},
+  {"d":"2026-04-02","t":"discovery","o":"c"},
+  {"d":"2026-04-01","t":"discovery","o":"s"},{"d":"2026-04-01","t":"judy","o":"n"},
+  {"d":"2026-04-01","t":"che","o":"a"},{"d":"2026-04-01","t":"stef","o":"a"},
+];
+
+// ─── DEAL STATUS PER PERSON (CS Pipeline, non-bulk deals, keyed by deal owner) ──────
+// p: person key, d: deal createdate, ds: deal_status ('' = no status set)
+const DS_DEALS = [
+  // Judy (78367246)
+  {p:'judy',d:'2026-04-01',co:'Robotronics.ai',ds:''},
+  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'Closed won'},
+  {p:'judy',d:'2026-04-06',co:'Finserve Global',ds:'Decision Maker Bought-in'},
+  {p:'judy',d:'2026-04-06',co:'Trainonex Solutions',ds:''},
+  {p:'judy',d:'2026-04-06',co:'Fusion CX',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-07',co:'Titan Clarity',ds:''},
+  {p:'judy',d:'2026-04-07',co:'Alorica',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-08',co:'123Employee',ds:'Closed won'},
+  {p:'judy',d:'2026-04-08',co:'Snapscale',ds:'Closed won'},
+  {p:'judy',d:'2026-04-08',co:'Avata Technologies',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-08',co:'Aadi Business Solution',ds:''},
+  {p:'judy',d:'2026-04-10',co:'Innopact',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-10',co:'Talent Connect',ds:''},
+  {p:'judy',d:'2026-04-13',co:'Pristine E Tele Services',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-15',co:'Netsmartz',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-15',co:'DialX',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-15',co:'SkyOS BPO',ds:''},
+  {p:'judy',d:'2026-04-16',co:'Peak Support',ds:''},
+  {p:'judy',d:'2026-04-16',co:'CreaThink Solutions',ds:''},
+  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'Closed won'},
+  {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-17',co:'Prime Bridge Solutions',ds:'Decision Maker Bought-in'},
+  {p:'judy',d:'2026-04-17',co:'Prestige OSS',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'Closed won'},
+  {p:'judy',d:'2026-04-22',co:'EmpireOne Group',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-22',co:'Coderland',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-22',co:'Revelo',ds:'Not interested'},
+  {p:'judy',d:'2026-04-22',co:'MB Group',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-23',co:'CapActix Business Solutions',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-23',co:'HeyDelegate',ds:'With hesitations'},
+  {p:'judy',d:'2026-04-24',co:'Exordiom',ds:'Early Stage Startup'},
+  {p:'judy',d:'2026-04-27',co:'Ekinova',ds:'Not the decision maker'},
+  {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'Decision Maker Bought-in'},
+  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'Closed won'},
+  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'Closed won'},
+  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'Closed won'},
+  // Stef (635230480)
+  {p:'stef',d:'2026-04-01',co:'Virtual Experts PH',ds:''},
+  {p:'stef',d:'2026-04-07',co:'Complete BPO',ds:'Decision Maker Bought-in'},
+  {p:'stef',d:'2026-04-10',co:'Black Seedspire Technologies',ds:''},
+  {p:'stef',d:'2026-04-11',co:'Releaf Claim',ds:'With hesitations'},
+  {p:'stef',d:'2026-04-17',co:'Resource Consulting',ds:'With hesitations'},
+  {p:'stef',d:'2026-04-23',co:'Ellora – Outsourced Team',ds:''},
+  {p:'stef',d:'2026-04-23',co:'Kyniska',ds:''},
+  {p:'stef',d:'2026-04-23',co:'Gobro Web Services',ds:''},
+  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'Closed won'},
+  // Che (635230465)
+  {p:'che',d:'2026-04-01',co:'Sparkbridge',ds:''},
+  {p:'che',d:'2026-04-06',co:'Outsource Accelerator',ds:''},
+  {p:'che',d:'2026-04-14',co:'Cost Solution Pty Ltd.',ds:'Keen – Needs Internal Discussion'},
+  {p:'che',d:'2026-04-20',co:'Global IT Finest',ds:''},
+  {p:'che',d:'2026-04-21',co:'VensureHR',ds:''},
+  {p:'che',d:'2026-04-23',co:'Econx Group',ds:''},
+  {p:'che',d:'2026-04-24',co:'Alvi Global',ds:''},
+  {p:'che',d:'2026-04-28',co:'Novacomp',ds:''},
+  {p:'che',d:'2026-04-28',co:'Outsourced',ds:''},
+  {p:'che',d:'2026-04-29',co:'Onehalf',ds:''},
+  {p:'che',d:'2026-05-01',co:'StaffHero',ds:''},
+  {p:'che',d:'2026-05-04',co:'wgsindia',ds:''},
+  {p:'che',d:'2026-05-04',co:'Biscc',ds:''},
+  // Rochelle (76241586)
+  {p:'rochelle',d:'2026-04-20',co:'Success Link Outsourcing US',ds:'Decision Maker Bought-in'},
+  {p:'rochelle',d:'2026-04-22',co:'CnerG',ds:'Keen – Needs Internal Discussion'},
+  {p:'rochelle',d:'2026-04-24',co:'Proficient CS',ds:'Keen – Needs Internal Discussion'},
+  {p:'rochelle',d:'2026-04-29',co:'Brand Vantage',ds:'Keen – Needs Internal Discussion'},
+];
+const DS_STATUSES = [
+  {key:'Closed won',                       label:'Closed Won',           color:'#0f2744'},
+  {key:'Decision Maker Bought-in',         label:'DM Bought-in',         color:'#16a34a'},
+  {key:'Keen – Needs Internal Discussion', label:'Keen – Needs Discuss.',color:'#6366f1'},
+  {key:'With hesitations',                 label:'With Hesitations',     color:'#d97706'},
+  {key:'Not the decision maker',           label:'Not the DM',           color:'#f59e0b'},
+  {key:'Early Stage Startup',              label:'Early Stage',          color:'#7c3aed'},
+  {key:'Not interested',                   label:'Not Interested',       color:'#dc2626'},
+  {key:'',                                 label:'No Status',            color:'#e2e8f0'},
+];
+
+// ─── ACTIVE PARTNERS (268 CS - Closed Won deals) ─────────────────────────────
+// n: company name, sub: subscription type, o: owner key, rev: revenue ($)
+const AP_SUBS = [
+  {key:'Source Partner',          label:'Source Partner',     color:'#0f2744'},
+  {key:'Marketing Hub - Source Boost',label:'MH - Source Boost',color:'#6366f1'},
+  {key:'Sales Hub',               label:'Sales Hub',          color:'#16a34a'},
+  {key:'Standard',                label:'Standard',           color:'#64748b'},
+  {key:'Marketing Hub',           label:'Marketing Hub',      color:'#d97706'},
+  {key:'Marketing Hub - Standard',label:'MH - Standard',      color:'#7c3aed'},
+  {key:'',                        label:'No Subscription',    color:'#e2e8f0'},
+];
+const AP_PARTNERS = [
+  {n:'123Employee',sub:'Standard',o:'judy',rev:0},
+  {n:'Acquire Intelligence',sub:'Source Partner',o:'stef',rev:7089},
+  {n:'Affirm Data',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Afrishore BPO',sub:'Marketing Hub - Source Boost',o:'judy',rev:499},
+  {n:'Agility Staffing/Healthscope',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Ansafone',sub:'Standard',o:'judy',rev:0},
+  {n:'Answering Service Care',sub:'Standard',o:'judy',rev:100},
+  {n:'Archers Contact Solutions',sub:'Sales Hub',o:'judy',rev:0},
+  {n:'Azendo',sub:'Sales Hub',o:'judy',rev:3499},
+  {n:'Better Support',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Boomering',sub:'Standard',o:'stef',rev:100},
+  {n:'Callmax Solutions',sub:'Source Partner',o:'che',rev:6599},
+  {n:'CCIG Group',sub:'Standard',o:'stef',rev:0},
+  {n:'CDM Direct',sub:'Sales Hub',o:'rochelle',rev:100},
+  {n:'Cebu Telenet',sub:'Source Partner',o:'judy',rev:6070},
+  {n:'Cloudstaff',sub:'Standard',o:'stef',rev:0},
+  {n:'ConnectOS',sub:'Marketing Hub - Source Boost',o:'stef',rev:7089},
+  {n:'Connext',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:1000},
+  {n:'Contactpoint 360',sub:'Marketing Hub - Source Boost',o:'judy',rev:1249},
+  {n:'Corpshore Solutions',sub:'Marketing Hub - Source Boost',o:'stef',rev:1249},
+  {n:'CS-PAC Global Solutions',sub:'Source Partner',o:'rochelle',rev:3499},
+  {n:'Eastvantage',sub:'Source Partner',o:'che',rev:6070},
+  {n:'Eastvantage - Client Services',sub:'Source Partner',o:'judy',rev:6070},
+  {n:'EffectiveSoft',sub:'Standard',o:'stef',rev:100},
+  {n:'Elaxis',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Enezync',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Epic Outsourcing',sub:'Sales Hub',o:'stef',rev:0},
+  {n:'Expedock',sub:'Source Partner',o:'judy',rev:3499},
+  {n:'FBSPL',sub:'Standard',o:'stef',rev:0},
+  {n:'Gloov Outsourcing',sub:'Standard',o:'judy',rev:100},
+  {n:'Goodland BPO',sub:'Sales Hub',o:'rochelle',rev:299},
+  {n:'H Connect International',sub:'Standard',o:'rochelle',rev:600},
+  {n:'HGS',sub:'Source Partner',o:'che',rev:6070},
+  {n:'HGS OSS',sub:'Source Partner',o:'che',rev:3135},
+  {n:'HGS UK',sub:'Source Partner',o:'che',rev:3135},
+  {n:'Hinduja Global Solutions - UK - Client Services',sub:'Source Partner',o:'che',rev:0},
+  {n:'HOPLA',sub:'Source Partner',o:'rochelle',rev:6599},
+  {n:'Hugo',sub:'Marketing Hub - Source Boost',o:'judy',rev:490},
+  {n:'iFive',sub:'Standard',o:'judy',rev:100},
+  {n:'IIMI Intelligent Image Management Inc.',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:600},
+  {n:'Imperative Business Ventures Limited',sub:'Standard',o:'stef',rev:0},
+  {n:'Innovative Work Solutions - Client Services',sub:'Sales Hub',o:'judy',rev:0},
+  {n:'Innovature',sub:'Standard',o:'stef',rev:0},
+  {n:'Innowise',sub:'Marketing Hub - Source Boost',o:'stef',rev:499},
+  {n:'IntegratedOS',sub:'Source Partner',o:'stef',rev:3135},
+  {n:'Intelliworx PH',sub:'Source Partner',o:'judy',rev:3499},
+  {n:'ISTA Solutions',sub:'Standard',o:'judy',rev:0},
+  {n:'iTransition',sub:'Standard',o:'judy',rev:100},
+  {n:'Kamel BPO',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Kinetic Innovative Staffing',sub:'Marketing Hub',o:'rochelle',rev:0},
+  {n:'LAdmins',sub:'Marketing Hub',o:'judy',rev:316},
+  {n:'Lynk Global',sub:'Sales Hub',o:'rochelle',rev:100},
+  {n:'Multinational Holdings',sub:'Sales Hub',o:'rochelle',rev:0},
+  {n:'NQX',sub:'Standard',o:'judy',rev:100},
+  {n:'OfficePartners360',sub:'Standard',o:'judy',rev:0},
+  {n:'Origo BPO',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Outposter',sub:'Source Partner',o:'stef',rev:20650},
+  {n:'Outsourcea',sub:'Sales Hub',o:'rochelle',rev:0},
+  {n:'Outsourced',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:590},
+  {n:'Outsourced Global',sub:'Standard',o:'rochelle',rev:1100},
+  {n:'Pandr',sub:'Source Partner',o:'stef',rev:6599},
+  {n:'Pandr - Call Center',sub:'Source Partner',o:'stef',rev:3135},
+  {n:'Paragon Outsourcing',sub:'Standard',o:'judy',rev:0},
+  {n:'Parkes BPO',sub:'Sales Hub',o:'rochelle',rev:0},
+  {n:'Peak Outsourcing',sub:'Standard',o:'judy',rev:100},
+  {n:'Peak Support',sub:'Marketing Hub - Standard',o:'judy',rev:29},
+  {n:'Pentwater',sub:'Source Partner',o:'stef',rev:3499},
+  {n:'People Partners BPO',sub:'Source Partner',o:'rochelle',rev:3699},
+  {n:'Platinum Outsourcing',sub:'Standard',o:'rochelle',rev:0},
+  {n:'Portland Outsource',sub:'Standard',o:'judy',rev:0},
+  {n:'Prima Systems',sub:'Standard',o:'stef',rev:100},
+  {n:'Remote Employee',sub:'Source Partner',o:'stef',rev:7089},
+  {n:'Remote Latinos',sub:'Standard',o:'judy',rev:100},
+  {n:'Remote People',sub:'Marketing Hub - Source Boost',o:'judy',rev:0},
+  {n:'Remotify',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Sagan Passport',sub:'Standard',o:'judy',rev:100},
+  {n:'Satellite Office',sub:'Source Partner',o:'stef',rev:3499},
+  {n:'ScalableOS',sub:'Standard',o:'rochelle',rev:0},
+  {n:'SEBPO',sub:'Marketing Hub - Standard',o:'judy',rev:0},
+  {n:'Select Voicecom',sub:'Standard',o:'judy',rev:0},
+  {n:'Sigli',sub:'Standard',o:'stef',rev:100},
+  {n:'Simply Contact',sub:'Sales Hub',o:'stef',rev:100},
+  {n:'Sirius Support',sub:'Source Partner',o:'judy',rev:3499},
+  {n:'Six Eleven',sub:'Source Partner',o:'che',rev:18189},
+  {n:'Snapscale',sub:'Standard',o:'judy',rev:100},
+  {n:'Sourcefit',sub:'Marketing Hub - Source Boost',o:'rochelle',rev:3625},
+  {n:'Staff Outsourcing',sub:'Standard',o:'judy',rev:100},
+  {n:'SummitNext',sub:'Standard',o:'rochelle',rev:100},
+  {n:'Talent First',sub:'Standard',o:'stef',rev:0},
+  {n:'Talent Forge Group',sub:'Standard',o:'rochelle',rev:100},
+  {n:'The Remote Group',sub:'Sales Hub',o:'rochelle',rev:100},
+  {n:'Thrivin',sub:'Sales Hub',o:'judy',rev:299},
+  {n:'Tison',sub:'Sales Hub',o:'stef',rev:0},
+  {n:'VA Platinum Pty Ltd',sub:'Source Partner',o:'rochelle',rev:7698},
+  {n:'Virtual Latinos',sub:'Standard',o:'rochelle',rev:0},
+  {n:'VirtualStaff.ph',sub:'Marketing Hub - Source Boost',o:'judy',rev:0},
+  {n:'vizx international staffing solutions',sub:'Standard',o:'judy',rev:100},
+  {n:'Xceed',sub:'Standard',o:'stef',rev:0},
+  {n:'ZigZag (Outposter)',sub:'Source Partner',o:'stef',rev:0},
+];
+
+// ─── DEAL STATUS DATA (CS Pipeline, Apr 1 – May 6; Closed Won = Active subs only) ──
+const DEAL_STAGES = [
+  {label:'Closed Won (Active)',        v:97,  color:'#0f2744'},
+  {label:'No Status Set',              v:37,  color:'#cbd5e1'},
+  {label:'With Hesitations',           v:11,  color:'#d97706'},
+  {label:'Not the Decision Maker',     v:8,   color:'#f59e0b'},
+  {label:'Decision Maker Bought-in',   v:7,   color:'#16a34a'},
+  {label:'Keen – Needs Discussion',    v:6,   color:'#6366f1'},
+  {label:'Not Interested',             v:3,   color:'#dc2626'},
+  {label:'Early Stage Startup',        v:1,   color:'#94a3b8'},
+];
+
+// ─── UTILITIES ────────────────────────────────────────────────────────────────
+function isoDate(d){ return d.toISOString().slice(0,10); }
+function parseISO(s){ return new Date(s+'T00:00:00'); }
+function addDays(s,n){ const d=parseISO(s); d.setDate(d.getDate()+n); return isoDate(d); }
+function fmtShort(s){ return parseISO(s).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function fmtLabel(s,e){
+  const sy=s.slice(0,4), ey=e.slice(0,4);
+  return sy===ey
+    ? `${fmtShort(s)} – ${parseISO(e).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`
+    : `${parseISO(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} – ${parseISO(e).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+}
+function pct(n,d){ return d ? `${((n/d)*100).toFixed(1)}%` : '—'; }
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+// ─── CS LEADS LOGIC ───────────────────────────────────────────────────────────
+function csFilter(s,e){ return CS_RECORDS.filter(r=>r.d>=s&&r.d<=e); }
+function csStats(recs){
+  const c={}; recs.forEach(r=>{c[r.s]=(c[r.s]||0)+1;});
+  const valid=c['Valid BPO']||0, notBPO=c['Not a BPO']||0, prequal=recs.length-valid-notBPO;
+  return { total:recs.length, valid, notBPO, prequal,
+    pd:{notLook:c['Prequalification - Does not look like a BPO']||0,
+        noEmail:c['Prequalification - No Business Email']||0,
+        inactive:c['Prequalification - Inactive/No Website']||0,
+        unverified:c['Prequalification - Unverified Email']||0} };
+}
+function csTrend(recs,s,e){
+  const s0=parseISO(s),e0=parseISO(e),days=Math.round((e0-s0)/86400000)+1;
+  const bkts={};
+  if(days<=35){
+    let d=new Date(s0);
+    while(d<=e0){const k=isoDate(d);bkts[k]={v:0,p:0,n:0};d.setDate(d.getDate()+1);}
+    recs.forEach(r=>{if(!bkts[r.d])return;if(r.s==='Valid BPO')bkts[r.d].v++;else if(r.s==='Not a BPO')bkts[r.d].n++;else bkts[r.d].p++;});
+    const keys=Object.keys(bkts);
+    return{type:'daily',labels:keys.map(fmtShort),v:keys.map(k=>bkts[k].v),p:keys.map(k=>bkts[k].p),n:keys.map(k=>bkts[k].n)};
+  } else {
+    recs.forEach(r=>{const d=parseISO(r.d),sun=new Date(d);sun.setDate(d.getDate()-d.getDay());const k=isoDate(sun);if(!bkts[k])bkts[k]={v:0,p:0,n:0};if(r.s==='Valid BPO')bkts[k].v++;else if(r.s==='Not a BPO')bkts[k].n++;else bkts[k].p++;});
+    const keys=Object.keys(bkts).sort();
+    return{type:'weekly',labels:keys.map(k=>{const sun=parseISO(k),sat=new Date(sun);sat.setDate(sun.getDate()+6);return`${fmtShort(k)}–${fmtShort(isoDate(sat))}`;}),v:keys.map(k=>bkts[k].v),p:keys.map(k=>bkts[k].p),n:keys.map(k=>bkts[k].n)};
+  }
+}
+
+// ─── DEMO CALLS LOGIC ────────────────────────────────────────────────────────
+const PERSONS = [
+  {key:'judy',     label:'Judy',     color:'#6366f1'},
+  {key:'stef',     label:'Stef',     color:'#0f2744'},
+  {key:'che',      label:'Che',      color:'#d97706'},
+  {key:'rochelle', label:'Rochelle', color:'#16a34a'},
+  {key:'discovery',label:'Discovery',color:'#94a3b8'},
+];
+function dcFilter(s,e){ return MEETINGS.filter(r=>r.d>=s&&r.d<=e); }
+function dcStats(recs){
+  let attended=0,noshow=0,canceled=0,scheduled=0;
+  recs.forEach(r=>{
+    if(r.o==='a')attended++;
+    else if(r.o==='n')noshow++;
+    else if(r.o==='c')canceled++;
+    else if(r.o==='s'||r.o==='r')scheduled++;
+  });
+  const decisive=attended+noshow;
+  const byPerson={};
+  PERSONS.forEach(p=>{byPerson[p.key]={total:0,a:0,n:0,c:0,s:0};});
+  recs.forEach(r=>{
+    const bp=byPerson[r.t]||byPerson['discovery'];
+    if(r.t in byPerson){
+      byPerson[r.t].total++;
+      if(r.o==='a')byPerson[r.t].a++;
+      else if(r.o==='n')byPerson[r.t].n++;
+      else if(r.o==='c')byPerson[r.t].c++;
+      else if(r.o==='s'||r.o==='r')byPerson[r.t].s++;
+    }
+  });
+  return{total:recs.length,attended,noshow,canceled,scheduled,decisive,byPerson};
+}
+function dcTrend(recs,s,e){
+  const s0=parseISO(s),e0=parseISO(e),days=Math.round((e0-s0)/86400000)+1;
+  const bkts={};
+  if(days<=35){
+    let d=new Date(s0);
+    while(d<=e0){const k=isoDate(d);bkts[k]={a:0,n:0,c:0,s:0};d.setDate(d.getDate()+1);}
+    recs.forEach(r=>{if(!bkts[r.d])return;if(r.o==='a')bkts[r.d].a++;else if(r.o==='n')bkts[r.d].n++;else if(r.o==='c')bkts[r.d].c++;else bkts[r.d].s++;});
+    const keys=Object.keys(bkts);
+    return{type:'daily',labels:keys.map(fmtShort),a:keys.map(k=>bkts[k].a),n:keys.map(k=>bkts[k].n),c:keys.map(k=>bkts[k].c),s:keys.map(k=>bkts[k].s)};
+  } else {
+    recs.forEach(r=>{const d=parseISO(r.d),sun=new Date(d);sun.setDate(d.getDate()-d.getDay());const k=isoDate(sun);if(!bkts[k])bkts[k]={a:0,n:0,c:0,s:0};if(r.o==='a')bkts[k].a++;else if(r.o==='n')bkts[k].n++;else if(r.o==='c')bkts[k].c++;else bkts[k].s++;});
+    const keys=Object.keys(bkts).sort();
+    return{type:'weekly',labels:keys.map(k=>{const sun=parseISO(k),sat=new Date(sun);sat.setDate(sun.getDate()+6);return`${fmtShort(k)}–${fmtShort(isoDate(sat))}`;}),a:keys.map(k=>bkts[k].a),n:keys.map(k=>bkts[k].n),c:keys.map(k=>bkts[k].c),s:keys.map(k=>bkts[k].s)};
+  }
+}
+
+function dsStats(s,e){
+  const recs=DS_DEALS.filter(r=>r.d>=s&&r.d<=e);
+  const out={};
+  PERSONS.filter(p=>p.key!=='discovery').forEach(p=>{
+    out[p.key]={};
+    DS_STATUSES.forEach(st=>{out[p.key][st.key]=0;});
+  });
+  recs.forEach(r=>{ if(r.p in out) out[r.p][r.ds]=(out[r.p][r.ds]||0)+1; });
+  return out;
+}
+
+// ─── CHARTS ───────────────────────────────────────────────────────────────────
+Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+let csDonut,csWaterfall,csTrend2,dcPerson,dcTrend2,dcDeal,dcDealPerson;
+let apSubCount,apSubRev,apOwnerCount,apOwnerRev;
+
+function initAll(){
+  const csR=csFilter(state.startDate,state.endDate);
+  const csS=csStats(csR);
+  const td=csTrend(csR,state.startDate,state.endDate);
+
+  csDonut=new Chart(document.getElementById('csDonutChart'),{type:'doughnut',data:{
+    labels:['Valid BPO','Not a BPO-looking','No Business Email','Inactive/No Website','Unverified Email','Not a BPO'],
+    datasets:[{data:[csS.valid,csS.pd.notLook,csS.pd.noEmail,csS.pd.inactive,csS.pd.unverified,csS.notBPO],
+      backgroundColor:['#16a34a','#d97706','#fbbf24','#fde68a','#fef9c3','#dc2626'],
+      borderWidth:3,borderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
+      tooltip:{callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return`  ${ctx.label}: ${ctx.parsed} (${t?((ctx.parsed/t)*100).toFixed(1):0}%)`;}}}}}});
+
+  csWaterfall=new Chart(document.getElementById('csWaterfallChart'),{type:'bar',data:{
+    labels:['Total Inquiries','− Not a BPO','− Prequalification','Valid BPO'],
+    datasets:[{data:[[0,csS.total],[csS.total-csS.notBPO,csS.total],[csS.valid,csS.total-csS.notBPO],[0,csS.valid]],
+      backgroundColor:['#0f2744','#dc2626','#d97706','#16a34a'],borderRadius:5,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`  ${Math.abs(ctx.raw[1]-ctx.raw[0])} contacts`}}},
+      scales:{x:{min:0,max:Math.max(csS.total+3,10),grid:{color:'#f1f5f9'}},y:{grid:{display:false}}}}});
+
+  csTrend2=new Chart(document.getElementById('csTrendChart'),{type:'bar',data:{
+    labels:td.labels,
+    datasets:[{label:'Valid BPO',data:td.v,backgroundColor:'#16a34a',stack:'s',borderRadius:3},
+              {label:'Prequalification',data:td.p,backgroundColor:'#f59e0b',stack:'s'},
+              {label:'Not a BPO',data:td.n,backgroundColor:'#dc2626',stack:'s'}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{font:{size:10},padding:12,boxWidth:10,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+
+  // Demo calls charts (init with no data, updated when rendered)
+  const dcR=dcFilter(state.startDate,state.endDate);
+  const dcS=dcStats(dcR);
+  const dct=dcTrend(dcR,state.startDate,state.endDate);
+
+  dcPerson=new Chart(document.getElementById('dcPersonChart'),{type:'bar',data:{
+    labels:PERSONS.map(p=>p.label),
+    datasets:[
+      {label:'Attended',data:PERSONS.map(p=>dcS.byPerson[p.key].a),backgroundColor:'#16a34a',stack:'s',borderRadius:3},
+      {label:'No Show', data:PERSONS.map(p=>dcS.byPerson[p.key].n),backgroundColor:'#dc2626',stack:'s'},
+      {label:'Canceled',data:PERSONS.map(p=>dcS.byPerson[p.key].c),backgroundColor:'#f59e0b',stack:'s'},
+      {label:'Scheduled',data:PERSONS.map(p=>dcS.byPerson[p.key].s),backgroundColor:'#94a3b8',stack:'s'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+
+  dcTrend2=new Chart(document.getElementById('dcTrendChart'),{type:'bar',data:{
+    labels:dct.labels,
+    datasets:[
+      {label:'Attended', data:dct.a,backgroundColor:'#16a34a',stack:'s',borderRadius:3},
+      {label:'No Show',  data:dct.n,backgroundColor:'#dc2626',stack:'s'},
+      {label:'Canceled', data:dct.c,backgroundColor:'#f59e0b',stack:'s'},
+      {label:'Scheduled',data:dct.s,backgroundColor:'#94a3b8',stack:'s'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+
+  dcDeal=new Chart(document.getElementById('dcDealChart'),{type:'doughnut',data:{
+    labels:DEAL_STAGES.map(d=>d.label),
+    datasets:[{data:DEAL_STAGES.map(d=>d.v),backgroundColor:DEAL_STAGES.map(d=>d.color),borderWidth:3,borderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+      plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
+      tooltip:{callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.parsed}`}}}}});
+
+  const dsInit=dsStats(state.startDate,state.endDate);
+  dcDealPerson=new Chart(document.getElementById('dcDealPersonChart'),{type:'bar',data:{
+    labels:PERSONS.filter(p=>p.key!=='discovery').map(p=>p.label),
+    datasets:DS_STATUSES.map((s,i)=>({
+      label:s.label,
+      data:PERSONS.filter(p=>p.key!=='discovery').map(p=>dsInit[p.key][s.key]||0),
+      backgroundColor:s.color,
+      stack:'s',
+      borderRadius:i===0?3:0,
+    }))},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{font:{size:9},padding:6,boxWidth:8,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+
+  // ── Active Partners charts (static — not date-filtered) ──────────────────
+  const apSubLabels=AP_SUBS.map(s=>s.label);
+  const apSubColors=AP_SUBS.map(s=>s.color);
+  const apSubCounts=AP_SUBS.map(s=>AP_PARTNERS.filter(p=>p.sub===s.key).length);
+  const apSubRevs=AP_SUBS.map(s=>AP_PARTNERS.filter(p=>p.sub===s.key).reduce((a,r)=>a+r.rev,0));
+  const apOwners=PERSONS.filter(p=>p.key!=='discovery');
+  const apOwnerLabels=apOwners.map(p=>p.label);
+  const apOwnerColors={'judy':'#0f2744','stef':'#6366f1','che':'#16a34a','rochelle':'#d97706'};
+
+  apSubCount=new Chart(document.getElementById('apSubCountChart'),{type:'doughnut',data:{
+    labels:apSubLabels,
+    datasets:[{data:apSubCounts,backgroundColor:apSubColors,borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
+               tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} partners`}}}}});
+
+  apSubRev=new Chart(document.getElementById('apSubRevChart'),{type:'bar',data:{
+    labels:apSubLabels,
+    datasets:[{label:'Revenue',data:apSubRevs,backgroundColor:apSubColors,borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},
+               tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toLocaleString()}`}}},
+      scales:{x:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{callback:v=>'$'+v.toLocaleString()}},y:{grid:{display:false}}}}});
+
+  const apOwnerCountData=AP_SUBS.map(s=>({
+    label:s.label,backgroundColor:s.color,stack:'s',
+    data:apOwners.map(p=>AP_PARTNERS.filter(r=>r.o===p.key&&r.sub===s.key).length),
+    borderRadius:0,
+  }));
+  apOwnerCount=new Chart(document.getElementById('apOwnerCountChart'),{type:'bar',data:{
+    labels:apOwnerLabels,datasets:apOwnerCountData},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{font:{size:9},padding:6,boxWidth:8,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'}}}}});
+
+  apOwnerRev=new Chart(document.getElementById('apOwnerRevChart'),{type:'bar',data:{
+    labels:apOwnerLabels,
+    datasets:[{label:'Revenue',
+      data:apOwners.map(p=>AP_PARTNERS.filter(r=>r.o===p.key).reduce((a,r)=>a+r.rev,0)),
+      backgroundColor:apOwners.map(p=>apOwnerColors[p.key]||'#94a3b8'),
+      borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+               tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toLocaleString()}`}}},
+      scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{callback:v=>'$'+v.toLocaleString()}}}}});
+
+  renderApTable();
+  updateAll();
+}
+
+function renderApTable(){
+  const subF=document.getElementById('apSubFilter').value;
+  const ownerF=document.getElementById('apOwnerFilter').value;
+  const ownerLabels={'judy':'Judy','stef':'Stef','che':'Che','rochelle':'Rochelle','other':'Other'};
+  const ownerColors={'judy':'#0f2744','stef':'#6366f1','che':'#16a34a','rochelle':'#d97706','other':'#94a3b8'};
+  const subColorMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.color]));
+  const subLabelMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.label]));
+  const rows=AP_PARTNERS
+    .filter(r=>(subF==='all'||r.sub===subF)&&(ownerF==='all'||r.o===ownerF))
+    .slice().sort((a,b)=>a.n.localeCompare(b.n));
+  const tbody=document.getElementById('apPartnerTable');
+  if(!tbody)return;
+  tbody.innerHTML=rows.map(r=>{
+    const sc=subColorMap[r.sub]||'#e2e8f0';
+    const sl=subLabelMap[r.sub]||'No Subscription';
+    const oc=ownerColors[r.o]||'#94a3b8';
+    const ol=ownerLabels[r.o]||r.o;
+    const revStr=r.rev>0?'$'+r.rev.toLocaleString():'—';
+    const pillText=r.rev>0?`<strong style="color:#16a34a">${revStr}</strong>`:`<span style="color:#94a3b8">—</span>`;
+    return`<tr>
+      <td><strong>${r.n}</strong></td>
+      <td><span class="pill" style="background:${sc};color:${sc==='#e2e8f0'?'#475569':'#fff'}">${sl}</span></td>
+      <td><span class="pill" style="background:${oc};color:#fff">${ol}</span></td>
+      <td>${pillText}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#94a3b8">No partners match filters</td></tr>';
+}
+window.setApFilter=function(){renderApTable();};
+
+function updateAll(){
+  const csR=csFilter(state.startDate,state.endDate);
+  const csS=csStats(csR);
+  const td=csTrend(csR,state.startDate,state.endDate);
+
+  // CS cards
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('statTotal',csS.total); set('statValid',csS.valid);
+  set('statPrequal',csS.prequal); set('statNotBPO',csS.notBPO);
+  set('statValidPct',pct(csS.valid,csS.total));
+  set('statPrequalPct',pct(csS.prequal,csS.total));
+  set('statNotBPOPct',pct(csS.notBPO,csS.total));
+  set('pdNotLook',csS.pd.notLook); set('pdNoEmail',csS.pd.noEmail);
+  set('pdInactive',csS.pd.inactive); set('pdUnverified',csS.pd.unverified);
+  set('pdTotal',csS.prequal);
+  set('pdNotLookPct',pct(csS.pd.notLook,csS.total));
+  set('pdNoEmailPct',pct(csS.pd.noEmail,csS.total));
+  set('pdInactivePct',pct(csS.pd.inactive,csS.total));
+  set('pdUnverifiedPct',pct(csS.pd.unverified,csS.total));
+  set('pdTotalPct',pct(csS.prequal,csS.total));
+
+  // Demo Booked (CS Leads tab)
+  const dbRecs = CS_DEMO_BOOKED.filter(r=>r.d>=state.startDate&&r.d<=state.endDate);
+  set('statDemoBooked', dbRecs.length);
+  set('statDemoBookedPct', pct(dbRecs.length, csS.total));
+  set('statNotBooked', Math.max(0, csS.total - dbRecs.length));
+  set('statNotBookedPct', pct(Math.max(0, csS.total - dbRecs.length), csS.total));
+  const pillColor = s => s==='Valid BPO'?'pill-green':s==='Not a BPO'?'pill-red':'pill-amber';
+
+  // Sync dropdown to state (in case updateAll() was called by date change)
+  const dtSel = document.getElementById('demoTableFilter');
+  if(dtSel) dtSel.value = state.demoTableFilter;
+
+  const thead = document.getElementById('demoBookedTableHead');
+  const dbTbody = document.getElementById('demoBookedTable');
+
+  const subPill = v => v==='Active'?'<span class="pill pill-green">Active</span>':v==='Inactive'?'<span class="pill pill-red">Inactive</span>':'<span style="color:#94a3b8">—</span>';
+  if(state.demoTableFilter === 'booked'){
+    thead.innerHTML = '<th>Inquiry Date</th><th>Name</th><th>Company</th><th>CS Lead Status</th><th>Subscription Status</th>';
+    dbTbody.innerHTML = dbRecs.length === 0
+      ? '<tr><td colspan="5" style="color:#94a3b8;text-align:center">No demo bookings in this date range.</td></tr>'
+      : dbRecs.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(r=>`<tr>
+          <td>${r.d}</td>
+          <td><strong>${r.n}</strong></td>
+          <td>${r.co}</td>
+          <td><span class="pill ${pillColor(r.s)}">${r.s}</span></td>
+          <td>${subPill(r.sub)}</td>
+        </tr>`).join('');
+  } else {
+    // Not Yet Booked: derive from CS_RECORDS minus booked count per date
+    thead.innerHTML = '<th>Inquiry Date</th><th>CS Lead Status</th>';
+    const bookedByDate = {};
+    dbRecs.forEach(r=>{ bookedByDate[r.d] = (bookedByDate[r.d]||0)+1; });
+    const nbRecs = [];
+    const recsByDate = {};
+    csR.forEach(r=>{ (recsByDate[r.d]=recsByDate[r.d]||[]).push(r); });
+    Object.entries(recsByDate).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([date,recs])=>{
+      const skip = bookedByDate[date]||0;
+      recs.slice(skip).forEach(r=>nbRecs.push({d:date,s:r.s}));
+    });
+    dbTbody.innerHTML = nbRecs.length === 0
+      ? '<tr><td colspan="2" style="color:#94a3b8;text-align:center">All CS leads in this range have a booked demo call.</td></tr>'
+      : nbRecs.map(r=>`<tr>
+          <td>${r.d}</td>
+          <td><span class="pill ${pillColor(r.s)}">${r.s}</span></td>
+        </tr>`).join('');
+  }
+
+  // CS charts
+  csDonut.data.datasets[0].data=[csS.valid,csS.pd.notLook,csS.pd.noEmail,csS.pd.inactive,csS.pd.unverified,csS.notBPO];
+  csDonut.update();
+  const afNB=csS.total-csS.notBPO;
+  csWaterfall.data.datasets[0].data=[[0,csS.total],[afNB,csS.total],[csS.valid,afNB],[0,csS.valid]];
+  csWaterfall.options.scales.x.max=Math.max(csS.total+3,10);
+  csWaterfall.update();
+  csTrend2.data.labels=td.labels;
+  csTrend2.data.datasets[0].data=td.v;csTrend2.data.datasets[1].data=td.p;csTrend2.data.datasets[2].data=td.n;
+  document.getElementById('csTrendTitle').textContent=td.type==='daily'?'Daily CS Inquiries by Status':'Weekly CS Inquiries by Status';
+  csTrend2.update();
+
+  // Demo Calls
+  const dcR=dcFilter(state.startDate,state.endDate);
+  const dcS=dcStats(dcR);
+  const dct=dcTrend(dcR,state.startDate,state.endDate);
+
+  set('dcTotal',dcS.total);
+  set('dcAttended',dcS.attended); set('dcAttendedPct',pct(dcS.attended,dcS.decisive));
+  set('dcNoShow',dcS.noshow);   set('dcNoShowPct',pct(dcS.noshow,dcS.decisive));
+  set('dcRate',dcS.decisive>0?Math.round((dcS.attended/dcS.decisive)*100)+'%':'—');
+
+  dcPerson.data.datasets[0].data=PERSONS.map(p=>dcS.byPerson[p.key].a);
+  dcPerson.data.datasets[1].data=PERSONS.map(p=>dcS.byPerson[p.key].n);
+  dcPerson.data.datasets[2].data=PERSONS.map(p=>dcS.byPerson[p.key].c);
+  dcPerson.data.datasets[3].data=PERSONS.map(p=>dcS.byPerson[p.key].s);
+  dcPerson.update();
+
+  dcTrend2.data.labels=dct.labels;
+  dcTrend2.data.datasets[0].data=dct.a;dcTrend2.data.datasets[1].data=dct.n;
+  dcTrend2.data.datasets[2].data=dct.c;dcTrend2.data.datasets[3].data=dct.s;
+  document.getElementById('dcTrendTitle').textContent=dct.type==='daily'?'Daily Demo Calls by Outcome':'Weekly Demo Calls by Outcome';
+  dcTrend2.update();
+
+  // Person table
+  const tbody=document.getElementById('dcPersonTable');
+  tbody.innerHTML=PERSONS.map(p=>{
+    const bp=dcS.byPerson[p.key];
+    const dec=bp.a+bp.n;
+    const rateStr=dec>0?Math.round((bp.a/dec)*100)+'%':'—';
+    const rateColor=dec===0?'#94a3b8':bp.a/dec>=0.8?'#16a34a':bp.a/dec>=0.6?'#d97706':'#dc2626';
+    return`<tr>
+      <td><strong>${p.label}</strong></td>
+      <td>${bp.total}</td>
+      <td><span class="pill pill-green">${bp.a}</span></td>
+      <td><span class="pill ${bp.n>0?'pill-red':'pill-gray'}">${bp.n}</span></td>
+      <td><span class="pill pill-amber">${bp.c}</span></td>
+      <td><span class="pill pill-blue">${bp.s}</span></td>
+      <td><strong style="color:${rateColor}">${rateStr}</strong></td>
+    </tr>`;
+  }).join('');
+
+  // Deal Status by Person chart
+  const dsD=dsStats(state.startDate,state.endDate);
+  const dsPersonKeys=PERSONS.filter(p=>p.key!=='discovery').map(p=>p.key);
+  DS_STATUSES.forEach((s,i)=>{
+    dcDealPerson.data.datasets[i].data=dsPersonKeys.map(pk=>dsD[pk][s.key]||0);
+  });
+  dcDealPerson.update();
+
+  // Deal Status breakdown table
+  const dsRows=DS_DEALS.filter(r=>r.d>=state.startDate&&r.d<=state.endDate&&(state.dsDealStatusFilter==='all'||r.ds===state.dsDealStatusFilter))
+    .slice().sort((a,b)=>b.d.localeCompare(a.d));
+  const personBadgeColors={judy:'#0f2744',stef:'#6366f1',che:'#16a34a',rochelle:'#d97706'};
+  document.getElementById('dsDealTable').innerHTML=dsRows.map(r=>{
+    const person=PERSONS.find(p=>p.key===r.p);
+    const personLabel=person?person.label:r.p;
+    const pColor=personBadgeColors[r.p]||'#64748b';
+    const st=DS_STATUSES.find(s=>s.key===r.ds)||DS_STATUSES[DS_STATUSES.length-1];
+    const pillStyle=st.key===''?'background:#f1f5f9;color:#64748b':'background:'+st.color+';color:'+(st.color==='#e2e8f0'||st.color==='#f59e0b'?'#1e293b':'#fff');
+    return`<tr>
+      <td>${r.d}</td>
+      <td><strong>${r.co||'—'}</strong></td>
+      <td><span class="pill" style="background:${pColor};color:#fff">${personLabel}</span></td>
+      <td><span class="pill" style="${pillStyle}">${st.label}</span></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#94a3b8">No deals in selected range</td></tr>';
+
+  // Tags
+  const tagText = state.activePreset==='mtd'?'MTD':state.activePreset==='lm'?'Last Month':state.activePreset==='7d'?'L7D':state.activePreset==='14d'?'L14D':state.activePreset==='30d'?'L30D':state.activePreset==='90d'?'L90D':'Custom';
+  document.getElementById('csTagLabel').textContent=tagText;
+  document.getElementById('dcTagLabel').textContent=tagText;
+}
+
+// ─── VIEW SWITCHER ────────────────────────────────────────────────────────────
+window.showView=function(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(view+'-view').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-view="${view}"]`).classList.add('active');
+  state.activeView=view;
+  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report'};
+  document.getElementById('viewSubtitle').textContent=labels[view]||view;
+  document.getElementById('pickerWrapper').style.display=view==='source-partners'?'none':'';
+};
+
+// ─── PRESETS ─────────────────────────────────────────────────────────────────
+window.setPreset=function(p){
+  document.querySelectorAll('.preset-item').forEach(el=>el.classList.toggle('active',el.dataset.preset===p));
+  let s,e=TODAY;
+  if(p==='mtd'){s=TODAY.slice(0,7)+'-01';}
+  else if(p==='lm'){
+    const d=parseISO(TODAY);
+    const lmYear=d.getMonth()===0?d.getFullYear()-1:d.getFullYear();
+    const lmMonth=d.getMonth()===0?11:d.getMonth()-1;
+    s=`${lmYear}-${String(lmMonth+1).padStart(2,'0')}-01`;
+    e=isoDate(new Date(lmYear,lmMonth+1,0));
+  }
+  else if(p==='7d')s=addDays(TODAY,-6);
+  else if(p==='14d')s=addDays(TODAY,-13);
+  else if(p==='30d')s=addDays(TODAY,-29);
+  else if(p==='90d')s=addDays(TODAY,-89);
+  else return;
+  applyRange(s,e,p);
+};
+function applyRange(s,e,preset){
+  state.startDate=s; state.endDate=e; state.activePreset=preset;
+  document.getElementById('triggerLabel').textContent=fmtLabel(s,e);
+  updateAll(); closePicker();
+}
+
+// ─── CALENDAR ────────────────────────────────────────────────────────────────
+function renderCalendars(){
+  let ry=state.calLeftYear,rm=state.calLeftMonth+1;
+  if(rm>11){rm=0;ry++;}
+  renderMonth('calLeft',state.calLeftYear,state.calLeftMonth);
+  renderMonth('calRight',ry,rm);
+}
+function renderMonth(id,year,month){
+  const el=document.getElementById(id);
+  const first=new Date(year,month,1),last=new Date(year,month+1,0);
+  let rs=state.pickStep===1?state.pickStart:state.startDate;
+  let re=state.pickStep===1?(state.pickHover||state.pickStart):state.endDate;
+  if(rs&&re&&rs>re){[rs,re]=[re,rs];}
+  let h=`<div class="cal-month-head">`;
+  if(id==='calLeft')h+=`<button class="cal-nav-btn" onclick="navMonth(-1)">‹</button>`;
+  else h+=`<div style="width:26px"></div>`;
+  h+=`<span class="cal-month-name">${MONTHS[month]} ${year}</span>`;
+  if(id==='calRight')h+=`<button class="cal-nav-btn" onclick="navMonth(1)">›</button>`;
+  else h+=`<div style="width:26px"></div>`;
+  h+=`</div><div class="cal-grid">`;
+  DAYS.forEach(d=>{h+=`<div class="cal-dayname">${d}</div>`;});
+  for(let i=0;i<first.getDay();i++)h+=`<div class="cal-day other"><span class="day-inner"></span></div>`;
+  for(let d=1;d<=last.getDate();d++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isFuture=ds>TODAY,isToday=ds===TODAY;
+    const sameDay=rs===re&&rs===ds,isStart=rs&&ds===rs&&!sameDay,isEnd=re&&ds===re&&!sameDay,inRange=rs&&re&&ds>rs&&ds<re;
+    let cls='cal-day';
+    if(isFuture)cls+=' future';else if(isToday)cls+=' today';
+    if(sameDay)cls+=' sel-only';else if(isStart)cls+=' range-s';else if(isEnd)cls+=' range-e';else if(inRange)cls+=' in-range';
+    const click=!isFuture?`onclick="dayClick('${ds}')"` :'';
+    const hover=(!isFuture&&state.pickStep===1)?`onmouseenter="dayHover('${ds}')"` :'';
+    h+=`<div class="${cls}" ${click} ${hover}><span class="day-inner">${d}</span></div>`;
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+window.navMonth=function(dir){
+  state.calLeftMonth+=dir;
+  if(state.calLeftMonth<0){state.calLeftMonth=11;state.calLeftYear--;}
+  if(state.calLeftMonth>11){state.calLeftMonth=0;state.calLeftYear++;}
+  renderCalendars();
+};
+window.dayClick=function(ds){
+  if(state.pickStep===0){
+    state.pickStep=1;state.pickStart=ds;state.pickHover=ds;
+    document.querySelectorAll('.preset-item').forEach(el=>el.classList.toggle('active',el.dataset.preset==='custom'));
+    document.getElementById('pickerHint').textContent='Start: '+fmtShort(ds)+' — now click an end date.';
+    renderCalendars();
+  } else {
+    let s=state.pickStart,e=ds;if(s>e){[s,e]=[e,s];}
+    state.pickStep=0;state.pickStart=null;state.pickHover=null;
+    applyRange(s,e,'custom');
+  }
+};
+window.dayHover=function(ds){if(state.pickStep!==1)return;state.pickHover=ds;renderCalendars();};
+window.togglePicker=function(){state.pickerOpen?closePicker():openPicker();};
+window.setDemoTableFilter=function(v){
+  state.demoTableFilter=v;
+  updateAll();
+};
+window.setDsDealStatusFilter=function(v){
+  state.dsDealStatusFilter=v;
+  updateAll();
+};
+function openPicker(){
+  state.pickerOpen=true;
+  // Show the month before startDate on the left so cross-month ranges are immediately visible
+  const dt=parseISO(state.startDate);
+  let lm=dt.getMonth()-1, ly=dt.getFullYear();
+  if(lm<0){lm=11;ly--;}
+  state.calLeftYear=ly;state.calLeftMonth=lm;
+  state.pickStep=0;state.pickStart=null;state.pickHover=null;
+  document.getElementById('pickerHint').textContent='Select a preset, or click any date to start a custom range.';
+  document.getElementById('pickerPanel').classList.remove('hidden');
+  document.querySelectorAll('.preset-item').forEach(el=>el.classList.toggle('active',el.dataset.preset===state.activePreset));
+  renderCalendars();
+}
+window.closePicker=function(){state.pickerOpen=false;document.getElementById('pickerPanel').classList.add('hidden');};
+document.addEventListener('click',e=>{if(state.pickerOpen&&!document.getElementById('pickerWrapper').contains(e.target))closePicker();});
+
+// ─── SOURCE PARTNERS ─────────────────────────────────────────────────────────
+const SP_RISK_OPTS=[
+  {key:'high',  label:'High Risk',    color:'#dc2626',bg:'#fee2e2'},
+  {key:'medium',label:'Medium',       color:'#b45309',bg:'#fef3c7'},
+  {key:'low',   label:'Low Risk',     color:'#16a34a',bg:'#dcfce7'},
+  {key:'',      label:'Not Assessed', color:'#64748b',bg:'#f1f5f9'},
+];
+const SP_SENT_OPTS=[
+  {key:'positive', label:'Positive', color:'#16a34a',bg:'#dcfce7'},
+  {key:'neutral',  label:'Neutral',  color:'#1d4ed8',bg:'#dbeafe'},
+  {key:'at-risk',  label:'At Risk',  color:'#b45309',bg:'#fef3c7'},
+  {key:'negative', label:'Negative', color:'#dc2626',bg:'#fee2e2'},
+  {key:'',         label:'Not Set',  color:'#64748b',bg:'#f1f5f9'},
+];
+const SP_GROUPS=[
+  {id:'new-sp', label:'New SP',          desc:'Recently onboarded Source Partners'},
+  {id:'sp2',    label:'SP 2.0',          desc:'Already on Source Partner 2.0'},
+  {id:'hybrid', label:'Hybrid → SP 2.0', desc:'Transitioning from Hybrid'},
+  {id:'il',     label:'IL → SP 2.0',     desc:'Transitioning from Integrated List'},
+];
+const SP_DEFAULTS=[
+  {id:'zigzag',          n:'ZigZag (Outposter)',    g:'new-sp', dc:20, risk:'medium', sent:'neutral',  notes:'Outbound Gold account. Monitor conversion rate.',       action:''},
+  {id:'eastvantage',     n:'Eastvantage',            g:'new-sp', dc:10, risk:'high',   sent:'negative', notes:'Invoice voided. Payment issue unresolved.',             action:'Follow up on invoice dispute'},
+  {id:'intelliworx',     n:'Intelliworx PH',         g:'new-sp', dc:10, risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'hgs-uk',          n:'HGS UK',                 g:'new-sp', dc:5,  risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'va-platinum',     n:'VA Platinum Pty Ltd',    g:'sp2',    dc:20, risk:'medium', sent:'neutral',  notes:'',                                                      action:''},
+  {id:'expedock',        n:'Expedock',               g:'sp2',    dc:10, risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'people-partners', n:'People Partners BPO',   g:'sp2',    dc:10, risk:'medium', sent:'neutral',  notes:'Non-delivery of agreed output.',                        action:'Review SLA compliance'},
+  {id:'satellite-office',n:'Satellite Office',       g:'sp2',    dc:10, risk:'medium', sent:'neutral',  notes:'',                                                      action:''},
+  {id:'sirius-support',  n:'Sirius Support',         g:'sp2',    dc:10, risk:'high',   sent:'negative', notes:'Cancellation requested. Non-payment issue.',            action:'Urgent: escalate to account management'},
+  {id:'pandr',           n:'Pandr',                  g:'hybrid', dc:25, risk:'medium', sent:'neutral',  notes:'Invoice paused. Awaiting renewal decision.',            action:'Confirm invoice status and re-engage'},
+  {id:'acquire-intel',   n:'Acquire Intelligence',   g:'hybrid', dc:20, risk:'medium', sent:'neutral',  notes:'High cancellation rate from their leads.',              action:'Review lead quality and DC targeting'},
+  {id:'outposter',       n:'Outposter',              g:'il',     dc:50, risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'six-eleven',      n:'Six Eleven',             g:'il',     dc:65, risk:'',       sent:'',         notes:'Confusion on purpose / direction from their end.',      action:'Clarify partnership purpose and expectations'},
+  {id:'callmax',         n:'Callmax',                g:'il',     dc:25, risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'remote-employee', n:'Remote Employee',        g:'il',     dc:20, risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'connectos',       n:'ConnectOS',              g:'il',     dc:20, risk:'medium', sent:'neutral',  notes:'ROI assessment ahead of July renewal.',                 action:'Prepare ROI report before July'},
+  {id:'hopla',           n:'HOPLA',                  g:'il',     dc:20, risk:'low',    sent:'positive', notes:'Improvement noticed in recent months.',                 action:''},
+  {id:'cs-pac',          n:'CS-PAC',                 g:'il',     dc:10, risk:'low',    sent:'positive', notes:'',                                                      action:''},
+  {id:'cebu-telenet',    n:'Cebu Telenet',           g:'il',     dc:10, risk:'',       sent:'',         notes:'Wrong vertical — leads not matching BPO profile.',      action:'Review targeting criteria'},
+  {id:'pentwater',       n:'Pentwater',              g:'il',     dc:10, risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'integratedos',    n:'IntegratedOS',           g:'il',     dc:5,  risk:'',       sent:'',         notes:'',                                                      action:''},
+  {id:'sourcefit',       n:'Sourcefit',              g:'il',     dc:5,  risk:'',       sent:'',         notes:'No response from partner.',                             action:'Send follow-up check-in'},
+];
+
+let spData=[];
+let spRiskChart,spSentChart;
+
+function spLoadData(){
+  try{
+    const saved=localStorage.getItem('spData');
+    if(saved){
+      const parsed=JSON.parse(saved);
+      spData=SP_DEFAULTS.map(def=>{
+        const s=parsed.find(p=>p.id===def.id);
+        return s?{...def,...s}:{...def};
+      });
+    } else {spData=SP_DEFAULTS.map(d=>({...d}));}
+  } catch(e){spData=SP_DEFAULTS.map(d=>({...d}));}
+}
+
+function spSaveData(){
+  localStorage.setItem('spData',JSON.stringify(
+    spData.map(({id,risk,sent,notes,action})=>({id,risk,sent,notes,action}))
+  ));
+}
+
+window.spResetData=function(){
+  if(!confirm('Reset all Source Partner data to defaults? This cannot be undone.'))return;
+  localStorage.removeItem('spData');
+  spData=SP_DEFAULTS.map(d=>({...d}));
+  spRenderTable();
+  spUpdateCharts();
+  spUpdateSummary();
+};
+
+function spRiskOpt(key){return SP_RISK_OPTS.find(r=>r.key===key)||SP_RISK_OPTS[SP_RISK_OPTS.length-1];}
+function spSentOpt(key){return SP_SENT_OPTS.find(s=>s.key===key)||SP_SENT_OPTS[SP_SENT_OPTS.length-1];}
+
+function spEsc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function spRenderTable(){
+  const riskF=(document.getElementById('spRiskFilter')||{}).value||'all';
+  const groupF=(document.getElementById('spGroupFilter')||{}).value||'all';
+  const tbody=document.getElementById('spTableBody');
+  if(!tbody)return;
+  let html='';
+  SP_GROUPS.forEach(g=>{
+    if(groupF!=='all'&&groupF!==g.id)return;
+    const rows=spData.filter(r=>r.g===g.id&&(riskF==='all'||r.risk===riskF));
+    if(!rows.length)return;
+    const count=spData.filter(r=>r.g===g.id).length;
+    html+=`<tr class="sp-group-hdr"><td colspan="6"><strong>${g.label}</strong><span class="sp-group-desc">${g.desc} &bull; ${count} partner${count>1?'s':''}</span></td></tr>`;
+    rows.forEach(r=>{
+      const ro=spRiskOpt(r.risk);
+      const so=spSentOpt(r.sent);
+      const rc=r.risk?'risk-'+r.risk:'';
+      const rOpts=SP_RISK_OPTS.map(o=>`<option value="${o.key}"${o.key===r.risk?' selected':''}>${o.label}</option>`).join('');
+      const sOpts=SP_SENT_OPTS.map(o=>`<option value="${o.key}"${o.key===r.sent?' selected':''}>${o.label}</option>`).join('');
+      html+=`<tr class="sp-row ${rc}" id="sp-row-${r.id}">
+        <td style="font-weight:600;color:#1e293b">${spEsc(r.n)}</td>
+        <td style="text-align:center;color:#64748b;font-weight:600">${r.dc}</td>
+        <td><select class="sp-sel" style="background:${ro.bg};color:${ro.color}" onchange="spChangeRisk('${r.id}',this.value)">${rOpts}</select></td>
+        <td><select class="sp-sel" style="background:${so.bg};color:${so.color}" onchange="spChangeSent('${r.id}',this.value)">${sOpts}</select></td>
+        <td><div class="sp-ce" contenteditable="true" data-ph="Add notes..." data-id="${r.id}" data-field="notes" onblur="spBlurField(this)">${spEsc(r.notes)}</div></td>
+        <td><div class="sp-ce" contenteditable="true" data-ph="Add action item..." data-id="${r.id}" data-field="action" onblur="spBlurField(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${spEsc(r.action)}</div></td>
+      </tr>`;
+    });
+  });
+  if(!html)html='<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px">No partners match the selected filters</td></tr>';
+  tbody.innerHTML=html;
+}
+
+window.spChangeRisk=function(id,val){
+  const r=spData.find(p=>p.id===id);if(!r)return;
+  r.risk=val;spSaveData();
+  const row=document.getElementById('sp-row-'+id);
+  if(row){
+    row.className='sp-row'+(val?' risk-'+val:'');
+    const sel=row.querySelector('select.sp-sel');
+    if(sel){const ro=spRiskOpt(val);sel.style.background=ro.bg;sel.style.color=ro.color;}
+  }
+  spUpdateCharts();spUpdateSummary();
+};
+
+window.spChangeSent=function(id,val){
+  const r=spData.find(p=>p.id===id);if(!r)return;
+  r.sent=val;spSaveData();
+  const row=document.getElementById('sp-row-'+id);
+  if(row){
+    const sels=row.querySelectorAll('select.sp-sel');
+    if(sels[1]){const so=spSentOpt(val);sels[1].style.background=so.bg;sels[1].style.color=so.color;}
+  }
+  spUpdateCharts();spUpdateSummary();
+};
+
+window.spBlurField=function(el){
+  const id=el.dataset.id;const field=el.dataset.field;
+  const r=spData.find(p=>p.id===id);if(!r)return;
+  r[field]=el.innerText.trim();
+  spSaveData();
+  if(field==='action')spUpdateSummary();
+};
+
+window.spApplyFilter=function(){spRenderTable();};
+
+function spUpdateSummary(){
+  const highRisk=spData.filter(r=>r.risk==='high').length;
+  const actionsPending=spData.filter(r=>r.action&&r.action.trim()).length;
+  const totalDC=spData.reduce((a,r)=>a+r.dc,0);
+  const e1=document.getElementById('spCardHighRisk');if(e1)e1.textContent=highRisk;
+  const e2=document.getElementById('spCardActions');if(e2)e2.textContent=actionsPending;
+  const e3=document.getElementById('spCardDC');if(e3)e3.textContent=totalDC;
+}
+
+function spInitCharts(){
+  spRiskChart=new Chart(document.getElementById('spRiskChart'),{type:'doughnut',data:{
+    labels:SP_RISK_OPTS.map(o=>o.label),
+    datasets:[{data:SP_RISK_OPTS.map(o=>spData.filter(r=>r.risk===o.key).length),
+      backgroundColor:SP_RISK_OPTS.map(o=>o.color),borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
+               tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw}`}}}}});
+
+  spSentChart=new Chart(document.getElementById('spSentChart'),{type:'doughnut',data:{
+    labels:SP_SENT_OPTS.map(o=>o.label),
+    datasets:[{data:SP_SENT_OPTS.map(o=>spData.filter(r=>r.sent===o.key).length),
+      backgroundColor:SP_SENT_OPTS.map(o=>o.color),borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'right',labels:{font:{size:10},padding:10,boxWidth:10,usePointStyle:true}},
+               tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw}`}}}}});
+}
+
+function spUpdateCharts(){
+  if(!spRiskChart||!spSentChart)return;
+  spRiskChart.data.datasets[0].data=SP_RISK_OPTS.map(o=>spData.filter(r=>r.risk===o.key).length);
+  spRiskChart.update();
+  spSentChart.data.datasets[0].data=SP_SENT_OPTS.map(o=>spData.filter(r=>r.sent===o.key).length);
+  spSentChart.update();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+spLoadData();
+initAll();
+spRenderTable();
+spInitCharts();
+spUpdateSummary();
+</script>
+</body>
+</html>
