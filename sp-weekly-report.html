@@ -272,6 +272,10 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
         SP Forecast
       </div>
+      <div class="nav-item" data-view="lead-fulfillment" onclick="showView('lead-fulfillment')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Lead Fulfillment
+      </div>
     </div>
   </nav>
 
@@ -313,7 +317,7 @@
           <div class="pct" id="statDemoBookedPct" style="color:#2563eb"></div>
         </div>
         <div class="card" style="border-top-color:#94a3b8">
-          <div class="lbl">Not Yet Booked</div>
+          <div class="lbl">Not Yet Booked <span style="font-size:0.65rem;color:#94a3b8;font-weight:400">(Valid BPO)</span></div>
           <div class="big" id="statNotBooked">—</div>
           <div class="pct" id="statNotBookedPct" style="color:#94a3b8"></div>
         </div>
@@ -353,12 +357,32 @@
       <div class="table-card">
         <div class="table-card-hdr">
           <h3>Demo Call — Contact List</h3>
-          <div class="tbl-filter-group">
-            <span class="tbl-filter-label">Demo Call Status</span>
-            <select class="tbl-filter-select" id="demoTableFilter" onchange="setDemoTableFilter(this.value)">
-              <option value="booked">Demo Call Booked</option>
-              <option value="notbooked">Not Yet Booked</option>
-            </select>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Demo Call Status</span>
+              <select class="tbl-filter-select" id="demoTableFilter" onchange="setDemoTableFilter(this.value)">
+                <option value="booked">Demo Call Booked</option>
+                <option value="notbooked">Not Yet Booked</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Subscription Status</span>
+              <select class="tbl-filter-select" id="demoSubFilter" onchange="setDemoSubFilter(this.value)">
+                <option value="all">All</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="">None</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">CS Lead Status</span>
+              <select class="tbl-filter-select" id="demoLeadFilter" onchange="setDemoLeadFilter(this.value)">
+                <option value="all">All</option>
+                <option value="Valid BPO">Valid BPO</option>
+                <option value="prequal">Prequalification</option>
+                <option value="Not a BPO">Not a BPO</option>
+              </select>
+            </div>
           </div>
         </div>
         <table>
@@ -431,14 +455,37 @@
             <h3>Monthly Sign-ups</h3>
             <div style="font-size:0.65rem;color:#94a3b8">All deals closed within the selected period &middot; based on HubSpot Close Date</div>
           </div>
-          <div style="display:flex;gap:20px;align-items:center">
-            <div style="text-align:right">
-              <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">New Sign-ups</div>
-              <div id="suCount" style="font-size:1.15rem;font-weight:800;color:#111827">—</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Owner</span>
+              <select class="tbl-filter-select" id="suOwnerFilter" onchange="setSuOwnerFilter(this.value)">
+                <option value="all">All</option>
+                <option value="judy">Judy</option>
+                <option value="stef">Stef</option>
+                <option value="che">Che</option>
+                <option value="rochelle">Rochelle</option>
+              </select>
             </div>
-            <div style="text-align:right">
-              <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">New MRR</div>
-              <div id="suMRR" style="font-size:1.15rem;font-weight:800;color:#1e40af">—</div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Subscription</span>
+              <select class="tbl-filter-select" id="suSubFilter" onchange="setSuSubFilter(this.value)">
+                <option value="all">All</option>
+                <option value="Source Partner">Source Partner</option>
+                <option value="Marketing Hub - Source Boost">MH – Source Boost</option>
+                <option value="Marketing Hub - Standard">MH – Standard</option>
+                <option value="Marketing Hub">Marketing Hub</option>
+                <option value="Sales Hub">Sales Hub</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:20px;align-items:center;margin-left:8px">
+              <div style="text-align:right">
+                <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">New Sign-ups</div>
+                <div id="suCount" style="font-size:1.15rem;font-weight:800;color:#111827">—</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:1px">New MRR</div>
+                <div id="suMRR" style="font-size:1.15rem;font-weight:800;color:#1e40af">—</div>
+              </div>
             </div>
           </div>
         </div>
@@ -546,19 +593,35 @@
       <div class="table-card">
         <div class="table-card-hdr">
           <h3>Demo Call — Deal Status List</h3>
-          <div class="tbl-filter-group">
-            <span class="tbl-filter-label">Deal Status</span>
-            <select class="tbl-filter-select" id="dsDealStatusFilter" onchange="setDsDealStatusFilter(this.value)">
-              <option value="all">All</option>
-              <option value="Closed won">Closed Won</option>
-              <option value="Decision Maker Bought-in">DM Bought-in</option>
-              <option value="Keen – Needs Internal Discussion">Keen – Needs Discuss.</option>
-              <option value="With hesitations">With Hesitations</option>
-              <option value="Not the decision maker">Not the DM</option>
-              <option value="Early Stage Startup">Early Stage</option>
-              <option value="Not interested">Not Interested</option>
-              <option value="">No Status</option>
-            </select>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Company</span>
+              <input type="text" class="tbl-filter-select" id="dsCompanyFilter" placeholder="Search…" oninput="setDsCompanyFilter(this.value)" style="min-width:120px">
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Deal Owner</span>
+              <select class="tbl-filter-select" id="dsDealOwnerFilter" onchange="setDsDealOwnerFilter(this.value)">
+                <option value="all">All</option>
+                <option value="judy">Judy</option>
+                <option value="stef">Stef</option>
+                <option value="che">Che</option>
+                <option value="rochelle">Rochelle</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Deal Status</span>
+              <select class="tbl-filter-select" id="dsDealStatusFilter" onchange="setDsDealStatusFilter(this.value)">
+                <option value="all">All</option>
+                <option value="Closed won">Closed Won</option>
+                <option value="Decision Maker Bought-in">DM Bought-in</option>
+                <option value="Keen – Needs Internal Discussion">Keen – Needs Discuss.</option>
+                <option value="With hesitations">With Hesitations</option>
+                <option value="Not the decision maker">Not the DM</option>
+                <option value="Early Stage Startup">Early Stage</option>
+                <option value="Not interested">Not Interested</option>
+                <option value="">No Status</option>
+              </select>
+            </div>
           </div>
         </div>
         <table>
@@ -834,6 +897,117 @@
   </div>
 </div>
 
+    <!-- ════ LEAD FULFILLMENT VIEW ══════════════════════════════════════════ -->
+    <div id="lead-fulfillment-view" class="view">
+      <div class="view-title">Lead Fulfillment
+        <span style="font-size:.75rem;background:#1e40af;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600;margin-left:8px">May 2026 · Active Cycles</span>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="summary-grid" style="margin-bottom:14px">
+        <div class="card" style="border-top-color:#1e40af">
+          <div class="lbl">Active Cycles</div>
+          <div class="big" id="lfCardCycles">—</div>
+          <div class="sub">1st + 15th combined</div>
+        </div>
+        <div class="card" style="border-top-color:#2563eb">
+          <div class="lbl">Expected DCs</div>
+          <div class="big" id="lfCardExpected">—</div>
+          <div class="sub">Target discovery calls</div>
+        </div>
+        <div class="card" style="border-top-color:#475569">
+          <div class="lbl">Allocated Leads</div>
+          <div class="big" id="lfCardAllocated">—</div>
+          <div class="sub">Leads sent to partners</div>
+        </div>
+        <div class="card" style="border-top-color:#64748b">
+          <div class="lbl">Completed DCs</div>
+          <div class="big" id="lfCardCompleted">—</div>
+          <div class="sub" id="lfCardCompletedSub">—% of expected</div>
+        </div>
+      </div>
+
+      <!-- MTD Preview -->
+      <div class="table-card" style="margin-bottom:14px">
+        <div style="font-size:0.72rem;font-weight:600;color:#374151;margin-bottom:14px">MTD Progress Preview</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" id="lfMtdCards">
+          <div id="lfMtd1st"></div>
+          <div id="lfMtd15th"></div>
+        </div>
+      </div>
+
+      <!-- Table with filters -->
+      <div class="table-card">
+        <div class="table-card-hdr">
+          <h3>Source Partner Cycles — May 2026</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Cycle</span>
+              <select class="tbl-filter-select" id="lfCycleFilter" onchange="setLfCycleFilter(this.value)">
+                <option value="all">All</option>
+                <option value="1st">1st (May 1–31)</option>
+                <option value="15th">15th (Apr 15–May 14)</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Type</span>
+              <select class="tbl-filter-select" id="lfTypeFilter" onchange="setLfTypeFilter(this.value)">
+                <option value="all">All</option>
+                <option value="outbound">Outbound</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Source Partner</span>
+              <select class="tbl-filter-select" id="lfSpFilter" onchange="setLfSpFilter(this.value)" style="min-width:160px">
+                <option value="all">All</option>
+                <option>Acquire</option>
+                <option>Callmax Solutions</option>
+                <option>Cebu Tele-net</option>
+                <option>ConnectOS</option>
+                <option>CS-PAC Global Solutions</option>
+                <option>Eastvantage Business Sol.</option>
+                <option>Expedock</option>
+                <option>HOPLA Online</option>
+                <option>Integrated OS</option>
+                <option>Outsource Accelerator</option>
+                <option>Outposter</option>
+                <option>Pandr Outsourcing</option>
+                <option>Pentwater Group</option>
+                <option>People Partners</option>
+                <option>Remote Employee</option>
+                <option>Satellite Office</option>
+                <option>Six Eleven Global Services</option>
+                <option>Sourcefit</option>
+                <option>Team HGS UK</option>
+                <option>VA Platinum</option>
+                <option>ZIGZAG Offshoring</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Source Partner</th>
+              <th style="text-align:center">Type</th>
+              <th style="text-align:center">Cycle</th>
+              <th style="text-align:center">Lead Filter</th>
+              <th style="text-align:center">Exp. DCs</th>
+              <th style="text-align:center">Allocated</th>
+              <th style="text-align:center">Completed</th>
+              <th style="text-align:center">Scheduled</th>
+              <th style="text-align:center">No Show</th>
+              <th style="text-align:center">Canceled</th>
+              <th style="text-align:center">Fulfillment</th>
+              <th style="text-align:center">Variance</th>
+            </tr>
+          </thead>
+          <tbody id="lfTable"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div><!-- /main-content -->
 </div><!-- /app-body -->
 
@@ -846,7 +1020,16 @@ const state = {
   pickerOpen: false, pickStep: 0, pickStart: null, pickHover: null,
   calLeftYear: 2026, calLeftMonth: 4,
   demoTableFilter: 'booked',
+  demoSubFilter: 'all',
+  demoLeadFilter: 'all',
   dsDealStatusFilter: 'all',
+  suOwnerFilter: 'all',
+  suSubFilter: 'all',
+  dsCompanyFilter: '',
+  dsDealOwnerFilter: 'all',
+  lfCycleFilter: 'all',
+  lfTypeFilter: 'all',
+  lfSpFilter: 'all',
 };
 
 // ─── CS LEADS DATA (207 records) ──────────────────────────────────────────────
@@ -893,66 +1076,66 @@ const CS_RECORDS = [
 // ─── CS LEADS BOOKED FOR DEMO SAME MONTH (61 records) ────────────────────────
 // sub: CS - Subscription Status from HubSpot deal (empty = not yet set)
 const CS_DEMO_BOOKED = [
-  {d:"2026-04-01",n:"Dulce Chiongson",co:"Virtual Experts PH",s:"Valid BPO",sub:""},
-  {d:"2026-04-01",n:"Salman Ali",co:"Robotronics.ai",s:"Valid BPO",sub:""},
-  {d:"2026-04-01",n:"Enrique Labayen",co:"Alorica",s:"Valid BPO",sub:""},
-  {d:"2026-04-03",n:"Scott Jones",co:"SEBPO",s:"Valid BPO",sub:"Active"},
-  {d:"2026-04-06",n:"Vishnu B H",co:"Trainonex Solutions",s:"Valid BPO",sub:""},
-  {d:"2026-04-06",n:"Aaditya Gadal",co:"Finserve Global",s:"Valid BPO",sub:""},
-  {d:"2026-04-06",n:"Barbara Atillo",co:"Fusion CX",s:"Valid BPO",sub:""},
-  {d:"2026-04-07",n:"Carina Ramos",co:"Titan Clarity",s:"Valid BPO",sub:""},
-  {d:"2026-04-08",n:"Francis Gomez",co:"Complete BPO",s:"Valid BPO",sub:""},
-  {d:"2026-04-08",n:"Himanshu Kumar",co:"Aadi Business Solution",s:"Valid BPO",sub:""},
-  {d:"2026-04-09",n:"Mayuresh Kumar Sinha",co:"Innopact Technologies",s:"Prequalification - Inactive/No Website",sub:""},
-  {d:"2026-04-09",n:"Dinesh Saravanan",co:"Avata Technologies",s:"Valid BPO",sub:""},
-  {d:"2026-04-09",n:"Royce Marcus",co:"Revelo",s:"Valid BPO",sub:""},
-  {d:"2026-04-10",n:"Walter Sabrin",co:"Vensure Employer Solutions",s:"Valid BPO",sub:""},
-  {d:"2026-04-10",n:"Aarchit Ranjan",co:"Black Seedspire Technologies",s:"Valid BPO",sub:""},
-  {d:"2026-04-11",n:"Simran Arora",co:"Releaf Claim",s:"Prequalification - Does not look like a BPO",sub:""},
-  {d:"2026-04-11",n:"John Baptista",co:"Pristine E Tele Services",s:"Prequalification - Does not look like a BPO",sub:""},
-  {d:"2026-04-11",n:"Travis Smith",co:"Talent Connect Recruitment",s:"Valid BPO",sub:""},
-  {d:"2026-04-14",n:"Marjorie Penalosa",co:"KMC Solutions",s:"Valid BPO",sub:""},
-  {d:"2026-04-14",n:"Omid Rokni",co:"Cost Solution Pty Ltd",s:"Prequalification - Does not look like a BPO",sub:""},
-  {d:"2026-04-14",n:"Gaurav Luthra",co:"SkyOS BPO",s:"Valid BPO",sub:""},
-  {d:"2026-04-15",n:"Divanshu Guleria",co:"Netsmartz",s:"Valid BPO",sub:""},
-  {d:"2026-04-15",n:"Dasar Saraqi",co:"DialX",s:"Valid BPO",sub:""},
-  {d:"2026-04-16",n:"Marina Behmann",co:"Innovative Work Solutions",s:"Valid BPO",sub:"Active"},
-  {d:"2026-04-16",n:"Umar Khalid",co:"Resource Consulting Management",s:"Valid BPO",sub:""},
-  {d:"2026-04-17",n:"Ali Khan",co:"MB Group",s:"Valid BPO",sub:""},
-  {d:"2026-04-17",n:"Mahnoor Ali",co:"Prestige OSS",s:"Valid BPO",sub:""},
-  {d:"2026-04-18",n:"Mimi Arguelles",co:"SuccessLink Outsourcing",s:"Valid BPO",sub:""},
-  {d:"2026-04-18",n:"Amede Deane",co:"Prime Bridge Solutions",s:"Valid BPO",sub:""},
-  {d:"2026-04-20",n:"Nishath Tanveer",co:"Global IT Finest",s:"Prequalification - Does not look like a BPO",sub:""},
-  {d:"2026-04-20",n:"Vikram Arora",co:"ICCS Digx",s:"Valid BPO",sub:""},
-  {d:"2026-04-22",n:"Ryan Shrestha",co:"CnerG",s:"Valid BPO",sub:""},
-  {d:"2026-04-22",n:"Shey Salcedo",co:"Clark Outsourcing",s:"Valid BPO",sub:""},
-  {d:"2026-04-22",n:"Chirag Koshti",co:"CapActix",s:"Valid BPO",sub:""},
-  {d:"2026-04-22",n:"Danny Schaffer",co:"BackerIT Innovation",s:"Valid BPO",sub:""},
-  {d:"2026-04-22",n:"Harneet Singh",co:"Excelsior Servicez",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-22",n:"Sergio Murillo",co:"Coderland",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-23",n:"Furqan Chohdary",co:"Kyniska",s:"Valid BPO",sub:""},
-  {d:"2026-04-23",n:"Amerein Marie Tapia",co:"GoBro PH",s:"Valid BPO",sub:""},
-  {d:"2026-04-23",n:"Rajan Arora",co:"Ellora Inc.",s:"Valid BPO",sub:""},
-  {d:"2026-04-23",n:"Naomi Munyasya",co:"HeyDelegate",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-23",n:"Dean Toro",co:"Global Impact Sourcing",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-24",n:"Neej Parikh",co:"Exordiom",s:"Valid BPO",sub:""},
-  {d:"2026-04-24",n:"Ayaan Ahmad",co:"Alvi Global Enterprises",s:"Valid BPO",sub:""},
-  {d:"2026-04-24",n:"Sahil Chand",co:"Proficient Customer Solutions",s:"Valid BPO",sub:""},
-  {d:"2026-04-24",n:"Mike Snyder",co:"External Input",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-24",n:"Anton Vukic",co:"Afrishore BPO",s:"Valid BPO",sub:"Active"},
-  {d:"2026-04-27",n:"Fateen Banday",co:"Ekinova Business Solutions",s:"Valid BPO",sub:""},
-  {d:"2026-04-27",n:"Yaniv Varochik",co:"Aidey",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-27",n:"Terry Woltman",co:"External Input",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-28",n:"Jasmin Jurvakainen",co:"yoummday",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-28",n:"Henry Wallace",co:"Outsourced",s:"Valid BPO",sub:"Active"},
-  {d:"2026-04-29",n:"Damian Paklos",co:"yoummday GmbH",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-04-29",n:"Elizabeth Kara",co:"OneHalf",s:"Valid BPO",sub:""},
-  {d:"2026-04-29",n:"Fawad Nasir",co:"EmpireOne BPO",s:"Valid BPO",sub:""},
-  {d:"2026-04-29",n:"Anthony Ross",co:"Brand Vantage",s:"Valid BPO",sub:""},
-  {d:"2026-04-29",n:"Louis Siebrits",co:"Resolv Global",s:"Valid BPO",sub:"Inactive"},
-  {d:"2026-05-01",n:"Gavin Luka",co:"MIFIN Services Philippines",s:"Valid BPO",sub:""},
-  {d:"2026-05-02",n:"Brian Magbanua",co:"Staff Hero",s:"Valid BPO",sub:""},
-  {d:"2026-05-06",n:"Ravi Shanker",co:"WGS India",s:"Valid BPO",sub:""},
+  {d:"2026-04-01",n:"Dulce Chiongson",co:"Virtual Experts PH",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-01",n:"Salman Ali",co:"Robotronics.ai",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-01",n:"Enrique Labayen",co:"Alorica",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-03",n:"Scott Jones",co:"SEBPO",s:"Valid BPO",sub:"Active",o:"judy"},
+  {d:"2026-04-06",n:"Vishnu B H",co:"Trainonex Solutions",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-06",n:"Aaditya Gadal",co:"Finserve Global",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-06",n:"Barbara Atillo",co:"Fusion CX",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-07",n:"Carina Ramos",co:"Titan Clarity",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-08",n:"Francis Gomez",co:"Complete BPO",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-08",n:"Himanshu Kumar",co:"Aadi Business Solution",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-09",n:"Mayuresh Kumar Sinha",co:"Innopact Technologies",s:"Prequalification - Inactive/No Website",sub:"",o:"judy"},
+  {d:"2026-04-09",n:"Dinesh Saravanan",co:"Avata Technologies",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-09",n:"Royce Marcus",co:"Revelo",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-10",n:"Walter Sabrin",co:"Vensure Employer Solutions",s:"Valid BPO",sub:"",o:""},
+  {d:"2026-04-10",n:"Aarchit Ranjan",co:"Black Seedspire Technologies",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-11",n:"Simran Arora",co:"Releaf Claim",s:"Prequalification - Does not look like a BPO",sub:"",o:"stef"},
+  {d:"2026-04-11",n:"John Baptista",co:"Pristine E Tele Services",s:"Prequalification - Does not look like a BPO",sub:"",o:"judy"},
+  {d:"2026-04-11",n:"Travis Smith",co:"Talent Connect Recruitment",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-14",n:"Marjorie Penalosa",co:"KMC Solutions",s:"Valid BPO",sub:"",o:"che"},
+  {d:"2026-04-14",n:"Omid Rokni",co:"Cost Solution Pty Ltd",s:"Prequalification - Does not look like a BPO",sub:"",o:"che"},
+  {d:"2026-04-14",n:"Gaurav Luthra",co:"SkyOS BPO",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-15",n:"Divanshu Guleria",co:"Netsmartz",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-15",n:"Dasar Saraqi",co:"DialX",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-16",n:"Marina Behmann",co:"Innovative Work Solutions",s:"Valid BPO",sub:"Active",o:"judy"},
+  {d:"2026-04-16",n:"Umar Khalid",co:"Resource Consulting Management",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-17",n:"Ali Khan",co:"MB Group",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-17",n:"Mahnoor Ali",co:"Prestige OSS",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-18",n:"Mimi Arguelles",co:"SuccessLink Outsourcing",s:"Valid BPO",sub:"",o:"rochelle"},
+  {d:"2026-04-18",n:"Amede Deane",co:"Prime Bridge Solutions",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-20",n:"Nishath Tanveer",co:"Global IT Finest",s:"Prequalification - Does not look like a BPO",sub:"",o:"che"},
+  {d:"2026-04-20",n:"Vikram Arora",co:"ICCS Digx",s:"Valid BPO",sub:"",o:"che"},
+  {d:"2026-04-22",n:"Ryan Shrestha",co:"CnerG",s:"Valid BPO",sub:"",o:"rochelle"},
+  {d:"2026-04-22",n:"Shey Salcedo",co:"Clark Outsourcing",s:"Valid BPO",sub:"",o:"che"},
+  {d:"2026-04-22",n:"Chirag Koshti",co:"CapActix",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-22",n:"Danny Schaffer",co:"BackerIT Innovation",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-22",n:"Harneet Singh",co:"Excelsior Servicez",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-04-22",n:"Sergio Murillo",co:"Coderland",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-04-23",n:"Furqan Chohdary",co:"Kyniska",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-23",n:"Amerein Marie Tapia",co:"GoBro PH",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-23",n:"Rajan Arora",co:"Ellora Inc.",s:"Valid BPO",sub:"",o:"stef"},
+  {d:"2026-04-23",n:"Naomi Munyasya",co:"HeyDelegate",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-04-23",n:"Dean Toro",co:"Global Impact Sourcing",s:"Valid BPO",sub:"Inactive",o:""},
+  {d:"2026-04-24",n:"Neej Parikh",co:"Exordiom",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-24",n:"Ayaan Ahmad",co:"Alvi Global Enterprises",s:"Valid BPO",sub:"",o:"che"},
+  {d:"2026-04-24",n:"Sahil Chand",co:"Proficient Customer Solutions",s:"Valid BPO",sub:"",o:"rochelle"},
+  {d:"2026-04-24",n:"Mike Snyder",co:"External Input",s:"Valid BPO",sub:"Inactive",o:"stef"},
+  {d:"2026-04-24",n:"Anton Vukic",co:"Afrishore BPO",s:"Valid BPO",sub:"Active",o:"judy"},
+  {d:"2026-04-27",n:"Fateen Banday",co:"Ekinova Business Solutions",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-27",n:"Yaniv Varochik",co:"Aidey",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-04-27",n:"Terry Woltman",co:"External Input",s:"Valid BPO",sub:"Inactive",o:"stef"},
+  {d:"2026-04-28",n:"Jasmin Jurvakainen",co:"yoummday",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-04-28",n:"Henry Wallace",co:"Outsourced",s:"Valid BPO",sub:"Active",o:"che"},
+  {d:"2026-04-29",n:"Damian Paklos",co:"yoummday GmbH",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-04-29",n:"Elizabeth Kara",co:"OneHalf",s:"Valid BPO",sub:"",o:"che"},
+  {d:"2026-04-29",n:"Fawad Nasir",co:"EmpireOne BPO",s:"Valid BPO",sub:"",o:"judy"},
+  {d:"2026-04-29",n:"Anthony Ross",co:"Brand Vantage",s:"Valid BPO",sub:"",o:"rochelle"},
+  {d:"2026-04-29",n:"Louis Siebrits",co:"Resolv Global",s:"Valid BPO",sub:"Inactive",o:"judy"},
+  {d:"2026-05-01",n:"Gavin Luka",co:"MIFIN Services Philippines",s:"Valid BPO",sub:"",o:""},
+  {d:"2026-05-02",n:"Brian Magbanua",co:"Staff Hero",s:"Valid BPO",sub:"",o:"che"},
+  {d:"2026-05-06",n:"Ravi Shanker",co:"WGS India",s:"Valid BPO",sub:"",o:"che"},
 ];
 
 // ─── DEMO CALLS DATA (117 records) ────────────────────────────────────────────
@@ -1259,6 +1442,36 @@ const SIGNUPS = [
   {n:'Success Link Outsourcing', sub:'Sales Hub',                    o:'rochelle',rev:364,  cd:'2026-05-07', dc:'2026-04-22', active:true},
 ];
 
+// ─── SOURCE PARTNER CYCLES (OA Hub · May 2026) ───────────────────────────────
+const SP_CYCLES = [
+  // 1st cycle — May 1–31, 2026
+  {n:'Six Eleven Global Services', type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:60, alloc:21, done:19, leadOnly:0, spOnly:7, sched:9,  resch:3, noshow:0, cancel:3, filter:''},
+  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:17, done:16, leadOnly:2, spOnly:2, sched:7,  resch:3, noshow:2, cancel:2, filter:''},
+  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:10, done:12, leadOnly:1, spOnly:3, sched:7,  resch:6, noshow:0, cancel:1, filter:''},
+  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:9,  done:1,  leadOnly:1, spOnly:0, sched:8,  resch:0, noshow:0, cancel:0, filter:''},
+  {n:'ConnectOS',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:8,  done:2,  leadOnly:0, spOnly:1, sched:5,  resch:1, noshow:0, cancel:0, filter:''},
+  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:5,  done:2,  leadOnly:0, spOnly:1, sched:4,  resch:0, noshow:0, cancel:0, filter:''},
+  {n:'People Partners',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:7,  done:3,  leadOnly:0, spOnly:0, sched:4,  resch:0, noshow:0, cancel:2, filter:''},
+  {n:'HOPLA Online',               type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:7,  done:0,  leadOnly:0, spOnly:0, sched:6,  resch:1, noshow:0, cancel:0, filter:''},
+  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:6,  done:2,  leadOnly:0, spOnly:0, sched:6,  resch:0, noshow:1, cancel:0, filter:''},
+  {n:'Cebu Tele-net',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:13, alloc:5,  done:1,  leadOnly:0, spOnly:1, sched:2,  resch:0, noshow:0, cancel:2, filter:''},
+  {n:'Satellite Office',           type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:1,  done:0,  leadOnly:0, spOnly:0, sched:1,  resch:1, noshow:0, cancel:0, filter:''},
+  {n:'Sourcefit',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:1,  done:3,  leadOnly:0, spOnly:2, sched:3,  resch:0, noshow:0, cancel:0, filter:'Call Center'},
+  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:2,  done:0,  leadOnly:0, spOnly:1, sched:2,  resch:0, noshow:0, cancel:0, filter:''},
+  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:4,  done:2,  leadOnly:0, spOnly:0, sched:4,  resch:0, noshow:0, cancel:0, filter:'AU · NZ'},
+  {n:'Pentwater Group',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:''},
+  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'AU · NZ'},
+  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:1,  done:0,  leadOnly:0, spOnly:0, sched:1,  resch:0, noshow:0, cancel:0, filter:'Call Center'},
+  // 15th cycle — Apr 15 – May 14, 2026
+  {n:'Callmax Solutions',          type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:20, alloc:31, done:7,  leadOnly:0, spOnly:3, sched:11, resch:0, noshow:1, cancel:6, filter:''},
+  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:25, alloc:18, done:10, leadOnly:0, spOnly:4, sched:6,  resch:1, noshow:0, cancel:3, filter:''},
+  {n:'Team HGS UK',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:15, done:7,  leadOnly:2, spOnly:3, sched:0,  resch:0, noshow:2, cancel:1, filter:'AU · NZ'},
+  {n:'Expedock',                   type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:14, done:9,  leadOnly:0, spOnly:1, sched:1,  resch:0, noshow:0, cancel:4, filter:''},
+  {n:'People Partners',            type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:11, alloc:9,  done:4,  leadOnly:0, spOnly:0, sched:2,  resch:0, noshow:0, cancel:2, filter:''},
+  {n:'Callmax Solutions',          type:'enterprise', cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:''},
+  {n:'Outsource Accelerator',      type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:74, done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'US · UK'},
+];
+
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
 function isoDate(d){ return d.toISOString().slice(0,10); }
 function parseISO(s){ return new Date(s+'T00:00:00'); }
@@ -1419,7 +1632,14 @@ function dsRenderBreakdown(){
 // ─── SIGN-UPS RENDER ─────────────────────────────────────────────────────────
 function renderSignups(){
   const s=state.startDate,e=state.endDate;
-  const recs=SIGNUPS.filter(r=>r.cd>=s&&r.cd<=e).slice().sort((a,b)=>b.cd.localeCompare(a.cd));
+  let recs=SIGNUPS.filter(r=>r.cd>=s&&r.cd<=e);
+  if(state.suOwnerFilter!=='all') recs=recs.filter(r=>r.o===state.suOwnerFilter);
+  if(state.suSubFilter!=='all') recs=recs.filter(r=>r.sub===state.suSubFilter);
+  recs=recs.slice().sort((a,b)=>b.cd.localeCompare(a.cd));
+  const ownerSel=document.getElementById('suOwnerFilter');
+  const subSel=document.getElementById('suSubFilter');
+  if(ownerSel)ownerSel.value=state.suOwnerFilter;
+  if(subSel)subSel.value=state.suSubFilter;
   const suCount=document.getElementById('suCount');
   const suMRR=document.getElementById('suMRR');
   const mrr=recs.reduce((a,r)=>a+r.rev,0);
@@ -1444,6 +1664,152 @@ function renderSignups(){
         <td><span class="pill" style="background:${oc};color:#fff">${ol}</span></td>
         <td style="text-align:right;font-weight:700;color:#1e40af">${r.rev>0?'$'+r.rev.toLocaleString():'—'}</td>
         <td style="text-align:center"><span class="pill" style="${r.active?'background:#dbeafe;color:#1e40af':'background:#fee2e2;color:#dc2626'}">${r.active?'Active':'Inactive'}</span></td>
+      </tr>`;
+    }).join('');
+}
+
+// ─── LEAD FULFILLMENT ─────────────────────────────────────────────────────────
+function lfMtdBlock(cycleKey,spFilter){
+  let rows=SP_CYCLES.filter(r=>r.cycle===cycleKey);
+  if(spFilter&&spFilter!=='all') rows=rows.filter(r=>r.n===spFilter);
+  if(!rows.length)return'';
+  const cs=rows[0].cs, ce=rows[0].ce;
+  const start=parseISO(cs), end=parseISO(ce), now=parseISO(TODAY);
+  const clamped=now>end?end:now<start?start:now;
+  const elapsed=Math.round((clamped-start)/(864e5))+1;
+  const total=Math.round((end-start)/(864e5))+1;
+  const totExpDc=rows.reduce((a,r)=>a+r.expDc,0);
+  const totDone=rows.reduce((a,r)=>a+r.done,0);
+  const mtdPct=totExpDc>0?(totDone/totExpDc*100):0;
+  const pacePct=(elapsed/total)*100;
+  const variance=mtdPct-pacePct;
+  const varSign=variance>=0?'+':'';
+  const varColor=variance>=0?'#1e40af':'#dc2626';
+  const varLabel=variance>=0?'Ahead of pace':'Behind pace';
+  const barW=Math.min(100,Math.round(mtdPct));
+  const paceBarW=Math.min(100,Math.round(pacePct));
+  const label=cycleKey==='1st'?`1st Cycle · May 1–31`:`15th Cycle · Apr 15–May 14`;
+  const dayLabel=`Day ${elapsed} of ${total}`;
+  return`
+    <div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;color:#1e40af;margin-bottom:2px">${label}</div>
+          <div style="font-size:0.62rem;color:#94a3b8">${dayLabel} &middot; ${totDone} completed / ${totExpDc} expected</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:1.6rem;font-weight:800;color:#111827;line-height:1">${mtdPct.toFixed(1)}%</div>
+          <div style="font-size:0.6rem;color:#94a3b8;margin-top:1px">MTD Fulfillment</div>
+        </div>
+      </div>
+      <!-- Progress bar: actual vs pace -->
+      <div style="position:relative;height:8px;background:#f3f4f6;border-radius:4px;margin-bottom:10px;overflow:visible">
+        <div style="position:absolute;top:0;left:0;height:8px;width:${barW}%;background:#2563eb;border-radius:4px;transition:width .3s"></div>
+        <div style="position:absolute;top:-2px;left:${paceBarW}%;width:2px;height:12px;background:#94a3b8;border-radius:1px" title="Pace target: ${pacePct.toFixed(1)}%"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="background:#f8fafc;border-radius:7px;padding:8px 10px">
+          <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:2px">MTD Fulfillment</div>
+          <div style="font-size:1rem;font-weight:700;color:#2563eb">${mtdPct.toFixed(1)}%</div>
+          <div style="font-size:0.58rem;color:#94a3b8">Completed vs expected</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:7px;padding:8px 10px">
+          <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:2px">Pace Target</div>
+          <div style="font-size:1rem;font-weight:700;color:#475569">${pacePct.toFixed(1)}%</div>
+          <div style="font-size:0.58rem;color:#94a3b8">${elapsed}/${total} days elapsed</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:7px;padding:8px 10px">
+          <div style="font-size:0.62rem;color:#94a3b8;margin-bottom:2px">Variance</div>
+          <div style="font-size:1rem;font-weight:700;color:${varColor}">${varSign}${variance.toFixed(1)}%</div>
+          <div style="font-size:0.58rem;color:${varColor}">${varLabel}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLeadFulfillment(){
+  const cycleSel=document.getElementById('lfCycleFilter');
+  const typeSel=document.getElementById('lfTypeFilter');
+  const spSel=document.getElementById('lfSpFilter');
+  if(cycleSel)cycleSel.value=state.lfCycleFilter;
+  if(typeSel)typeSel.value=state.lfTypeFilter;
+  if(spSel)spSel.value=state.lfSpFilter;
+
+  // MTD preview — respects SP filter, always shows both cycles
+  const mtd1=document.getElementById('lfMtd1st');
+  const mtd15=document.getElementById('lfMtd15th');
+  if(mtd1) mtd1.innerHTML=lfMtdBlock('1st',state.lfSpFilter);
+  if(mtd15) mtd15.innerHTML=lfMtdBlock('15th',state.lfSpFilter);
+
+  let rows=SP_CYCLES;
+  if(state.lfCycleFilter!=='all') rows=rows.filter(r=>r.cycle===state.lfCycleFilter);
+  if(state.lfTypeFilter!=='all')  rows=rows.filter(r=>r.type===state.lfTypeFilter);
+  if(state.lfSpFilter!=='all')    rows=rows.filter(r=>r.n===state.lfSpFilter);
+
+  // Summary cards
+  const totExpected=rows.reduce((a,r)=>a+r.expDc,0);
+  const totAlloc=rows.reduce((a,r)=>a+r.alloc,0);
+  const totDone=rows.reduce((a,r)=>a+r.done,0);
+  const fulfillPct=totExpected>0?((totDone/totExpected)*100).toFixed(1):0;
+  const set=id=>v=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('lfCardCycles')(rows.length);
+  set('lfCardExpected')(totExpected);
+  set('lfCardAllocated')(totAlloc);
+  set('lfCardCompleted')(totDone);
+  set('lfCardCompletedSub')(fulfillPct+'% of expected');
+
+  // Type badge
+  const typePill=t=>t==='enterprise'
+    ?'<span class="pill" style="background:#475569;color:#fff;font-size:.65rem">Enterprise</span>'
+    :'<span class="pill" style="background:#2563eb;color:#fff;font-size:.65rem">Outbound</span>';
+
+  // Fulfillment badge
+  const fulfillBadge=(done,expDc)=>{
+    if(expDc===0)return'<span style="color:#94a3b8">—</span>';
+    const p=Math.round(done/expDc*100);
+    const c=p>=80?'#1e40af':p>=50?'#2563eb':p>=1?'#d97706':'#94a3b8';
+    return`<span class="pill" style="background:${c};color:#fff;font-size:.68rem;min-width:48px;text-align:center">${p}%</span>`;
+  };
+
+  // Pre-compute pace target per cycle key (same for all rows sharing a cycle)
+  const paceCache={};
+  SP_CYCLES.forEach(r=>{
+    if(paceCache[r.cycle])return;
+    const start=parseISO(r.cs),end=parseISO(r.ce),now=parseISO(TODAY);
+    const clamped=now>end?end:now<start?start:now;
+    const elapsed=Math.round((clamped-start)/864e5)+1;
+    const total=Math.round((end-start)/864e5)+1;
+    paceCache[r.cycle]=(elapsed/total)*100;
+  });
+
+  const tbody=document.getElementById('lfTable');
+  if(!tbody)return;
+  tbody.innerHTML=rows.length===0
+    ?'<tr><td colspan="12" style="text-align:center;color:#94a3b8;padding:14px">No data for selected filters</td></tr>'
+    :rows.map(r=>{
+      const schedTotal=r.sched+r.resch;
+      const filterPill=r.filter?`<span class="pill" style="background:#e0e7ff;color:#3730a3;font-size:.65rem">${r.filter}</span>`:'<span style="color:#94a3b8;font-size:.7rem">All</span>';
+      const pacePct=paceCache[r.cycle]||0;
+      const mtdPct=r.expDc>0?(r.done/r.expDc*100):0;
+      const variance=mtdPct-pacePct;
+      const varSign=variance>=0?'+':'';
+      const varColor=variance>=0?'#1e40af':'#dc2626';
+      const varCell=r.expDc===0
+        ?'<span style="color:#94a3b8">—</span>'
+        :`<span style="font-weight:700;color:${varColor}">${varSign}${variance.toFixed(1)}%</span>`;
+      return`<tr>
+        <td><strong>${r.n}</strong></td>
+        <td style="text-align:center">${typePill(r.type)}</td>
+        <td style="text-align:center"><span class="pill" style="background:#f3f4f6;color:#374151;font-size:.68rem">${r.cycle}</span></td>
+        <td style="text-align:center">${filterPill}</td>
+        <td style="text-align:center;font-weight:700">${r.expDc}</td>
+        <td style="text-align:center">${r.alloc}</td>
+        <td style="text-align:center;font-weight:700;color:#1e40af">${r.done}</td>
+        <td style="text-align:center">${schedTotal>0?schedTotal:'—'}</td>
+        <td style="text-align:center;color:${r.noshow>0?'#d97706':'#94a3b8'}">${r.noshow>0?r.noshow:'—'}</td>
+        <td style="text-align:center;color:${r.cancel>0?'#dc2626':'#94a3b8'}">${r.cancel>0?r.cancel:'—'}</td>
+        <td style="text-align:center">${fulfillBadge(r.done,r.expDc)}</td>
+        <td style="text-align:center">${varCell}</td>
       </tr>`;
     }).join('');
 }
@@ -1647,33 +2013,50 @@ function updateAll(){
 
   // Demo Booked (CS Leads tab)
   const dbRecs = CS_DEMO_BOOKED.filter(r=>r.d>=state.startDate&&r.d<=state.endDate);
+  const dbValidBooked = dbRecs.filter(r=>r.s==='Valid BPO').length;
   set('statDemoBooked', dbRecs.length);
   set('statDemoBookedPct', pct(dbRecs.length, csS.total));
-  set('statNotBooked', Math.max(0, csS.total - dbRecs.length));
-  set('statNotBookedPct', pct(Math.max(0, csS.total - dbRecs.length), csS.total));
+  set('statNotBooked', Math.max(0, csS.valid - dbValidBooked));
+  set('statNotBookedPct', pct(Math.max(0, csS.valid - dbValidBooked), csS.valid));
   const pillColor = s => s==='Valid BPO'?'pill-green':s==='Not a BPO'?'pill-red':'pill-amber';
 
-  // Sync dropdown to state (in case updateAll() was called by date change)
+  // Sync dropdowns to state
   const dtSel = document.getElementById('demoTableFilter');
+  const demoSubSel = document.getElementById('demoSubFilter');
+  const demoLeadSel = document.getElementById('demoLeadFilter');
   if(dtSel) dtSel.value = state.demoTableFilter;
+  if(demoSubSel) demoSubSel.value = state.demoSubFilter;
+  if(demoLeadSel) demoLeadSel.value = state.demoLeadFilter;
 
   const thead = document.getElementById('demoBookedTableHead');
   const dbTbody = document.getElementById('demoBookedTable');
 
   const subPill = v => v==='Active'?'<span class="pill pill-green">Active</span>':v==='Inactive'?'<span class="pill pill-red">Inactive</span>':'<span style="color:#94a3b8">—</span>';
+  const ownerPill = o => {const oc={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};const ol={judy:'Judy',stef:'Stef',che:'Che',rochelle:'Rochelle'};return o&&ol[o]?`<span class="pill" style="background:${oc[o]};color:#fff">${ol[o]}</span>`:'<span style="color:#94a3b8">—</span>';};
+
+  // Apply Subscription Status + CS Lead Status filters to booked list
+  let filteredBooked = dbRecs;
+  if(state.demoSubFilter !== 'all') filteredBooked = filteredBooked.filter(r=>r.sub===state.demoSubFilter);
+  if(state.demoLeadFilter !== 'all'){
+    filteredBooked = state.demoLeadFilter==='prequal'
+      ? filteredBooked.filter(r=>r.s.startsWith('Prequalification'))
+      : filteredBooked.filter(r=>r.s===state.demoLeadFilter);
+  }
+
   if(state.demoTableFilter === 'booked'){
-    thead.innerHTML = '<th>Inquiry Date</th><th>Name</th><th>Company</th><th>CS Lead Status</th><th>Subscription Status</th>';
-    dbTbody.innerHTML = dbRecs.length === 0
-      ? '<tr><td colspan="5" style="color:#94a3b8;text-align:center">No demo bookings in this date range.</td></tr>'
-      : dbRecs.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(r=>`<tr>
+    thead.innerHTML = '<th>Inquiry Date</th><th>Name</th><th>Company</th><th>CS Lead Status</th><th style="text-align:center">Subscription</th><th style="text-align:center">Deal Owner</th>';
+    dbTbody.innerHTML = filteredBooked.length === 0
+      ? '<tr><td colspan="6" style="color:#94a3b8;text-align:center">No records match the selected filters.</td></tr>'
+      : filteredBooked.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(r=>`<tr>
           <td>${r.d}</td>
           <td><strong>${r.n}</strong></td>
           <td>${r.co}</td>
           <td><span class="pill ${pillColor(r.s)}">${r.s}</span></td>
-          <td>${subPill(r.sub)}</td>
+          <td style="text-align:center">${subPill(r.sub)}</td>
+          <td style="text-align:center">${ownerPill(r.o)}</td>
         </tr>`).join('');
   } else {
-    // Not Yet Booked: derive from CS_RECORDS minus booked count per date
+    // Not Yet Booked: derive from Valid BPO CS_RECORDS minus booked
     thead.innerHTML = '<th>Inquiry Date</th><th>CS Lead Status</th>';
     const bookedByDate = {};
     dbRecs.forEach(r=>{ bookedByDate[r.d] = (bookedByDate[r.d]||0)+1; });
@@ -1682,10 +2065,14 @@ function updateAll(){
     csR.forEach(r=>{ (recsByDate[r.d]=recsByDate[r.d]||[]).push(r); });
     Object.entries(recsByDate).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([date,recs])=>{
       const skip = bookedByDate[date]||0;
-      recs.slice(skip).forEach(r=>nbRecs.push({d:date,s:r.s}));
+      recs.slice(skip).forEach(r=>{
+        if(state.demoLeadFilter==='all'||
+           (state.demoLeadFilter==='prequal'&&r.s.startsWith('Prequalification'))||
+           r.s===state.demoLeadFilter) nbRecs.push({d:date,s:r.s});
+      });
     });
     dbTbody.innerHTML = nbRecs.length === 0
-      ? '<tr><td colspan="2" style="color:#94a3b8;text-align:center">All CS leads in this range have a booked demo call.</td></tr>'
+      ? '<tr><td colspan="2" style="color:#94a3b8;text-align:center">No records match the selected filters.</td></tr>'
       : nbRecs.map(r=>`<tr>
           <td>${r.d}</td>
           <td><span class="pill ${pillColor(r.s)}">${r.s}</span></td>
@@ -1762,8 +2149,19 @@ function updateAll(){
   renderSignups();
 
   // Deal Status breakdown table
-  const dsRows=DS_DEALS.filter(r=>r.d>=state.startDate&&r.d<=state.endDate&&(state.dsDealStatusFilter==='all'||r.ds===state.dsDealStatusFilter))
-    .slice().sort((a,b)=>b.d.localeCompare(a.d));
+  const dsCompanyEl=document.getElementById('dsCompanyFilter');
+  const dsDealOwnerEl=document.getElementById('dsDealOwnerFilter');
+  const dsDealStatusEl=document.getElementById('dsDealStatusFilter');
+  if(dsCompanyEl)dsCompanyEl.value=state.dsCompanyFilter;
+  if(dsDealOwnerEl)dsDealOwnerEl.value=state.dsDealOwnerFilter;
+  if(dsDealStatusEl)dsDealStatusEl.value=state.dsDealStatusFilter;
+  const dsCompanyLower=state.dsCompanyFilter.trim().toLowerCase();
+  const dsRows=DS_DEALS.filter(r=>
+    r.d>=state.startDate&&r.d<=state.endDate&&
+    (state.dsDealStatusFilter==='all'||r.ds===state.dsDealStatusFilter)&&
+    (state.dsDealOwnerFilter==='all'||r.p===state.dsDealOwnerFilter)&&
+    (!dsCompanyLower||(r.co||'').toLowerCase().includes(dsCompanyLower))
+  ).slice().sort((a,b)=>b.d.localeCompare(a.d));
   const personBadgeColors={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
   document.getElementById('dsDealTable').innerHTML=dsRows.map(r=>{
     const person=PERSONS.find(p=>p.key===r.p);
@@ -1792,10 +2190,11 @@ window.showView=function(view){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelector(`[data-view="${view}"]`).classList.add('active');
   state.activeView=view;
-  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report','sp-forecast':'SP Forecast · $300k by Dec 2026'};
+  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report','sp-forecast':'SP Forecast · $300k by Dec 2026','lead-fulfillment':'Lead Fulfillment · SP Cycle Data · May 2026'};
   document.getElementById('viewSubtitle').textContent=labels[view]||view;
-  const hidePicker=['source-partners','sp-forecast'];
+  const hidePicker=['source-partners','sp-forecast','lead-fulfillment'];
   document.getElementById('pickerWrapper').style.display=hidePicker.includes(view)?'none':'';
+  if(view==='lead-fulfillment') renderLeadFulfillment();
 };
 
 // ─── PRESETS ─────────────────────────────────────────────────────────────────
@@ -1883,10 +2282,19 @@ window.setDemoTableFilter=function(v){
   state.demoTableFilter=v;
   updateAll();
 };
+window.setDemoSubFilter=function(v){state.demoSubFilter=v;updateAll();};
+window.setDemoLeadFilter=function(v){state.demoLeadFilter=v;updateAll();};
 window.setDsDealStatusFilter=function(v){
   state.dsDealStatusFilter=v;
   updateAll();
 };
+window.setSuOwnerFilter=function(v){state.suOwnerFilter=v;renderSignups();};
+window.setSuSubFilter=function(v){state.suSubFilter=v;renderSignups();};
+window.setDsCompanyFilter=function(v){state.dsCompanyFilter=v;updateAll();};
+window.setDsDealOwnerFilter=function(v){state.dsDealOwnerFilter=v;updateAll();};
+window.setLfCycleFilter=function(v){state.lfCycleFilter=v;renderLeadFulfillment();};
+window.setLfTypeFilter=function(v){state.lfTypeFilter=v;renderLeadFulfillment();};
+window.setLfSpFilter=function(v){state.lfSpFilter=v;renderLeadFulfillment();};
 function openPicker(){
   state.pickerOpen=true;
   // Show the month before startDate on the left so cross-month ranges are immediately visible
