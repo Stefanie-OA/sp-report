@@ -958,6 +958,16 @@
               </select>
             </div>
             <div class="tbl-filter-group">
+              <span class="tbl-filter-label">Owner</span>
+              <select class="tbl-filter-select" id="lfOwnerFilter" onchange="setLfOwnerFilter(this.value)">
+                <option value="all">All</option>
+                <option value="judy">Judy</option>
+                <option value="stef">Stef</option>
+                <option value="che">Che</option>
+                <option value="rochelle">Rochelle</option>
+              </select>
+            </div>
+            <div class="tbl-filter-group">
               <span class="tbl-filter-label">Source Partner</span>
               <select class="tbl-filter-select" id="lfSpFilter" onchange="setLfSpFilter(this.value)" style="min-width:160px">
                 <option value="all">All</option>
@@ -999,6 +1009,7 @@
               <th style="text-align:center">Scheduled</th>
               <th style="text-align:center">No Show</th>
               <th style="text-align:center">Canceled</th>
+              <th style="text-align:center">Owner</th>
               <th style="text-align:center">Fulfillment</th>
               <th style="text-align:center">Variance</th>
             </tr>
@@ -1029,6 +1040,7 @@ const state = {
   dsDealOwnerFilter: 'all',
   lfCycleFilter: 'all',
   lfTypeFilter: 'all',
+  lfOwnerFilter: 'all',
   lfSpFilter: 'all',
 };
 
@@ -1445,31 +1457,31 @@ const SIGNUPS = [
 // ─── SOURCE PARTNER CYCLES (OA Hub · May 2026) ───────────────────────────────
 const SP_CYCLES = [
   // 1st cycle — May 1–31, 2026
-  {n:'Six Eleven Global Services', type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:60, alloc:21, done:19, leadOnly:0, spOnly:7, sched:9,  resch:3, noshow:0, cancel:3, filter:''},
-  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:17, done:16, leadOnly:2, spOnly:2, sched:7,  resch:3, noshow:2, cancel:2, filter:''},
-  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:10, done:12, leadOnly:1, spOnly:3, sched:7,  resch:6, noshow:0, cancel:1, filter:''},
-  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:9,  done:1,  leadOnly:1, spOnly:0, sched:8,  resch:0, noshow:0, cancel:0, filter:''},
-  {n:'ConnectOS',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:8,  done:2,  leadOnly:0, spOnly:1, sched:5,  resch:1, noshow:0, cancel:0, filter:''},
-  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:5,  done:2,  leadOnly:0, spOnly:1, sched:4,  resch:0, noshow:0, cancel:0, filter:''},
-  {n:'People Partners',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:7,  done:3,  leadOnly:0, spOnly:0, sched:4,  resch:0, noshow:0, cancel:2, filter:''},
-  {n:'HOPLA Online',               type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:7,  done:0,  leadOnly:0, spOnly:0, sched:6,  resch:1, noshow:0, cancel:0, filter:''},
-  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:6,  done:2,  leadOnly:0, spOnly:0, sched:6,  resch:0, noshow:1, cancel:0, filter:''},
-  {n:'Cebu Tele-net',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:13, alloc:5,  done:1,  leadOnly:0, spOnly:1, sched:2,  resch:0, noshow:0, cancel:2, filter:''},
-  {n:'Satellite Office',           type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:1,  done:0,  leadOnly:0, spOnly:0, sched:1,  resch:1, noshow:0, cancel:0, filter:''},
-  {n:'Sourcefit',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:1,  done:3,  leadOnly:0, spOnly:2, sched:3,  resch:0, noshow:0, cancel:0, filter:'Call Center'},
-  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:2,  done:0,  leadOnly:0, spOnly:1, sched:2,  resch:0, noshow:0, cancel:0, filter:''},
-  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:4,  done:2,  leadOnly:0, spOnly:0, sched:4,  resch:0, noshow:0, cancel:0, filter:'AU · NZ'},
-  {n:'Pentwater Group',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:''},
-  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'AU · NZ'},
-  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:1,  done:0,  leadOnly:0, spOnly:0, sched:1,  resch:0, noshow:0, cancel:0, filter:'Call Center'},
+  {n:'Six Eleven Global Services', type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:60, alloc:21, done:19, leadOnly:0, spOnly:7, sched:9,  resch:3, noshow:0, cancel:3, filter:'',            o:'che'},
+  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:17, done:16, leadOnly:2, spOnly:2, sched:7,  resch:3, noshow:2, cancel:2, filter:'',            o:'stef'},
+  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:10, done:12, leadOnly:1, spOnly:3, sched:7,  resch:6, noshow:0, cancel:1, filter:'',            o:'stef'},
+  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:9,  done:1,  leadOnly:1, spOnly:0, sched:8,  resch:0, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'ConnectOS',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:8,  done:2,  leadOnly:0, spOnly:1, sched:5,  resch:1, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:5,  done:2,  leadOnly:0, spOnly:1, sched:4,  resch:0, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'People Partners',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:7,  done:3,  leadOnly:0, spOnly:0, sched:4,  resch:0, noshow:0, cancel:2, filter:'',            o:'rochelle'},
+  {n:'HOPLA Online',               type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:7,  done:0,  leadOnly:0, spOnly:0, sched:6,  resch:1, noshow:0, cancel:0, filter:'',            o:'rochelle'},
+  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:6,  done:2,  leadOnly:0, spOnly:0, sched:6,  resch:0, noshow:1, cancel:0, filter:'',            o:'rochelle'},
+  {n:'Cebu Tele-net',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:13, alloc:5,  done:1,  leadOnly:0, spOnly:1, sched:2,  resch:0, noshow:0, cancel:2, filter:'',            o:'judy'},
+  {n:'Satellite Office',           type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:1,  done:0,  leadOnly:0, spOnly:0, sched:1,  resch:1, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'Sourcefit',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:1,  done:3,  leadOnly:0, spOnly:2, sched:3,  resch:0, noshow:0, cancel:0, filter:'Call Center',  o:'rochelle'},
+  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:2,  done:0,  leadOnly:0, spOnly:1, sched:2,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
+  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:4,  done:2,  leadOnly:0, spOnly:0, sched:4,  resch:0, noshow:0, cancel:0, filter:'AU · NZ',     o:'stef'},
+  {n:'Pentwater Group',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'AU · NZ',     o:'stef'},
+  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:1,  done:0,  leadOnly:0, spOnly:0, sched:1,  resch:0, noshow:0, cancel:0, filter:'Call Center',  o:'stef'},
   // 15th cycle — Apr 15 – May 14, 2026
-  {n:'Callmax Solutions',          type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:20, alloc:31, done:7,  leadOnly:0, spOnly:3, sched:11, resch:0, noshow:1, cancel:6, filter:''},
-  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:25, alloc:18, done:10, leadOnly:0, spOnly:4, sched:6,  resch:1, noshow:0, cancel:3, filter:''},
-  {n:'Team HGS UK',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:15, done:7,  leadOnly:2, spOnly:3, sched:0,  resch:0, noshow:2, cancel:1, filter:'AU · NZ'},
-  {n:'Expedock',                   type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:14, done:9,  leadOnly:0, spOnly:1, sched:1,  resch:0, noshow:0, cancel:4, filter:''},
-  {n:'People Partners',            type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:11, alloc:9,  done:4,  leadOnly:0, spOnly:0, sched:2,  resch:0, noshow:0, cancel:2, filter:''},
-  {n:'Callmax Solutions',          type:'enterprise', cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:''},
-  {n:'Outsource Accelerator',      type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:74, done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'US · UK'},
+  {n:'Callmax Solutions',          type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:20, alloc:31, done:7,  leadOnly:0, spOnly:3, sched:11, resch:0, noshow:1, cancel:6, filter:'',            o:'che'},
+  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:25, alloc:18, done:10, leadOnly:0, spOnly:4, sched:6,  resch:1, noshow:0, cancel:3, filter:'',            o:'rochelle'},
+  {n:'Team HGS UK',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:15, done:7,  leadOnly:2, spOnly:3, sched:0,  resch:0, noshow:2, cancel:1, filter:'AU · NZ',     o:'che'},
+  {n:'Expedock',                   type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:14, done:9,  leadOnly:0, spOnly:1, sched:1,  resch:0, noshow:0, cancel:4, filter:'',            o:'judy'},
+  {n:'People Partners',            type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:11, alloc:9,  done:4,  leadOnly:0, spOnly:0, sched:2,  resch:0, noshow:0, cancel:2, filter:'',            o:'rochelle'},
+  {n:'Callmax Solutions',          type:'enterprise', cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:0,  done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'che'},
+  {n:'Outsource Accelerator',      type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:74, done:0,  leadOnly:0, spOnly:0, sched:0,  resch:0, noshow:0, cancel:0, filter:'US · UK',     o:''},
 ];
 
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
@@ -1730,9 +1742,11 @@ function lfMtdBlock(cycleKey,spFilter){
 function renderLeadFulfillment(){
   const cycleSel=document.getElementById('lfCycleFilter');
   const typeSel=document.getElementById('lfTypeFilter');
+  const ownerSel=document.getElementById('lfOwnerFilter');
   const spSel=document.getElementById('lfSpFilter');
   if(cycleSel)cycleSel.value=state.lfCycleFilter;
   if(typeSel)typeSel.value=state.lfTypeFilter;
+  if(ownerSel)ownerSel.value=state.lfOwnerFilter;
   if(spSel)spSel.value=state.lfSpFilter;
 
   // MTD preview — respects SP filter, always shows both cycles
@@ -1742,9 +1756,10 @@ function renderLeadFulfillment(){
   if(mtd15) mtd15.innerHTML=lfMtdBlock('15th',state.lfSpFilter);
 
   let rows=SP_CYCLES;
-  if(state.lfCycleFilter!=='all') rows=rows.filter(r=>r.cycle===state.lfCycleFilter);
-  if(state.lfTypeFilter!=='all')  rows=rows.filter(r=>r.type===state.lfTypeFilter);
-  if(state.lfSpFilter!=='all')    rows=rows.filter(r=>r.n===state.lfSpFilter);
+  if(state.lfCycleFilter!=='all')  rows=rows.filter(r=>r.cycle===state.lfCycleFilter);
+  if(state.lfTypeFilter!=='all')   rows=rows.filter(r=>r.type===state.lfTypeFilter);
+  if(state.lfOwnerFilter!=='all')  rows=rows.filter(r=>r.o===state.lfOwnerFilter);
+  if(state.lfSpFilter!=='all')     rows=rows.filter(r=>r.n===state.lfSpFilter);
 
   // Summary cards
   const totExpected=rows.reduce((a,r)=>a+r.expDc,0);
@@ -1785,7 +1800,7 @@ function renderLeadFulfillment(){
   const tbody=document.getElementById('lfTable');
   if(!tbody)return;
   tbody.innerHTML=rows.length===0
-    ?'<tr><td colspan="12" style="text-align:center;color:#94a3b8;padding:14px">No data for selected filters</td></tr>'
+    ?'<tr><td colspan="13" style="text-align:center;color:#94a3b8;padding:14px">No data for selected filters</td></tr>'
     :rows.map(r=>{
       const schedTotal=r.sched+r.resch;
       const filterPill=r.filter?`<span class="pill" style="background:#e0e7ff;color:#3730a3;font-size:.65rem">${r.filter}</span>`:'<span style="color:#94a3b8;font-size:.7rem">All</span>';
@@ -1797,6 +1812,11 @@ function renderLeadFulfillment(){
       const varCell=r.expDc===0
         ?'<span style="color:#94a3b8">—</span>'
         :`<span style="font-weight:700;color:${varColor}">${varSign}${variance.toFixed(1)}%</span>`;
+      const oc={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
+      const ol={judy:'Judy',stef:'Stef',che:'Che',rochelle:'Rochelle'};
+      const ownerCell=r.o&&ol[r.o]
+        ?`<span class="pill" style="background:${oc[r.o]};color:#fff">${ol[r.o]}</span>`
+        :'<span style="color:#94a3b8">—</span>';
       return`<tr>
         <td><strong>${r.n}</strong></td>
         <td style="text-align:center">${typePill(r.type)}</td>
@@ -1808,6 +1828,7 @@ function renderLeadFulfillment(){
         <td style="text-align:center">${schedTotal>0?schedTotal:'—'}</td>
         <td style="text-align:center;color:${r.noshow>0?'#d97706':'#94a3b8'}">${r.noshow>0?r.noshow:'—'}</td>
         <td style="text-align:center;color:${r.cancel>0?'#dc2626':'#94a3b8'}">${r.cancel>0?r.cancel:'—'}</td>
+        <td style="text-align:center">${ownerCell}</td>
         <td style="text-align:center">${fulfillBadge(r.done,r.expDc)}</td>
         <td style="text-align:center">${varCell}</td>
       </tr>`;
@@ -2294,6 +2315,7 @@ window.setDsCompanyFilter=function(v){state.dsCompanyFilter=v;updateAll();};
 window.setDsDealOwnerFilter=function(v){state.dsDealOwnerFilter=v;updateAll();};
 window.setLfCycleFilter=function(v){state.lfCycleFilter=v;renderLeadFulfillment();};
 window.setLfTypeFilter=function(v){state.lfTypeFilter=v;renderLeadFulfillment();};
+window.setLfOwnerFilter=function(v){state.lfOwnerFilter=v;renderLeadFulfillment();};
 window.setLfSpFilter=function(v){state.lfSpFilter=v;renderLeadFulfillment();};
 function openPicker(){
   state.pickerOpen=true;
