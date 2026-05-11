@@ -7,6 +7,44 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    /* PASSWORD GATE */
+    #sp-gate {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: #f9fafb; align-items: center; justify-content: center;
+    }
+    .gate-card {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px;
+      padding: 48px 40px; width: 100%; max-width: 380px; text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,.07);
+    }
+    .gate-logo {
+      width: 52px; height: 52px; margin: 0 auto 20px;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      border-radius: 14px; display: grid; place-items: center;
+      font-weight: 800; font-size: 18px; color: #fff; letter-spacing: .02em;
+    }
+    .gate-title { font-size: 1.1rem; font-weight: 700; color: #111827; margin-bottom: 6px; }
+    .gate-sub { font-size: 0.78rem; color: #6b7280; margin-bottom: 28px; }
+    .gate-input {
+      width: 100%; padding: 12px 16px; border-radius: 8px;
+      border: 1px solid #d1d5db; background: #f9fafb;
+      color: #111827; font-size: 0.95rem; outline: none;
+      transition: border-color .15s; margin-bottom: 12px;
+      text-align: center; letter-spacing: .1em; font-family: inherit;
+    }
+    .gate-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .gate-btn {
+      width: 100%; padding: 12px; border-radius: 8px;
+      background: #1e40af; color: #fff; border: none;
+      font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: background .15s; letter-spacing: .04em; font-family: inherit;
+    }
+    .gate-btn:hover { background: #1d4ed8; }
+    .gate-error {
+      display: none; margin-top: 12px;
+      font-size: 0.75rem; color: #dc2626; font-weight: 600;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f9fafb; color: #111827; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
@@ -197,6 +235,49 @@
 </head>
 <body>
 
+<script>
+  (function(){
+    var PASSWORD='OA-CS-2026';
+    if(sessionStorage.getItem('oa_sp_unlocked')==='1') return;
+    document.addEventListener('DOMContentLoaded',function(){
+      document.getElementById('sp-gate').style.display='flex';
+      document.getElementById('sp-main-wrap').style.display='none';
+      document.getElementById('sp-gate-input').focus();
+    });
+    window.__spCheckGate=function(){
+      var val=document.getElementById('sp-gate-input').value;
+      if(val===PASSWORD){
+        sessionStorage.setItem('oa_sp_unlocked','1');
+        document.getElementById('sp-gate').style.display='none';
+        document.getElementById('sp-main-wrap').style.display='';
+      } else {
+        var err=document.getElementById('sp-gate-error');
+        err.style.display='block';
+        document.getElementById('sp-gate-input').value='';
+        document.getElementById('sp-gate-input').focus();
+        setTimeout(function(){err.style.display='none';},2500);
+      }
+    };
+    window.__spGateKey=function(e){if(e.key==='Enter') window.__spCheckGate();};
+  })();
+</script>
+
+<!-- PASSWORD GATE OVERLAY -->
+<div id="sp-gate">
+  <div class="gate-card">
+    <div class="gate-logo">SP</div>
+    <div class="gate-title">SP Weekly Report</div>
+    <div class="gate-sub">Enter the password to access this report</div>
+    <input id="sp-gate-input" class="gate-input" type="password"
+           placeholder="Password" onkeydown="__spGateKey(event)" autocomplete="off" />
+    <button class="gate-btn" onclick="__spCheckGate()">Unlock</button>
+    <div id="sp-gate-error" class="gate-error">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT WRAPPER -->
+<div id="sp-main-wrap">
+
 <!-- ═══ HEADER ══════════════════════════════════════════════════════════════ -->
 <header>
   <div style="display:flex;align-items:center;gap:12px;">
@@ -275,6 +356,10 @@
       <div class="nav-item" data-view="lead-fulfillment" onclick="showView('lead-fulfillment')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
         Lead Fulfillment
+      </div>
+      <div class="nav-item" data-view="pipeline" onclick="showView('pipeline')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M3 14h7v7H3z"/><path d="M14 14h7v7h-7z"/></svg>
+        Pipeline
       </div>
     </div>
   </nav>
@@ -612,13 +697,11 @@
               <span class="tbl-filter-label">Deal Status</span>
               <select class="tbl-filter-select" id="dsDealStatusFilter" onchange="setDsDealStatusFilter(this.value)">
                 <option value="all">All</option>
-                <option value="Closed won">Closed Won</option>
-                <option value="Decision Maker Bought-in">DM Bought-in</option>
-                <option value="Keen – Needs Internal Discussion">Keen – Needs Discuss.</option>
-                <option value="With hesitations">With Hesitations</option>
-                <option value="Not the decision maker">Not the DM</option>
-                <option value="Early Stage Startup">Early Stage</option>
-                <option value="Not interested">Not Interested</option>
+                <option value="CS - Closed Won">Closed Won</option>
+                <option value="CS - Alignment Call Completed">Alignment Call Completed</option>
+                <option value="CS - Demo Call Completed">Demo Call Completed</option>
+                <option value="CS - Deal Created">Deal Created</option>
+                <option value="CS - No Show">No Show</option>
                 <option value="">No Status</option>
               </select>
             </div>
@@ -1020,6 +1103,80 @@
       </div>
     </div>
 
+    <!-- ── PIPELINE TRACKER VIEW ── -->
+    <div id="pipeline-view" class="view">
+      <div class="view-title">Pipeline Tracker
+        <span style="font-size:.75rem;background:#1e40af;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600;margin-left:8px" id="plTagLabel">MTD</span>
+      </div>
+
+      <!-- Target banner -->
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:0.74rem;color:#1e40af;line-height:1.6">
+        <strong>Targets:</strong> &nbsp; DC1 Close Rate <strong>≥ 30%</strong> &nbsp;·&nbsp; Overall Close Rate <strong>≥ 50%</strong> of attended &nbsp;·&nbsp; Show-up Rate <strong>≥ 70%</strong> &nbsp;·&nbsp; Avg Calls to Close <strong>≤ 1.5</strong>
+      </div>
+
+      <!-- KPI cards -->
+      <div class="summary-grid" style="margin-bottom:14px">
+        <div class="card" style="border-top-color:#1e40af">
+          <div class="lbl">DC1 Total</div>
+          <div class="big" id="plTotalCount">—</div>
+          <div class="sub" id="plShowupSub">— attended · — no-show</div>
+        </div>
+        <div class="card" style="border-top-color:#059669">
+          <div class="lbl">Closed Won</div>
+          <div class="big" id="plClosedCount">—</div>
+          <div class="sub" id="plDC1CloseRate">— close rate · target 30%</div>
+        </div>
+        <div class="card" style="border-top-color:#7c3aed">
+          <div class="lbl">Overall Close Rate</div>
+          <div class="big" id="plOverallCloseRate">—</div>
+          <div class="sub">of attended DC1 · target 50%</div>
+        </div>
+        <div class="card" style="border-top-color:#d97706">
+          <div class="lbl">Avg Calls to Close</div>
+          <div class="big" id="plAvgCalls">—</div>
+          <div class="sub" id="plAvgCallsSub">target ≤ 1.5 calls</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:14px;margin-bottom:14px">
+        <!-- Waterfall funnel -->
+        <div class="card">
+          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Pipeline Waterfall</div>
+          <div id="plFunnel"></div>
+        </div>
+
+        <!-- Right column: Calls to Close + By Owner -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Calls to Close</div>
+            <div id="plCallsToClose"></div>
+          </div>
+          <div class="card">
+            <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">By Owner</div>
+            <div id="plOwnerTable"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open pipeline table -->
+      <div class="card">
+        <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Open Pipeline</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:0.77rem">
+            <thead><tr>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">DC1 Date</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">DC2 Date</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">DC3 Date</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Company</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Owner</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Stage</th>
+            </tr></thead>
+            <tbody id="plPipelineTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /main-content -->
 </div><!-- /app-body -->
 
@@ -1225,81 +1382,87 @@ const MEETINGS = [
 // p: person key, d: deal createdate, ds: deal_status ('' = no status set)
 const DS_DEALS = [
   // Judy (78367246)
-  {p:'judy',d:'2026-04-01',co:'Robotronics.ai',ds:''},
-  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'Closed won',cd:'2026-04-13'},
-  {p:'judy',d:'2026-04-06',co:'Finserve Global',ds:'Decision Maker Bought-in'},
-  {p:'judy',d:'2026-04-06',co:'Trainonex Solutions',ds:''},
-  {p:'judy',d:'2026-04-06',co:'Fusion CX',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-07',co:'Titan Clarity',ds:''},
-  {p:'judy',d:'2026-04-07',co:'Alorica',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-08',co:'123Employee',ds:'Closed won',cd:'2021-09-01'},
-  {p:'judy',d:'2026-04-08',co:'Snapscale',ds:'Closed won',cd:'2022-10-12'},
-  {p:'judy',d:'2026-04-08',co:'Avata Technologies',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-08',co:'Aadi Business Solution',ds:''},
-  {p:'judy',d:'2026-04-10',co:'Innopact',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-10',co:'Talent Connect',ds:''},
-  {p:'judy',d:'2026-04-13',co:'Pristine E Tele Services',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-15',co:'Netsmartz',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-15',co:'DialX',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-15',co:'SkyOS BPO',ds:''},
-  {p:'judy',d:'2026-04-16',co:'Peak Support',ds:''},
-  {p:'judy',d:'2026-04-16',co:'CreaThink Solutions',ds:''},
-  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'Closed won',cd:'2023-11-01'},
-  {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-17',co:'Prime Bridge Solutions',ds:'Decision Maker Bought-in'},
-  {p:'judy',d:'2026-04-17',co:'Prestige OSS',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'Closed won',cd:'2026-02-01'},
-  {p:'judy',d:'2026-04-22',co:'EmpireOne Group',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-22',co:'Coderland',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-22',co:'Revelo',ds:'Not interested'},
-  {p:'judy',d:'2026-04-22',co:'MB Group',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-23',co:'CapActix Business Solutions',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-23',co:'HeyDelegate',ds:'With hesitations'},
-  {p:'judy',d:'2026-04-24',co:'Exordiom',ds:'Early Stage Startup'},
-  {p:'judy',d:'2026-04-27',co:'Ekinova',ds:'Not the decision maker'},
-  {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'Decision Maker Bought-in'},
-  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'Closed won',cd:'2026-04-23'},
-  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'Closed won',cd:'2026-04-08'},
-  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'Closed won',cd:'2026-04-01'},
+  {p:'judy',d:'2026-04-01',co:'Robotronics.ai',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-01',co:'Intelliworx PH',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'CS - Closed Won',cd:'2026-04-13'},
+  {p:'judy',d:'2026-04-06',co:'Finserve Global',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-06',co:'Trainonex Solutions',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-06',co:'Fusion CX',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-07',co:'Titan Clarity',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-07',co:'Alorica',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-08',co:'123Employee',ds:'CS - Closed Won'},
+  {p:'judy',d:'2026-04-08',co:'Snapscale',ds:'CS - Closed Won'},
+  {p:'judy',d:'2026-04-08',co:'Avata Technologies',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-08',co:'Aadi Business Solution',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-10',co:'Innopact',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-10',co:'Talent Connect Recruitment Agency',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-10',co:'VensureHR',ds:'CS - Deal Created'},
+  {p:'judy',d:'2026-04-13',co:'Pristine E Tele Services',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-15',co:'Netsmartz',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-15',co:'DialX',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-15',co:'SkyOS BPO',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-16',co:'Peak Support',ds:'CS - Closed Won',cd:'2026-04-15'},
+  {p:'judy',d:'2026-04-16',co:'CreaThink Solutions',ds:'CS - Deal Created'},
+  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'CS - Closed Won'},
+  {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:''},
+  {p:'judy',d:'2026-04-17',co:'Prime Bridge Solutions',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-17',co:'Prestige OSS',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'CS - Closed Won'},
+  {p:'judy',d:'2026-04-20',co:'ICCS Digx',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-22',co:'EmpireOne Group',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-22',co:'Coderland',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-22',co:'Revelo',ds:'CS - Alignment Call Completed'},
+  {p:'judy',d:'2026-04-22',co:'MB Group',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-23',co:'Econx Group',ds:'CS - Deal Created'},
+  {p:'judy',d:'2026-04-23',co:'CapActix Business Solutions',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-23',co:'HeyDelegate',ds:''},
+  {p:'judy',d:'2026-04-24',co:'Alvi Global',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-24',co:'Exordiom',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-27',co:'Ekinova',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'CS - Closed Won',cd:'2026-04-29'},
+  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'CS - Closed Won',cd:'2026-04-23'},
+  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'CS - Closed Won',cd:'2026-04-08'},
+  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'CS - Closed Won',cd:'2026-04-01'},
   // Stef (635230480)
-  {p:'stef',d:'2026-04-01',co:'Virtual Experts PH',ds:''},
-  {p:'stef',d:'2026-04-07',co:'Complete BPO',ds:'Decision Maker Bought-in'},
-  {p:'stef',d:'2026-04-10',co:'Black Seedspire Technologies',ds:''},
-  {p:'stef',d:'2026-04-11',co:'Releaf Claim',ds:'With hesitations'},
-  {p:'stef',d:'2026-04-17',co:'Resource Consulting',ds:'With hesitations'},
-  {p:'stef',d:'2026-04-23',co:'Ellora – Outsourced Team',ds:''},
-  {p:'stef',d:'2026-04-23',co:'Kyniska',ds:''},
-  {p:'stef',d:'2026-04-23',co:'Gobro Web Services',ds:''},
-  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'Closed won',cd:'2026-01-06'},
+  {p:'stef',d:'2026-04-01',co:'Virtual Experts PH',ds:'CS - No Show'},
+  {p:'stef',d:'2026-04-01',co:'ZigZag (Outposter)',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'stef',d:'2026-04-01',co:'Pandr - Call Center',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'stef',d:'2026-04-02',co:'Corpshore Solutions',ds:'CS - Closed Won',cd:'2026-04-02'},
+  {p:'stef',d:'2026-04-07',co:'Complete BPO',ds:'CS - Deal Created'},
+  {p:'stef',d:'2026-04-10',co:'Black Seedspire Technologies',ds:'CS - Deal Created'},
+  {p:'stef',d:'2026-04-11',co:'Releaf Claim',ds:'CS - Demo Call Completed'},
+  {p:'stef',d:'2026-04-17',co:'Resource Consulting',ds:'CS - Deal Created'},
+  {p:'stef',d:'2026-04-20',co:'Global IT Finest',ds:'CS - Deal Created'},
+  {p:'stef',d:'2026-04-23',co:'Ellora – Outsourced Team',ds:'CS - Demo Call Completed'},
+  {p:'stef',d:'2026-04-23',co:'Kyniska',ds:'CS - No Show'},
+  {p:'stef',d:'2026-04-23',co:'Gobro Web Services',ds:'CS - Demo Call Completed'},
+  {p:'stef',d:'2026-04-29',co:'Onehalf',ds:'CS - Demo Call Completed'},
+  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'CS - Closed Won'},
   // Che (635230465)
-  {p:'che',d:'2026-04-01',co:'Sparkbridge',ds:''},
+  {p:'che',d:'2026-04-01',co:'Sparkbridge',ds:'CS - Deal Created'},
+  {p:'che',d:'2026-04-01',co:'HGS UK',ds:'CS - Closed Won',cd:'2026-04-01'},
   {p:'che',d:'2026-04-06',co:'Outsource Accelerator',ds:''},
-  {p:'che',d:'2026-04-14',co:'Cost Solution Pty Ltd.',ds:'Keen – Needs Internal Discussion'},
-  {p:'che',d:'2026-04-20',co:'Global IT Finest',ds:''},
-  {p:'che',d:'2026-04-21',co:'VensureHR',ds:''},
-  {p:'che',d:'2026-04-23',co:'Econx Group',ds:''},
-  {p:'che',d:'2026-04-24',co:'Alvi Global',ds:''},
+  {p:'che',d:'2026-04-14',co:'Cost Solution Pty Ltd.',ds:'CS - Demo Call Completed'},
+  {p:'che',d:'2026-04-23',co:'Global Impact Sourcing',ds:'CS - Demo Call Completed'},
   {p:'che',d:'2026-04-28',co:'Novacomp',ds:''},
-  {p:'che',d:'2026-04-28',co:'Outsourced',ds:''},
-  {p:'che',d:'2026-04-29',co:'Onehalf',ds:''},
   {p:'che',d:'2026-05-01',co:'StaffHero',ds:''},
   {p:'che',d:'2026-05-04',co:'wgsindia',ds:''},
   {p:'che',d:'2026-05-04',co:'Biscc',ds:''},
   // Rochelle (76241586)
-  {p:'rochelle',d:'2026-04-20',co:'Success Link Outsourcing US',ds:'Decision Maker Bought-in'},
-  {p:'rochelle',d:'2026-04-22',co:'CnerG',ds:'Keen – Needs Internal Discussion'},
-  {p:'rochelle',d:'2026-04-24',co:'Proficient CS',ds:'Keen – Needs Internal Discussion'},
-  {p:'rochelle',d:'2026-04-29',co:'Brand Vantage',ds:'Keen – Needs Internal Discussion'},
+  {p:'rochelle',d:'2026-04-01',co:'Goodland BPO',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'rochelle',d:'2026-04-20',co:'Success Link Outsourcing US',ds:''},
+  {p:'rochelle',d:'2026-04-22',co:'CnerG',ds:'CS - Demo Call Completed'},
+  {p:'rochelle',d:'2026-04-24',co:'Proficient CS',ds:'CS - Demo Call Completed'},
+  {p:'rochelle',d:'2026-04-28',co:'Outsourced',ds:'CS - Deal Created'},
+  {p:'rochelle',d:'2026-04-29',co:'Brand Vantage',ds:'CS - Deal Created'},
 ];
 const DS_STATUSES = [
-  {key:'Closed won',                       label:'Closed Won',           color:'#1e40af'},
-  {key:'Decision Maker Bought-in',         label:'DM Bought-in',         color:'#2563eb'},
-  {key:'Keen – Needs Internal Discussion', label:'Keen – Needs Discuss.',color:'#475569'},
-  {key:'With hesitations',                 label:'With Hesitations',     color:'#64748b'},
-  {key:'Not the decision maker',           label:'Not the DM',           color:'#94a3b8'},
-  {key:'Early Stage Startup',              label:'Early Stage',          color:'#d1d5db'},
-  {key:'Not interested',                   label:'Not Interested',       color:'#dc2626'},
-  {key:'',                                 label:'No Status',            color:'#e5e7eb'},
+  {key:'CS - Closed Won',               label:'Closed Won',               color:'#1e40af'},
+  {key:'CS - Alignment Call Completed', label:'Alignment Call Completed', color:'#2563eb'},
+  {key:'CS - Demo Call Completed',      label:'Demo Call Completed',      color:'#475569'},
+  {key:'CS - Deal Created',             label:'Deal Created',             color:'#94a3b8'},
+  {key:'CS - No Show',                  label:'No Show',                  color:'#dc2626'},
+  {key:'',                              label:'No Status',                color:'#e5e7eb'},
 ];
 
 // ─── ACTIVE PARTNERS (268 CS - Closed Won deals) ─────────────────────────────
@@ -1415,21 +1578,19 @@ const AP_PARTNERS = [
 
 // ─── DEAL STATUS DATA (CS Pipeline, Apr 1 – May 6; Closed Won = Active subs only) ──
 const DS_STAGE_MAP = [
-  {key:'Closed won',                       label:'Closed Won (Active)',      color:'#1e40af'},
-  {key:'Decision Maker Bought-in',         label:'Decision Maker Bought-in', color:'#2563eb'},
-  {key:'Keen – Needs Internal Discussion', label:'Keen – Needs Discussion',  color:'#475569'},
-  {key:'With hesitations',                 label:'With Hesitations',         color:'#64748b'},
-  {key:'Not the decision maker',           label:'Not the Decision Maker',   color:'#94a3b8'},
-  {key:'Early Stage Startup',              label:'Early Stage Startup',      color:'#d1d5db'},
-  {key:'Not interested',                   label:'Not Interested',           color:'#dc2626'},
-  {key:'',                                 label:'No Status Set',            color:'#e5e7eb'},
+  {key:'CS - Closed Won',               label:'Closed Won',               color:'#1e40af'},
+  {key:'CS - Alignment Call Completed', label:'Alignment Call Completed', color:'#2563eb'},
+  {key:'CS - Demo Call Completed',      label:'Demo Call Completed',      color:'#475569'},
+  {key:'CS - Deal Created',             label:'Deal Created',             color:'#94a3b8'},
+  {key:'CS - No Show',                  label:'No Show',                  color:'#dc2626'},
+  {key:'',                              label:'No Status Set',            color:'#e5e7eb'},
 ];
 function computeDealStages(s,e){
   const recs=DS_DEALS.filter(r=>r.d>=s&&r.d<=e);
   return DS_STAGE_MAP.map(m=>({
     label:m.label,color:m.color,
-    v:m.key==='Closed won'
-      ? recs.filter(r=>r.ds==='Closed won'&&r.cd&&r.cd>=s&&r.cd<=e).length
+    v:m.key==='CS - Closed Won'
+      ? recs.filter(r=>r.ds==='CS - Closed Won'&&r.cd&&r.cd>=s&&r.cd<=e).length
       : recs.filter(r=>r.ds===m.key).length
   })).filter(d=>d.v>0);
 }
@@ -1591,19 +1752,16 @@ function dsStats(s,e){
 function dsRenderBreakdown(){
   const stages=computeDealStages(state.startDate,state.endDate);
   const total=stages.reduce((a,d)=>a+d.v,0);
-  const nurture=stages.filter(d=>d.label!=='Closed Won (Active)').reduce((a,d)=>a+d.v,0);
+  const nurture=stages.filter(d=>d.label!=='Closed Won').reduce((a,d)=>a+d.v,0);
   const PRIORITY={
-    'Closed Won (Active)':{label:'Active',bg:'#dbeafe',c:'#1e40af'},
-    'Decision Maker Bought-in':{label:'High',bg:'#1e40af',c:'#fff'},
-    'Keen – Needs Discussion':{label:'High',bg:'#1e40af',c:'#fff'},
-    'With Hesitations':{label:'Med',bg:'#e5e7eb',c:'#475569'},
-    'Not the Decision Maker':{label:'Med',bg:'#e5e7eb',c:'#475569'},
+    'Closed Won':{label:'Active',bg:'#dbeafe',c:'#1e40af'},
+    'Alignment Call Completed':{label:'High',bg:'#1e40af',c:'#fff'},
+    'Demo Call Completed':{label:'Med',bg:'#e5e7eb',c:'#475569'},
+    'Deal Created':{label:'Low',bg:'#f3f4f6',c:'#94a3b8'},
+    'No Show':{label:'Disq.',bg:'#fee2e2',c:'#dc2626'},
     'No Status Set':{label:'Low',bg:'#f3f4f6',c:'#94a3b8'},
-    'Early Stage Startup':{label:'Low',bg:'#f3f4f6',c:'#94a3b8'},
-    'Not Interested':{label:'Disq.',bg:'#fee2e2',c:'#dc2626'},
   };
-  const highPri=(stages.find(d=>d.label==='Decision Maker Bought-in')||{v:0}).v
-               +(stages.find(d=>d.label==='Keen – Needs Discussion')||{v:0}).v;
+  const highPri=(stages.find(d=>d.label==='Alignment Call Completed')||{v:0}).v;
   document.getElementById('dsTotalCount').textContent=total;
   document.getElementById('dsNurtureCount').textContent=nurture;
   document.getElementById('dsBreakdownTable').innerHTML=`
@@ -1639,7 +1797,7 @@ function dsRenderBreakdown(){
       </tbody>
     </table>
     ${stages.length>0?`<div style="margin-top:10px;padding:9px 12px;background:#eff6ff;border-radius:7px;font-size:0.7rem;color:#475569;border-left:3px solid #2563eb">
-      Focus on <strong style="color:#1e40af">${highPri} High-priority leads</strong> (DM Bought-in + Keen) — closest to converting. Address <strong>${(stages.find(d=>d.label==='With Hesitations')||{v:0}).v} hesitations</strong> and <strong>${(stages.find(d=>d.label==='No Status Set')||{v:0}).v} untagged leads</strong> next.
+      Focus on <strong style="color:#1e40af">${highPri} Alignment Call</strong> lead(s) — closest to converting. Re-engage <strong>${(stages.find(d=>d.label==='No Show')||{v:0}).v} no-shows</strong> and tag <strong>${(stages.find(d=>d.label==='No Status Set')||{v:0}).v} untagged leads</strong> next.
     </div>`:''}`;
 }
 
@@ -2013,6 +2171,173 @@ function renderApTable(){
 }
 window.setApFilter=function(){renderApTable();};
 
+// ─── PIPELINE TRACKER ─────────────────────────────────────────────────────────
+function renderPipeline(){
+  const s=state.startDate, e=state.endDate;
+  const recs=DS_DEALS.filter(r=>r.d>=s&&r.d<=e);
+  const total=recs.length;
+  const rateClr=(rate,tgt)=>rate>=tgt?'#059669':rate>=tgt*0.7?'#d97706':'#dc2626';
+  const ownerClr={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
+  const tagText=state.activePreset==='mtd'?'MTD':state.activePreset==='lm'?'Last Month':state.activePreset==='7d'?'L7D':state.activePreset==='14d'?'L14D':state.activePreset==='30d'?'L30D':state.activePreset==='90d'?'L90D':'Custom';
+  const plTag=document.getElementById('plTagLabel');if(plTag)plTag.textContent=tagText;
+  const setEl=(id,txt,clr)=>{const el=document.getElementById(id);if(el){el.textContent=txt;if(clr)el.style.color=clr;}};
+
+  // Stage counts — new HubSpot stages + existing legacy stages
+  const dc2Booked  = recs.filter(r=>r.ds==='Demo Call 2 Booked').length;
+  const dc3Booked  = recs.filter(r=>r.ds==='Demo Call 3 Booked').length;
+  const closedWon  = recs.filter(r=>r.ds==='CS - Closed Won').length;
+  const nurture    = recs.filter(r=>r.ds==='Nurture').length;
+  const lost       = recs.filter(r=>r.ds==='Lost').length;
+  const noShow     = recs.filter(r=>r.ds==='CS - No Show').length;
+  const tagged     = dc2Booked+dc3Booked+closedWon+nurture+lost+noShow;
+  const untagged   = total - tagged; // deals still on legacy/interim stages
+
+  // Attended = all except no-show and unconfirmed-deal-created
+  const attended   = recs.filter(r=>['CS - Demo Call Completed','CS - Alignment Call Completed','CS - Closed Won','Demo Call 2 Booked','Demo Call 3 Booked','Nurture','Lost'].includes(r.ds)).length;
+  const knownOutcome = attended + noShow;
+  const showupPct  = knownOutcome>0?(attended/knownOutcome*100):0;
+  const dc1ClosePct = attended>0?(closedWon/attended*100):0;
+  const overallClosePct = attended>0?((closedWon+dc2Booked+dc3Booked)/attended*100):0;
+
+  // Calls to close — uses dc2 / dc3 date fields on DS_DEALS entries
+  const closedRecs = recs.filter(r=>r.ds==='CS - Closed Won');
+  const closedDC1  = closedRecs.filter(r=>!r.dc2&&!r.dc3).length;
+  const closedDC2  = closedRecs.filter(r=>r.dc2&&!r.dc3).length;
+  const closedDC3  = closedRecs.filter(r=>r.dc3).length;
+  const avgCalls   = closedWon>0?((closedDC1*1+closedDC2*2+closedDC3*3)/closedWon):0;
+
+  // KPI cards
+  setEl('plTotalCount', total, '');
+  setEl('plShowupSub', `${attended} attended · ${noShow} no-show`, '');
+  setEl('plClosedCount', closedWon, closedWon>0?rateClr(dc1ClosePct,30):'');
+  setEl('plDC1CloseRate', attended>0?dc1ClosePct.toFixed(0)+'% close rate · target 30%':'— close rate · target 30%', attended>0?rateClr(dc1ClosePct,30):'');
+  setEl('plOverallCloseRate', attended>0?overallClosePct.toFixed(0)+'%':'—', attended>0?rateClr(overallClosePct,50):'');
+  setEl('plAvgCalls', closedWon>0?avgCalls.toFixed(1)+'x':'—', closedWon>0?rateClr(2-avgCalls, 0.5):'');
+  setEl('plAvgCallsSub', closedWon>0?`${closedDC1} on DC1 · ${closedDC2} on DC2 · ${closedDC3} on DC3`:'target ≤ 1.5 calls', '');
+
+  // ── WATERFALL FUNNEL ─────────────────────────────────────────────────────
+  const plFunnelEl=document.getElementById('plFunnel');
+  if(plFunnelEl){
+    const wfBar=(label,count,color,note,isBase)=>{
+      const barW=total>0?Math.max(isBase?100:2,Math.round(count/total*100)):0;
+      const pct=total>0?(count/total*100):0;
+      return`<div style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <div style="min-width:150px;font-size:0.73rem;font-weight:${isBase?700:600};color:${isBase?'#111827':'#374151'}">${label}</div>
+          <div style="flex:1;background:#f1f5f9;border-radius:4px;height:${isBase?26:20}px;overflow:hidden;position:relative">
+            <div style="height:100%;width:${barW}%;background:${color};border-radius:4px;transition:width .3s"></div>
+            ${label==='Closed Won'?`<div style="position:absolute;left:30%;top:0;bottom:0;width:2px;background:#94a3b8;opacity:.5" title="30% target"></div>`:''}
+          </div>
+          <div style="min-width:28px;text-align:right;font-weight:700;font-size:${isBase?'0.88':'0.82'}rem;color:#111827">${count}</div>
+          <div style="min-width:42px;text-align:right;font-size:0.7rem;font-weight:600;color:${isBase?'#1e40af':color}">${isBase?'100%':pct.toFixed(0)+'%'}</div>
+        </div>
+        ${note?`<div style="margin-left:158px;font-size:0.65rem;color:#94a3b8">↳ ${note}</div>`:''}
+      </div>`;
+    };
+    plFunnelEl.innerHTML=`
+      ${wfBar('DC1 Total (CS Demo Call Date)', total, '#1e40af', `${attended} attended · ${noShow} no-show`, true)}
+      <div style="margin:4px 0 12px 0;border-top:2px dashed #e5e7eb"></div>
+      <div style="font-size:0.62rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-left:158px">Outcome Distribution</div>
+      ${wfBar('Demo Call 2 Booked', dc2Booked, '#2563eb', dc2Booked===0?'Set stage in HubSpot once DC2 is scheduled':'')}
+      ${wfBar('Demo Call 3 Booked', dc3Booked, '#7c3aed', dc3Booked===0?'Set stage in HubSpot once DC3 is scheduled':'')}
+      ${wfBar('Closed Won',         closedWon,  '#059669', closedWon>0?`30% target line shown on bar`:'',false)}
+      ${wfBar('Nurture',            nurture,    '#d97706', nurture===0?'Set stage in HubSpot for long-term follow-up':'')}
+      ${wfBar('Lost',               lost,       '#dc2626', lost===0?'Set stage in HubSpot when deal is marked lost':'')}
+      ${wfBar('No Show',            noShow,     '#94a3b8', '')}
+      ${untagged>0?wfBar('Untagged (needs update)', untagged, '#e5e7eb', `${untagged} deals still on legacy stages — update in HubSpot`):''}
+    `;
+  }
+
+  // ── CALLS TO CLOSE ───────────────────────────────────────────────────────
+  const plC2CEl=document.getElementById('plCallsToClose');
+  if(plC2CEl){
+    const c2cBar=(label,count,color)=>{
+      const barW=closedWon>0?Math.max(count>0?4:0,Math.round(count/closedWon*100)):0;
+      const pct=closedWon>0?(count/closedWon*100):0;
+      return`<div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="min-width:96px;font-size:0.72rem;font-weight:600;color:#374151">${label}</div>
+          <div style="flex:1;background:#f1f5f9;border-radius:4px;height:18px;overflow:hidden">
+            <div style="height:100%;width:${barW}%;background:${color};border-radius:4px"></div>
+          </div>
+          <div style="min-width:22px;text-align:right;font-weight:700;font-size:0.8rem;color:#111827">${count}</div>
+          <div style="min-width:36px;text-align:right;font-size:0.68rem;font-weight:600;color:${color}">${pct.toFixed(0)}%</div>
+        </div>
+      </div>`;
+    };
+    plC2CEl.innerHTML=closedWon===0
+      ?'<div style="color:#94a3b8;font-size:0.75rem;text-align:center;padding:12px">No closed deals in period</div>'
+      :c2cBar('Closed on DC1',closedDC1,'#059669')
+       +c2cBar('Closed on DC2',closedDC2,'#2563eb')
+       +c2cBar('Closed on DC3',closedDC3,'#7c3aed')
+       +`<div style="margin-top:10px;padding:8px 10px;background:#f0fdf4;border-radius:6px;font-size:0.7rem;color:#166534;border-left:3px solid #059669">
+           Avg <strong>${avgCalls.toFixed(1)} calls</strong> to close &nbsp;·&nbsp; ${closedDC1} closed on first call (${closedWon>0?(closedDC1/closedWon*100).toFixed(0):0}%)
+         </div>`;
+  }
+
+  // ── BY OWNER ─────────────────────────────────────────────────────────────
+  const owners=[{key:'judy',label:'Judy'},{key:'stef',label:'Stef'},{key:'che',label:'Che'},{key:'rochelle',label:'Rochelle'}];
+  const plOwnerEl=document.getElementById('plOwnerTable');
+  if(plOwnerEl) plOwnerEl.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:0.73rem">
+    <thead><tr>
+      <th style="text-align:left;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Owner</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC1</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC2</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC3</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Won</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Lost</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Close%</th>
+    </tr></thead>
+    <tbody>${owners.map(o=>{
+      const or=recs.filter(r=>r.p===o.key);
+      const ob=or.length;
+      const odc2=or.filter(r=>r.ds==='Demo Call 2 Booked').length;
+      const odc3=or.filter(r=>r.ds==='Demo Call 3 Booked').length;
+      const ocl=or.filter(r=>r.ds==='CS - Closed Won').length;
+      const olost=or.filter(r=>r.ds==='Lost').length;
+      const oatt=or.filter(r=>['CS - Demo Call Completed','CS - Alignment Call Completed','CS - Closed Won','Demo Call 2 Booked','Demo Call 3 Booked','Nurture','Lost'].includes(r.ds)).length;
+      const ocr=oatt>0?(ocl/oatt*100).toFixed(0)+'%':'—';
+      const crClr=oatt>0?rateClr(ocl/oatt*100,30):'#94a3b8';
+      return`<tr>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${ownerClr[o.key]};color:#fff;font-size:0.65rem">${o.label}</span></td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${ob}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#2563eb">${odc2||'—'}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#7c3aed">${odc3||'—'}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;color:#059669">${ocl}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#dc2626">${olost||'—'}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;color:${crClr}">${ocr}</td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+
+  // ── OPEN PIPELINE TABLE ───────────────────────────────────────────────────
+  const openStages=['Demo Call 2 Booked','Demo Call 3 Booked','CS - Demo Call Completed','CS - Alignment Call Completed','Nurture','CS - Deal Created',''];
+  const openDeals=recs.filter(r=>openStages.includes(r.ds)).sort((a,b)=>b.d.localeCompare(a.d));
+  const stgMap={
+    'Demo Call 2 Booked':     {l:'DC2 Booked',   c:'#2563eb'},
+    'Demo Call 3 Booked':     {l:'DC3 Booked',   c:'#7c3aed'},
+    'CS - Demo Call Completed':{l:'DC1 Done',    c:'#475569'},
+    'CS - Alignment Call Completed':{l:'Alignment Done',c:'#7c3aed'},
+    'Nurture':                {l:'Nurture',       c:'#d97706'},
+    'CS - Deal Created':      {l:'Deal Created',  c:'#94a3b8'},
+    '':                       {l:'No Stage',      c:'#e5e7eb'},
+  };
+  const plTableEl=document.getElementById('plPipelineTable');
+  if(plTableEl) plTableEl.innerHTML=openDeals.length===0
+    ?'<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:14px">No open deals in selected range</td></tr>'
+    :openDeals.map(r=>{
+      const sm=stgMap[r.ds]||{l:'Unknown',c:'#94a3b8'};
+      const txtClr=['#94a3b8','#e5e7eb'].includes(sm.c)?'#1e293b':'#fff';
+      return`<tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.d}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.dc2||'—'}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.dc3||'—'}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><strong style="font-size:0.77rem">${r.co||'—'}</strong></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${ownerClr[r.p]||'#64748b'};color:#fff">${r.p||'—'}</span></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${sm.c};color:${txtClr}">${sm.l}</span></td>
+      </tr>`;
+    }).join('');
+}
+
 function updateAll(){
   const csR=csFilter(state.startDate,state.endDate);
   const csS=csStats(csR);
@@ -2170,6 +2495,7 @@ function updateAll(){
   dcDeal.update();
   dsRenderBreakdown();
   renderSignups();
+  renderPipeline();
 
   // Deal Status breakdown table
   const dsCompanyEl=document.getElementById('dsCompanyFilter');
@@ -2191,7 +2517,7 @@ function updateAll(){
     const personLabel=person?person.label:r.p;
     const pColor=personBadgeColors[r.p]||'#64748b';
     const st=DS_STATUSES.find(s=>s.key===r.ds)||DS_STATUSES[DS_STATUSES.length-1];
-    const pillStyle=st.key===''?'background:#f3f4f6;color:#64748b':'background:'+st.color+';color:'+(st.color==='#e5e7eb'||st.color==='#d1d5db'||st.color==='#d1d5db'?'#1e40af':'#fff');
+    const pillStyle=st.key===''?'background:#f3f4f6;color:#64748b':'background:'+st.color+';color:'+(['#e5e7eb','#d1d5db','#94a3b8'].includes(st.color)?'#1e293b':'#fff');
     return`<tr>
       <td>${r.d}</td>
       <td><strong>${r.co||'—'}</strong></td>
@@ -2213,11 +2539,12 @@ window.showView=function(view){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelector(`[data-view="${view}"]`).classList.add('active');
   state.activeView=view;
-  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report','sp-forecast':'SP Forecast · $300k by Dec 2026','lead-fulfillment':'Lead Fulfillment · SP Cycle Data · May 2026'};
+  const labels={'cs-leads':'CS Leads · Source Partner Report','demo-calls':'Demo Calls · Source Partner Report','active-partners':'Active Partners · Source Partner Report','source-partners':'Source Partners · Source Partner Report','sp-forecast':'SP Forecast · $300k by Dec 2026','lead-fulfillment':'Lead Fulfillment · SP Cycle Data · May 2026','pipeline':'Pipeline Tracker · Conversion Rates & Funnel'};
   document.getElementById('viewSubtitle').textContent=labels[view]||view;
   const hidePicker=['source-partners','sp-forecast','lead-fulfillment'];
   document.getElementById('pickerWrapper').style.display=hidePicker.includes(view)?'none':'';
   if(view==='lead-fulfillment') renderLeadFulfillment();
+  if(view==='pipeline'){ if(state.activePreset==='mtd') setPreset('lm'); else renderPipeline(); }
 };
 
 // ─── PRESETS ─────────────────────────────────────────────────────────────────
@@ -2714,6 +3041,7 @@ function bootCharts(){
     initAll();
     dsRenderBreakdown();
     renderSignups();
+    renderPipeline();
     spRenderTable();
     spInitCharts();
     spUpdateSummary();
@@ -2731,5 +3059,7 @@ function bootCharts(){
 }
 bootCharts();
 </script>
+
+</div><!-- /sp-main-wrap -->
 </body>
 </html>
