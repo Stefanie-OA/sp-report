@@ -1111,27 +1111,17 @@
         <span style="font-size:.75rem;background:#1e40af;color:#fff;padding:2px 10px;border-radius:99px;font-weight:600;margin-left:8px" id="plTagLabel">MTD</span>
       </div>
 
-      <!-- Target banner -->
-      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:0.74rem;color:#1e40af;line-height:1.6">
-        <strong>Targets:</strong> &nbsp; DC1 Close Rate <strong>≥ 30%</strong> &nbsp;·&nbsp; Overall Close Rate <strong>≥ 50%</strong> of attended &nbsp;·&nbsp; Show-up Rate <strong>≥ 70%</strong> &nbsp;·&nbsp; Avg Calls to Close <strong>≤ 1.5</strong>
-      </div>
-
       <!-- KPI cards -->
-      <div class="summary-grid" style="margin-bottom:14px">
+      <div class="summary-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
         <div class="card" style="border-top-color:#1e40af">
-          <div class="lbl">DC1 Total</div>
+          <div class="lbl">Total Calls</div>
           <div class="big" id="plTotalCount">—</div>
           <div class="sub" id="plShowupSub">— attended · — no-show</div>
         </div>
         <div class="card" style="border-top-color:#059669">
-          <div class="lbl">Closed Won</div>
+          <div class="lbl">Total Closed Won</div>
           <div class="big" id="plClosedCount">—</div>
-          <div class="sub" id="plDC1CloseRate">— close rate · target 30%</div>
-        </div>
-        <div class="card" style="border-top-color:#7c3aed">
-          <div class="lbl">Overall Close Rate</div>
-          <div class="big" id="plOverallCloseRate">—</div>
-          <div class="sub">of attended DC1 · target 50%</div>
+          <div class="sub" id="plCloseRateSub">— overall close rate</div>
         </div>
         <div class="card" style="border-top-color:#d97706">
           <div class="lbl">Avg Calls to Close</div>
@@ -1140,29 +1130,62 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:14px;margin-bottom:14px">
-        <!-- Waterfall funnel -->
-        <div class="card">
-          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Pipeline Waterfall</div>
-          <div id="plFunnel"></div>
-        </div>
+      <!-- Decision Tree -->
+      <div class="card" style="margin-bottom:14px">
+        <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Pipeline Decision Tree</div>
+        <div id="plDecisionTree"></div>
+      </div>
 
-        <!-- Right column: Calls to Close + By Owner -->
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="card">
-            <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Calls to Close</div>
-            <div id="plCallsToClose"></div>
-          </div>
-          <div class="card">
-            <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">By Owner</div>
-            <div id="plOwnerTable"></div>
-          </div>
+      <!-- Existing Client Check-ins -->
+      <div class="card" id="plExistingCard" style="margin-bottom:14px;border-top-color:#059669;display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Existing Client Check-ins</div>
+          <span style="font-size:0.65rem;font-weight:600;color:#059669;background:#d1fae5;border-radius:99px;padding:2px 8px" id="plExistingBadge"></span>
+        </div>
+        <div id="plExistingFunnel"></div>
+      </div>
+
+      <!-- By Owner + Calls to Close -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div class="card">
+          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">By Owner</div>
+          <div id="plOwnerTable"></div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Calls to Close</div>
+          <div id="plCallsToClose"></div>
         </div>
       </div>
 
       <!-- Open pipeline table -->
       <div class="card">
-        <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Open Pipeline</div>
+        <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Pipeline Deals</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <input type="text" class="tbl-filter-select" id="plCoFilterInput" placeholder="Filter company…" oninput="setPlCoFilter(this.value)" style="min-width:130px">
+          <select class="tbl-filter-select" id="plOwnerSelect" onchange="setPlOwnerFilter(this.value)">
+            <option value="all">All Owners</option>
+            <option value="stef">Stef</option>
+            <option value="che">Che</option>
+            <option value="judy">Judy</option>
+            <option value="rochelle">Rochelle</option>
+          </select>
+          <select class="tbl-filter-select" id="plStageSelect" onchange="setPlStageFilter(this.value)">
+            <option value="all">All Stages</option>
+            <option value="CS - Closed Won">Closed Won</option>
+            <option value="CS - Demo Call Completed">DC1 Done</option>
+            <option value="CS - Deal Created">Deal Created</option>
+            <option value="Demo Call 2 Booked">DC2 Booked</option>
+            <option value="Demo Call 3 Booked">DC3 Booked</option>
+            <option value="CS - No Show">No Show</option>
+            <option value="Nurture">Nurture</option>
+          </select>
+          <select class="tbl-filter-select" id="plCwMonthSelect" onchange="setPlCwMonthFilter(this.value)">
+            <option value="all">All CW Months</option>
+          </select>
+          <select class="tbl-filter-select" id="plSubSelect" onchange="setPlSubFilter(this.value)">
+            <option value="all">All Subscriptions</option>
+          </select>
+        </div>
         <div style="overflow-x:auto">
           <table style="width:100%;border-collapse:collapse;font-size:0.77rem">
             <thead><tr>
@@ -1172,8 +1195,30 @@
               <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Company</th>
               <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Owner</th>
               <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Stage</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Closed Won Date</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Subscription</th>
             </tr></thead>
             <tbody id="plPipelineTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pipeline Deals — Need Update -->
+      <div class="card" id="plNeedUpdateCard" style="margin-top:14px;border-top-color:#f59e0b;display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Pipeline Deals — Need Update</div>
+          <span style="font-size:0.65rem;font-weight:600;color:#b45309;background:#fef3c7;border-radius:99px;padding:2px 8px" id="plNeedUpdateBadge"></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:0.77rem">
+            <thead><tr>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Meeting Date</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Company</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Deal Owner</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Meeting Outcome</th>
+              <th style="text-align:left;padding:6px 10px;font-size:0.62rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase;letter-spacing:.05em">Reason for Update</th>
+            </tr></thead>
+            <tbody id="plNeedUpdateTable"></tbody>
           </table>
         </div>
       </div>
@@ -1202,6 +1247,11 @@ const state = {
   lfTypeFilter: 'all',
   lfOwnerFilter: 'all',
   lfSpFilter: 'all',
+  plCoFilter: '',
+  plOwnerFilter: 'all',
+  plStageFilter: 'all',
+  plCwMonthFilter: 'all',
+  plSubFilter: 'all',
 };
 
 // ─── CS LEADS DATA (207 records) ──────────────────────────────────────────────
@@ -1313,15 +1363,23 @@ const CS_DEMO_BOOKED = [
 // ─── DEMO CALLS DATA (117 records) ────────────────────────────────────────────
 // t: stef/che/judy/rochelle/discovery  o: a=attended, n=noshow, c=canceled, s=scheduled, r=rescheduled
 const MEETINGS = [
-  {"d":"2026-05-14","t":"discovery","o":"s"},{"d":"2026-05-13","t":"discovery","o":"s"},
-  {"d":"2026-05-12","t":"discovery","o":"s"},{"d":"2026-05-11","t":"discovery","o":"s"},
-  {"d":"2026-05-11","t":"discovery","o":"s"},{"d":"2026-05-08","t":"discovery","o":"s"},
-  {"d":"2026-05-08","t":"discovery","o":"s"},{"d":"2026-05-08","t":"rochelle","o":"s"},
-  {"d":"2026-05-07","t":"discovery","o":"s"},{"d":"2026-05-07","t":"discovery","o":"s"},
-  {"d":"2026-05-06","t":"discovery","o":"s"},{"d":"2026-05-06","t":"discovery","o":"s"},
-  {"d":"2026-05-06","t":"discovery","o":"s"},{"d":"2026-05-06","t":"discovery","o":"s"},
-  {"d":"2026-05-06","t":"discovery","o":"s"},{"d":"2026-05-06","t":"stef","o":"s"},
-  {"d":"2026-05-06","t":"rochelle","o":"s"},
+  // May 2026 — live from HubSpot 2026-05-12
+  {d:'2026-05-06',t:'stef',   o:'a',co:'USource'},
+  {d:'2026-05-06',t:'rochelle',o:'a',co:'Outsourced'},
+  {d:'2026-05-06',t:'stef',   o:'a',co:'Offshore 247 Pty Ltd'},
+  {d:'2026-05-06',t:'rochelle',o:'a',co:'MIFIN Services Philippines'},
+  {d:'2026-05-06',t:'stef',   o:'a',co:'WOW 24-7'},
+  {d:'2026-05-06',t:'judy',   o:'a',co:'yoummday.com',      nds:true,nr:'DC2 date not set in HubSpot deal'},
+  {d:'2026-05-06',t:'rochelle',o:'a',co:'Staff Hero',        nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-08',t:'rochelle',o:'a',co:'Elaxis',            nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-11',t:'che',    o:'s',co:'Gurudev Software',   nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-11',t:'rochelle',o:'n',co:'Zentrex Solutions', nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-11',t:'stef',   o:'s',co:'Corpshore Solutions',nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-12',t:'rochelle',o:'s',co:'Elaxis',            nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-12',t:'stef',   o:'s',co:'CCIG',               nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-12',t:'che',    o:'s',co:'Workforce Africa',   nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-13',t:'che',    o:'r',co:'Better Support',     nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-14',t:'stef',   o:'s',co:'Tison',              nds:true,nr:'No CS pipeline deal with call date'},
   {"d":"2026-04-30","t":"discovery","o":"c"},{"d":"2026-04-30","t":"discovery","o":"s"},
   {"d":"2026-04-30","t":"discovery","o":"s"},{"d":"2026-04-30","t":"che","o":"c"},
   {"d":"2026-04-30","t":"rochelle","o":"a"},{"d":"2026-04-30","t":"rochelle","o":""},
@@ -1385,8 +1443,8 @@ const MEETINGS = [
 const DS_DEALS = [
   // Judy (78367246)
   {p:'judy',d:'2026-04-01',co:'Robotronics.ai',ds:'CS - No Show'},
-  {p:'judy',d:'2026-04-01',co:'Intelliworx PH',ds:'CS - Closed Won',cd:'2026-04-01'},
-  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'CS - Closed Won',cd:'2026-04-13'},
+  {p:'judy',d:'2026-04-01',co:'Intelliworx PH',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Source Partner'},
+  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'CS - Closed Won',cd:'2026-04-13',ss:'2025-04-16'},
   {p:'judy',d:'2026-04-06',co:'Finserve Global',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-06',co:'Trainonex Solutions',ds:'CS - No Show'},
   {p:'judy',d:'2026-04-06',co:'Fusion CX',ds:'CS - Demo Call Completed'},
@@ -1403,34 +1461,35 @@ const DS_DEALS = [
   {p:'judy',d:'2026-04-15',co:'Netsmartz',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-15',co:'DialX',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-15',co:'SkyOS BPO',ds:'CS - No Show'},
-  {p:'judy',d:'2026-04-16',co:'Peak Support',ds:'CS - Closed Won',cd:'2026-04-15'},
+  {p:'judy',d:'2026-04-16',co:'Peak Support',ds:'CS - Closed Won',cd:'2026-04-15',sub:'Marketing Hub - Standard'},
   {p:'judy',d:'2026-04-16',co:'CreaThink Solutions',ds:'CS - Deal Created'},
-  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'CS - Closed Won'},
+  {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'CS - Closed Won',ss:'2023-11-01'},
   {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:''},
   {p:'judy',d:'2026-04-17',co:'Prime Bridge Solutions',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-17',co:'Prestige OSS',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'CS - Closed Won'},
   {p:'judy',d:'2026-04-20',co:'ICCS Digx',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-22',co:'EmpireOne Group',ds:'CS - Demo Call Completed'},
-  {p:'judy',d:'2026-04-22',co:'Coderland',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-22',co:'Coderland',ds:'CS - Demo Call Completed',ss:'2025-02-15'},
   {p:'judy',d:'2026-04-22',co:'Revelo',ds:'CS - Alignment Call Completed'},
   {p:'judy',d:'2026-04-22',co:'MB Group',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-23',co:'Econx Group',ds:'CS - Deal Created'},
   {p:'judy',d:'2026-04-23',co:'CapActix Business Solutions',ds:'CS - Demo Call Completed'},
-  {p:'judy',d:'2026-04-23',co:'HeyDelegate',ds:''},
+  {p:'judy',d:'2026-04-23',co:'HeyDelegate',ds:'',ss:'2025-10-25'},
   {p:'judy',d:'2026-04-24',co:'Alvi Global',ds:'CS - No Show'},
   {p:'judy',d:'2026-04-24',co:'Exordiom',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-27',co:'Ekinova',ds:'CS - Demo Call Completed'},
-  {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'CS - Closed Won',cd:'2026-04-29'},
-  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'CS - Closed Won',cd:'2026-04-23'},
-  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'CS - Closed Won',cd:'2026-04-08'},
-  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'CS - Closed Won',cd:'2026-04-29',sub:'Sales Hub'},
+  {p:'judy',d:'2026-04-29',co:'Contactpoint 360',ds:'CS - Closed Won',cd:'2026-04-23',ss:'2026-04-23',sub:'Marketing Hub -Source Boost'},
+  {p:'judy',d:'2026-04-29',co:'Thrivin',ds:'CS - Closed Won',cd:'2026-04-08',sub:'Sales Hub'},
+  {p:'judy',d:'2026-04-30',co:'Eastvantage',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Source Partner'},
   // Stef (635230480)
   {p:'stef',d:'2026-04-01',co:'Virtual Experts PH',ds:'CS - No Show'},
-  {p:'stef',d:'2026-04-01',co:'ZigZag (Outposter)',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'stef',d:'2026-04-01',co:'ZigZag (Outposter)',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Source Partner'},
   {p:'stef',d:'2026-04-01',co:'Pandr - Call Center',ds:'CS - Closed Won',cd:'2026-04-01'},
-  {p:'stef',d:'2026-04-02',co:'Corpshore Solutions',ds:'CS - Closed Won',cd:'2026-04-02'},
-  {p:'stef',d:'2026-04-07',co:'Complete BPO',ds:'CS - Deal Created'},
+  {p:'stef',d:'2026-04-02',co:'Corpshore Solutions',ds:'CS - Closed Won',cd:'2026-04-02',sub:'Marketing Hub -Source Boost'},
+  {p:'stef',d:'2026-04-07',co:'Offshore 24/7',ds:'CS - Demo Call Completed',dc2:'2026-05-06'},
+  {p:'stef',d:'2026-04-07',co:'Complete BPO',ds:'CS - Closed Won',cd:'2026-05-15',ss:'2026-05-15',sub:'Sales Hub;Marketing Hub'},
   {p:'stef',d:'2026-04-10',co:'Black Seedspire Technologies',ds:'CS - Deal Created'},
   {p:'stef',d:'2026-04-11',co:'Releaf Claim',ds:'CS - Demo Call Completed'},
   {p:'stef',d:'2026-04-17',co:'Resource Consulting',ds:'CS - Deal Created'},
@@ -1439,24 +1498,25 @@ const DS_DEALS = [
   {p:'stef',d:'2026-04-23',co:'Kyniska',ds:'CS - No Show'},
   {p:'stef',d:'2026-04-23',co:'Gobro Web Services',ds:'CS - Demo Call Completed'},
   {p:'stef',d:'2026-04-29',co:'Onehalf',ds:'CS - Demo Call Completed'},
-  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'CS - Closed Won'},
+  {p:'stef',d:'2026-04-29',co:'Prima Systems',ds:'CS - Closed Won',sub:'Standard'},
+  {p:'stef',d:'2026-05-06',co:'USource',ds:'CS - Demo Call Completed'},
+  {p:'stef',d:'2026-05-06',co:'WOW 24-7',ds:'CS - Demo Call Completed'},
   // Che (635230465)
   {p:'che',d:'2026-04-01',co:'Sparkbridge',ds:'CS - Deal Created'},
-  {p:'che',d:'2026-04-01',co:'HGS UK',ds:'CS - Closed Won',cd:'2026-04-01'},
+  {p:'che',d:'2026-04-01',co:'HGS UK',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Source Partner'},
   {p:'che',d:'2026-04-06',co:'Outsource Accelerator',ds:''},
   {p:'che',d:'2026-04-14',co:'Cost Solution Pty Ltd.',ds:'CS - Demo Call Completed'},
   {p:'che',d:'2026-04-23',co:'Global Impact Sourcing',ds:'CS - Demo Call Completed'},
   {p:'che',d:'2026-04-28',co:'Novacomp',ds:''},
-  {p:'che',d:'2026-05-01',co:'StaffHero',ds:''},
-  {p:'che',d:'2026-05-04',co:'wgsindia',ds:''},
-  {p:'che',d:'2026-05-04',co:'Biscc',ds:''},
   // Rochelle (76241586)
-  {p:'rochelle',d:'2026-04-01',co:'Goodland BPO',ds:'CS - Closed Won',cd:'2026-04-01'},
-  {p:'rochelle',d:'2026-04-20',co:'Success Link Outsourcing US',ds:''},
+  {p:'rochelle',d:'2026-04-01',co:'Goodland BPO',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Sales Hub'},
+  {p:'rochelle',d:'2026-04-20',co:'Success Link Outsourcing US',ds:'CS - Closed Won',ss:'2026-05-07',sub:'Sales Hub;Marketing Hub - Standard'},
   {p:'rochelle',d:'2026-04-22',co:'CnerG',ds:'CS - Demo Call Completed'},
   {p:'rochelle',d:'2026-04-24',co:'Proficient CS',ds:'CS - Demo Call Completed'},
-  {p:'rochelle',d:'2026-04-28',co:'Outsourced',ds:'CS - Deal Created'},
   {p:'rochelle',d:'2026-04-29',co:'Brand Vantage',ds:'CS - Deal Created'},
+  {p:'rochelle',d:'2026-05-06',co:'Outsourced',ds:'CS - Closed Won',cd:'2022-01-17'},
+  {p:'rochelle',d:'2026-05-06',co:'Outsourced (2nd)',ds:'CS - Deal Created'},
+  {p:'rochelle',d:'2026-05-06',co:'Mifin',ds:'CS - Demo Call Completed'},
 ];
 const DS_STATUSES = [
   {key:'CS - Closed Won',               label:'Closed Won',               color:'#1e40af'},
@@ -1622,26 +1682,26 @@ const SIGNUPS = [
 const SP_CYCLES = [
   // 1st cycle — May 1–31, 2026  (refreshed 2026-05-12 · live OA Hub)
   {n:'Six Eleven Global Services', type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:60, alloc:29, done:25, leadOnly:0, spOnly:7,  sched:11, resch:1, noshow:0, cancel:5, filter:'',            o:'che'},
-  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:19, done:17, leadOnly:3, spOnly:3,  sched:6,  resch:2, noshow:2, cancel:3, filter:'',            o:'stef'},
-  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:11, done:13, leadOnly:1, spOnly:3,  sched:6,  resch:5, noshow:1, cancel:2, filter:'',            o:'stef'},
-  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:10, done:2,  leadOnly:1, spOnly:1,  sched:6,  resch:1, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:21, done:18, leadOnly:3, spOnly:3,  sched:7,  resch:2, noshow:2, cancel:3, filter:'',            o:'stef'},
+  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:11, done:14, leadOnly:1, spOnly:3,  sched:6,  resch:4, noshow:1, cancel:2, filter:'',            o:'stef'},
+  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:10, done:2,  leadOnly:1, spOnly:1,  sched:5,  resch:2, noshow:0, cancel:0, filter:'',            o:'stef'},
   {n:'ConnectOS',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:10, done:2,  leadOnly:0, spOnly:1,  sched:7,  resch:1, noshow:0, cancel:0, filter:'',            o:'stef'},
-  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:14, done:3,  leadOnly:0, spOnly:1,  sched:10, resch:1, noshow:0, cancel:1, filter:'',            o:'stef'},
+  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:15, done:3,  leadOnly:0, spOnly:1,  sched:11, resch:1, noshow:0, cancel:1, filter:'',            o:'stef'},
   {n:'People Partners',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:9,  done:3,  leadOnly:0, spOnly:0,  sched:6,  resch:0, noshow:0, cancel:2, filter:'',            o:'rochelle'},
   {n:'HOPLA Online',               type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:10, done:2,  leadOnly:0, spOnly:0,  sched:7,  resch:1, noshow:0, cancel:0, filter:'',            o:'rochelle'},
-  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:13, done:5,  leadOnly:0, spOnly:0,  sched:10, resch:0, noshow:1, cancel:0, filter:'',            o:'rochelle'},
+  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:13, done:5,  leadOnly:0, spOnly:0,  sched:10, resch:0, noshow:1, cancel:1, filter:'',            o:'rochelle'},
   {n:'Cebu Tele-net',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:13, alloc:5,  done:2,  leadOnly:0, spOnly:1,  sched:1,  resch:0, noshow:0, cancel:2, filter:'',            o:'judy'},
   {n:'Satellite Office',           type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:2,  done:0,  leadOnly:0, spOnly:0,  sched:2,  resch:0, noshow:0, cancel:1, filter:'',            o:'stef'},
   {n:'Sourcefit',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:1,  done:5,  leadOnly:0, spOnly:2,  sched:1,  resch:0, noshow:0, cancel:0, filter:'Call Center',  o:'rochelle'},
-  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:3,  done:0,  leadOnly:0, spOnly:1,  sched:3,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
-  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:4,  done:3,  leadOnly:0, spOnly:0,  sched:2,  resch:0, noshow:0, cancel:1, filter:'AU · NZ',     o:'stef'},
+  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:3,  done:2,  leadOnly:0, spOnly:1,  sched:1,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
+  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:4,  done:3,  leadOnly:0, spOnly:1,  sched:1,  resch:0, noshow:0, cancel:1, filter:'AU · NZ',     o:'stef'},
   {n:'Pentwater Group',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:0,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'stef'},
   {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:0,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'AU · NZ',     o:'stef'},
   {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:2,  done:1,  leadOnly:0, spOnly:0,  sched:1,  resch:0, noshow:0, cancel:0, filter:'Call Center',  o:'stef'},
-  {n:'Azendo',                     type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:3,  done:0,  leadOnly:0, spOnly:0,  sched:3,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
+  {n:'Azendo',                     type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:3,  done:1,  leadOnly:0, spOnly:0,  sched:2,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
   // 15th cycle — Apr 15 – May 14, 2026  (refreshed 2026-05-12 · live OA Hub)
   {n:'Callmax Solutions',          type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:20, alloc:34, done:11, leadOnly:0, spOnly:3,  sched:7,  resch:0, noshow:1, cancel:8, filter:'',            o:'che'},
-  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:25, alloc:22, done:12, leadOnly:0, spOnly:5,  sched:4,  resch:1, noshow:0, cancel:3, filter:'',            o:'rochelle'},
+  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:25, alloc:23, done:12, leadOnly:0, spOnly:5,  sched:4,  resch:1, noshow:0, cancel:5, filter:'',            o:'rochelle'},
   {n:'Team HGS UK',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:15, done:7,  leadOnly:2, spOnly:3,  sched:0,  resch:0, noshow:2, cancel:1, filter:'AU · NZ',     o:'che'},
   {n:'Expedock',                   type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:16, done:9,  leadOnly:0, spOnly:2,  sched:1,  resch:0, noshow:0, cancel:4, filter:'',            o:'judy'},
   {n:'Callmax Solutions',          type:'enterprise', cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:0,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'che'},
@@ -2175,105 +2235,183 @@ window.setApFilter=function(){renderApTable();};
 // ─── PIPELINE TRACKER ─────────────────────────────────────────────────────────
 function renderPipeline(){
   const s=state.startDate, e=state.endDate;
-  const recs=DS_DEALS.filter(r=>r.d>=s&&r.d<=e);
-  const total=recs.length;
-  const rateClr=(rate,tgt)=>rate>=tgt?'#059669':rate>=tgt*0.7?'#d97706':'#dc2626';
+  // Any deal that had a call (DC1, DC2, or DC3) within the reporting month
+  const recs=DS_DEALS.filter(r=>
+    (r.d>=s&&r.d<=e)||
+    (r.dc2&&r.dc2>=s&&r.dc2<=e)||
+    (r.dc3&&r.dc3>=s&&r.dc3<=e)
+  );
+  // Existing clients: subscription started before DC1, OR old closedate (fallback)
+  const isOldClient=r=>(r.ss&&r.ss<r.d)||(r.cd&&!r.ss&&r.cd<s);
+  const existingRecs=recs.filter(r=>isOldClient(r));
+  const newRecs=recs.filter(r=>!isOldClient(r));
+  // Top of funnel = all meetings of the 5 activity types within the month
+  const mtgTotal=dcFilter(s,e).length;
+  const total=newRecs.length;
   const ownerClr={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
   const tagText=state.activePreset==='mtd'?'MTD':state.activePreset==='lm'?'Last Month':state.activePreset==='7d'?'L7D':state.activePreset==='14d'?'L14D':state.activePreset==='30d'?'L30D':state.activePreset==='90d'?'L90D':'Custom';
   const plTag=document.getElementById('plTagLabel');if(plTag)plTag.textContent=tagText;
   const setEl=(id,txt,clr)=>{const el=document.getElementById(id);if(el){el.textContent=txt;if(clr)el.style.color=clr;}};
+  const rateClr=(r,t)=>r>=t?'#059669':r>=t*0.7?'#d97706':'#dc2626';
 
-  // Stage counts — new HubSpot stages + existing legacy stages
-  const dc2Booked  = recs.filter(r=>r.ds==='Demo Call 2 Booked').length;
-  const dc3Booked  = recs.filter(r=>r.ds==='Demo Call 3 Booked').length;
-  const closedWon  = recs.filter(r=>r.ds==='CS - Closed Won').length;
-  const nurture    = recs.filter(r=>r.ds==='Nurture').length;
-  const lost       = recs.filter(r=>r.ds==='Lost').length;
-  const noShow     = recs.filter(r=>r.ds==='CS - No Show').length;
-  const tagged     = dc2Booked+dc3Booked+closedWon+nurture+lost+noShow;
-  const untagged   = total - tagged; // deals still on legacy/interim stages
+  // ── DATA MODEL ──────────────────────────────────────────────────────────
+  // DC1 level — new prospects only (existingRecs excluded)
+  const noShow    = newRecs.filter(r=>r.ds==='CS - No Show').length;
+  const attended  = total - noShow;
 
-  // Attended = all except no-show and unconfirmed-deal-created
-  const attended   = recs.filter(r=>['CS - Demo Call Completed','CS - Alignment Call Completed','CS - Closed Won','Demo Call 2 Booked','Demo Call 3 Booked','Nurture','Lost'].includes(r.ds)).length;
-  const knownOutcome = attended + noShow;
-  const showupPct  = knownOutcome>0?(attended/knownOutcome*100):0;
-  const dc1ClosePct = attended>0?(closedWon/attended*100):0;
-  const overallClosePct = attended>0?((closedWon+dc2Booked+dc3Booked)/attended*100):0;
+  // A deal progressed to DC2 if it has a dc2 date OR its stage is Demo Call 2 Booked
+  const dc2Recs   = newRecs.filter(r=>r.dc2||r.ds==='Demo Call 2 Booked');
+  const dc2Total  = dc2Recs.length;
 
-  // Calls to close — uses dc2 / dc3 date fields on DS_DEALS entries
-  const closedRecs = recs.filter(r=>r.ds==='CS - Closed Won');
-  const closedDC1  = closedRecs.filter(r=>!r.dc2&&!r.dc3).length;
-  const closedDC2  = closedRecs.filter(r=>r.dc2&&!r.dc3).length;
-  const closedDC3  = closedRecs.filter(r=>r.dc3).length;
-  const avgCalls   = closedWon>0?((closedDC1*1+closedDC2*2+closedDC3*3)/closedWon):0;
+  // DC1 outcomes (for deals that attended DC1 but did NOT move to DC2)
+  const wonDC1    = newRecs.filter(r=>r.ds==='CS - Closed Won'&&!r.dc2&&!r.dc3).length;
+  const lostDC1   = newRecs.filter(r=>r.ds==='Lost'&&!r.dc2).length;
+  // untagged = attended deals not yet categorised (legacy interim stages)
+  const untagged  = Math.max(0, attended - wonDC1 - dc2Total - lostDC1);
 
-  // KPI cards
-  setEl('plTotalCount', total, '');
-  setEl('plShowupSub', `${attended} attended · ${noShow} no-show`, '');
-  setEl('plClosedCount', closedWon, closedWon>0?rateClr(dc1ClosePct,30):'');
-  setEl('plDC1CloseRate', attended>0?dc1ClosePct.toFixed(0)+'% close rate · target 30%':'— close rate · target 30%', attended>0?rateClr(dc1ClosePct,30):'');
-  setEl('plOverallCloseRate', attended>0?overallClosePct.toFixed(0)+'%':'—', attended>0?rateClr(overallClosePct,50):'');
-  setEl('plAvgCalls', closedWon>0?avgCalls.toFixed(1)+'x':'—', closedWon>0?rateClr(2-avgCalls, 0.5):'');
-  setEl('plAvgCallsSub', closedWon>0?`${closedDC1} on DC1 · ${closedDC2} on DC2 · ${closedDC3} on DC3`:'target ≤ 1.5 calls', '');
+  // DC2 outcomes (within the dc2Recs pool)
+  const dc3Recs   = dc2Recs.filter(r=>r.dc3||r.ds==='Demo Call 3 Booked');
+  const dc3Total  = dc3Recs.length;
+  const wonDC2    = dc2Recs.filter(r=>r.ds==='CS - Closed Won'&&!r.dc3).length;
+  const lostDC2   = dc2Recs.filter(r=>r.ds==='Lost'&&!r.dc3).length;
 
-  // ── WATERFALL FUNNEL ─────────────────────────────────────────────────────
-  const plFunnelEl=document.getElementById('plFunnel');
-  if(plFunnelEl){
-    const wfBar=(label,count,color,note,isBase)=>{
-      const barW=total>0?Math.max(isBase?100:2,Math.round(count/total*100)):0;
-      const pct=total>0?(count/total*100):0;
-      return`<div style="margin-bottom:12px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-          <div style="min-width:150px;font-size:0.73rem;font-weight:${isBase?700:600};color:${isBase?'#111827':'#374151'}">${label}</div>
-          <div style="flex:1;background:#f1f5f9;border-radius:4px;height:${isBase?26:20}px;overflow:hidden;position:relative">
-            <div style="height:100%;width:${barW}%;background:${color};border-radius:4px;transition:width .3s"></div>
-            ${label==='Closed Won'?`<div style="position:absolute;left:30%;top:0;bottom:0;width:2px;background:#94a3b8;opacity:.5" title="30% target"></div>`:''}
-          </div>
-          <div style="min-width:28px;text-align:right;font-weight:700;font-size:${isBase?'0.88':'0.82'}rem;color:#111827">${count}</div>
-          <div style="min-width:42px;text-align:right;font-size:0.7rem;font-weight:600;color:${isBase?'#1e40af':color}">${isBase?'100%':pct.toFixed(0)+'%'}</div>
-        </div>
-        ${note?`<div style="margin-left:158px;font-size:0.65rem;color:#94a3b8">↳ ${note}</div>`:''}
+  // DC3 outcomes (within the dc3Recs pool)
+  const wonDC3    = dc3Recs.filter(r=>r.ds==='CS - Closed Won').length;
+  const nurtureDC3= dc3Recs.filter(r=>r.ds==='Nurture').length;
+  const lostDC3   = dc3Recs.filter(r=>r.ds==='Lost').length;
+
+  // Summary
+  const totalWon  = wonDC1+wonDC2+wonDC3;
+  const totalLost = lostDC1+lostDC2+lostDC3;
+  const avgCalls  = totalWon>0?((wonDC1*1+wonDC2*2+wonDC3*3)/totalWon):0;
+  const closeRate = attended>0?(totalWon/attended*100):0;
+
+  // ── KPI CARDS ────────────────────────────────────────────────────────────
+  setEl('plTotalCount', mtgTotal);
+  setEl('plShowupSub', `${attended} attended · ${noShow} no-show · ${total} deals tracked`);
+  setEl('plClosedCount', totalWon, totalWon>0?rateClr(closeRate,30):'');
+  setEl('plCloseRateSub', attended>0?closeRate.toFixed(0)+'% overall close rate':'— overall close rate', attended>0?rateClr(closeRate,30):'');
+  setEl('plAvgCalls', totalWon>0?avgCalls.toFixed(1)+'x':'—', totalWon>0?rateClr(2-avgCalls,0.5):'');
+  setEl('plAvgCallsSub', totalWon>0?`${wonDC1} on DC1 · ${wonDC2} on DC2 · ${wonDC3} on DC3`:'target ≤ 1.5 calls');
+
+  // ── DECISION TREE ────────────────────────────────────────────────────────
+  const dtEl=document.getElementById('plDecisionTree');
+  if(dtEl){
+    const p=(n,d)=>d>0?Math.round(n/d*100)+'%':'—';
+
+    // Node: colored box with label / count / % of parent
+    const node=(label,count,pctLabel,color,bg,dim)=>`
+      <div style="background:${bg};border:1.5px solid ${color}${dim?'55':'99'};border-radius:8px;padding:10px 12px;text-align:center;min-width:0;opacity:${dim?'.55':'1'}">
+        <div style="font-size:0.61rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.05em;line-height:1.3;margin-bottom:4px">${label}</div>
+        <div style="font-size:1.35rem;font-weight:900;color:${color};line-height:1">${count}</div>
+        <div style="font-size:0.66rem;font-weight:600;color:${color}99;margin-top:3px">${pctLabel}</div>
       </div>`;
-    };
-    plFunnelEl.innerHTML=`
-      ${wfBar('DC1 Total (CS Demo Call Date)', total, '#1e40af', `${attended} attended · ${noShow} no-show`, true)}
-      <div style="margin:4px 0 12px 0;border-top:2px dashed #e5e7eb"></div>
-      <div style="font-size:0.62rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-left:158px">Outcome Distribution</div>
-      ${wfBar('Demo Call 2 Booked', dc2Booked, '#2563eb', dc2Booked===0?'Set stage in HubSpot once DC2 is scheduled':'')}
-      ${wfBar('Demo Call 3 Booked', dc3Booked, '#7c3aed', dc3Booked===0?'Set stage in HubSpot once DC3 is scheduled':'')}
-      ${wfBar('Closed Won',         closedWon,  '#059669', closedWon>0?`30% target line shown on bar`:'',false)}
-      ${wfBar('Nurture',            nurture,    '#d97706', nurture===0?'Set stage in HubSpot for long-term follow-up':'')}
-      ${wfBar('Lost',               lost,       '#dc2626', lost===0?'Set stage in HubSpot when deal is marked lost':'')}
-      ${wfBar('No Show',            noShow,     '#94a3b8', '')}
-      ${untagged>0?wfBar('Untagged (needs update)', untagged, '#e5e7eb', `${untagged} deals still on legacy stages — update in HubSpot`):''}
-    `;
-  }
 
-  // ── CALLS TO CLOSE ───────────────────────────────────────────────────────
-  const plC2CEl=document.getElementById('plCallsToClose');
-  if(plC2CEl){
-    const c2cBar=(label,count,color)=>{
-      const barW=closedWon>0?Math.max(count>0?4:0,Math.round(count/closedWon*100)):0;
-      const pct=closedWon>0?(count/closedWon*100):0;
+    // Arrow connector row between levels
+    const levelConnector=(fromLabel,fromCount,borderColor)=>fromCount===0?`
+      <div style="margin:10px 0 8px;padding:8px 14px;border-left:3px solid #e5e7eb;margin-left:20px;font-size:0.68rem;color:#94a3b8;font-style:italic">
+        No data yet for ${fromLabel} — set stage in HubSpot to populate this level
+      </div>`:
+      `<div style="display:flex;align-items:center;gap:6px;margin:10px 0 8px;padding-left:20px">
+        <div style="width:3px;height:24px;background:${borderColor};border-radius:2px"></div>
+        <div style="font-size:0.64rem;font-weight:700;color:${borderColor}">↓ &nbsp;From ${fromLabel} — ${fromCount} deal${fromCount!==1?'s':''} continuing</div>
+      </div>`;
+
+    // Level row wrapper (with indent for DC2+/DC3+ levels)
+    const levelWrap=(content,indent,borderColor)=>indent===0?content:
+      `<div style="margin-left:${indent}px;border-left:2px solid ${borderColor}33;padding-left:${indent===24?16:20}px">${content}</div>`;
+
+    const levelLabel=(txt)=>`<div style="font-size:0.61rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${txt}</div>`;
+
+    // ── Level 0: Total banner
+    const totalBanner=`
+      <div style="background:#eff6ff;border:2px solid #2563eb;border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:16px;margin-bottom:6px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:0.63rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.06em">Total DC1 Meetings Held</div>
+          <div style="font-size:2.2rem;font-weight:900;color:#1e40af;line-height:1.05">${total}</div>
+        </div>
+        <div style="width:1px;height:44px;background:#bfdbfe;flex-shrink:0"></div>
+        <div style="font-size:0.8rem;color:#2563eb;line-height:1.7">
+          <strong>${attended}</strong> attended &nbsp;·&nbsp; <strong>${noShow}</strong> no-show
+          ${attended>0?`&nbsp;·&nbsp; <strong>${Math.round(attended/total*100)}%</strong> show-up rate`:''}
+        </div>
+        ${untagged>0?`<div style="margin-left:auto;background:#fef3c7;color:#92400e;padding:5px 12px;border-radius:6px;font-size:0.66rem;font-weight:700;border:1px solid #fde68a">⚠ ${untagged} deal${untagged!==1?'s':''} need stage update in HubSpot</div>`:''}
+      </div>`;
+
+    // ── Level 1: DC1 outcomes
+    const dc1Cols=untagged>0?5:4;
+    const dc1Grid=`
+      <div style="display:grid;grid-template-columns:repeat(${dc1Cols},1fr);gap:8px">
+        ${node('Won at DC1 ✓',''+wonDC1,p(wonDC1,attended),'#059669','#f0fdf4',false)}
+        ${node('→ Booked DC2',''+dc2Total,p(dc2Total,attended),'#2563eb','#eff6ff',dc2Total===0)}
+        ${node('Lost at DC1',''+lostDC1,p(lostDC1,attended),'#dc2626','#fef2f2',lostDC1===0)}
+        ${node('No Show',''+noShow,p(noShow,total),'#94a3b8','#f8fafc',noShow===0)}
+        ${untagged>0?node('Needs Update',''+untagged,'of attended','#d97706','#fffbeb',false):''}
+      </div>`;
+
+    // ── Level 2: DC2 outcomes
+    const dc2Grid=dc2Total>0?`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${node('Won at DC2 ✓',''+wonDC2,p(wonDC2,dc2Total),'#059669','#f0fdf4',false)}
+        ${node('→ Booked DC3',''+dc3Total,p(dc3Total,dc2Total),'#7c3aed','#faf5ff',dc3Total===0)}
+        ${node('Lost at DC2',''+lostDC2,p(lostDC2,dc2Total),'#dc2626','#fef2f2',lostDC2===0)}
+      </div>`:null;
+
+    // ── Level 3: DC3 outcomes
+    const dc3Grid=dc3Total>0?`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${node('Won at DC3 ✓',''+wonDC3,p(wonDC3,dc3Total),'#059669','#f0fdf4',false)}
+        ${node('Nurture',''+nurtureDC3,p(nurtureDC3,dc3Total),'#d97706','#fffbeb',nurtureDC3===0)}
+        ${node('Lost at DC3',''+lostDC3,p(lostDC3,dc3Total),'#dc2626','#fef2f2',lostDC3===0)}
+      </div>`:null;
+
+    // ── Conversion summary
+    const convBar=(label,count,pct,color)=>{
+      const w=totalWon>0?Math.max(count>0?6:0,Math.round(count/totalWon*100)):0;
       return`<div style="margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="min-width:96px;font-size:0.72rem;font-weight:600;color:#374151">${label}</div>
-          <div style="flex:1;background:#f1f5f9;border-radius:4px;height:18px;overflow:hidden">
-            <div style="height:100%;width:${barW}%;background:${color};border-radius:4px"></div>
-          </div>
-          <div style="min-width:22px;text-align:right;font-weight:700;font-size:0.8rem;color:#111827">${count}</div>
-          <div style="min-width:36px;text-align:right;font-size:0.68rem;font-weight:600;color:${color}">${pct.toFixed(0)}%</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:0.72rem;font-weight:700;color:#374151">${label}</span>
+          <span style="font-size:0.72rem;font-weight:700;color:${color}">${count} deal${count!==1?'s':''} <span style="color:#94a3b8;font-weight:400">(${pct})</span></span>
+        </div>
+        <div style="background:#f1f5f9;border-radius:4px;height:10px;overflow:hidden">
+          <div style="height:100%;width:${w}%;background:${color};border-radius:4px"></div>
         </div>
       </div>`;
     };
-    plC2CEl.innerHTML=closedWon===0
-      ?'<div style="color:#94a3b8;font-size:0.75rem;text-align:center;padding:12px">No closed deals in period</div>'
-      :c2cBar('Closed on DC1',closedDC1,'#059669')
-       +c2cBar('Closed on DC2',closedDC2,'#2563eb')
-       +c2cBar('Closed on DC3',closedDC3,'#7c3aed')
-       +`<div style="margin-top:10px;padding:8px 10px;background:#f0fdf4;border-radius:6px;font-size:0.7rem;color:#166534;border-left:3px solid #059669">
-           Avg <strong>${avgCalls.toFixed(1)} calls</strong> to close &nbsp;·&nbsp; ${closedDC1} closed on first call (${closedWon>0?(closedDC1/closedWon*100).toFixed(0):0}%)
-         </div>`;
+    const convSummary=`
+      <div style="margin-top:18px;padding-top:14px;border-top:2px dashed #e5e7eb">
+        <div style="font-size:0.61rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">How Many Calls Did It Take to Close?</div>
+        ${totalWon===0
+          ?'<div style="color:#94a3b8;font-size:0.75rem;font-style:italic">No closed deals in this period</div>'
+          :convBar('Closed on 1st call (DC1)',wonDC1,p(wonDC1,totalWon),'#059669')
+           +convBar('Closed on 2nd call (DC2)',wonDC2,p(wonDC2,totalWon),'#2563eb')
+           +convBar('Closed on 3rd call (DC3)',wonDC3,p(wonDC3,totalWon),'#7c3aed')
+           +`<div style="margin-top:10px;padding:8px 12px;background:#f0fdf4;border-radius:6px;border-left:3px solid #059669;font-size:0.72rem;color:#166534">
+               Avg <strong>${avgCalls.toFixed(1)} calls</strong> to close &nbsp;·&nbsp;
+               ${totalWon>0?(wonDC1/totalWon*100).toFixed(0):0}% close on first call
+             </div>`
+        }
+      </div>`;
+
+    // Assemble full tree
+    dtEl.innerHTML=
+      totalBanner
+      +levelLabel('After DC1 — What happened?')
+      +dc1Grid
+      +(dc2Grid
+        ? levelConnector('→ Booked DC2',dc2Total,'#2563eb')
+          +levelWrap(
+            levelLabel('After DC2 — What happened?')
+            +dc2Grid
+            +(dc3Grid
+              ? levelConnector('→ Booked DC3',dc3Total,'#7c3aed')
+                +levelWrap(levelLabel('After DC3 — What happened?')+dc3Grid,24,'#7c3aed')
+              : levelConnector('→ Booked DC3',0,'#7c3aed')
+            )
+          ,24,'#2563eb')
+        : levelConnector('→ Booked DC2',0,'#2563eb')
+      )
+      +convSummary;
   }
 
   // ── BY OWNER ─────────────────────────────────────────────────────────────
@@ -2283,58 +2421,169 @@ function renderPipeline(){
     <thead><tr>
       <th style="text-align:left;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Owner</th>
       <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC1</th>
-      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC2</th>
-      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC3</th>
+      <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">DC2+</th>
       <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Won</th>
       <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Lost</th>
       <th style="text-align:right;padding:4px 6px;font-size:0.6rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;text-transform:uppercase">Close%</th>
     </tr></thead>
     <tbody>${owners.map(o=>{
       const or=recs.filter(r=>r.p===o.key);
-      const ob=or.length;
-      const odc2=or.filter(r=>r.ds==='Demo Call 2 Booked').length;
-      const odc3=or.filter(r=>r.ds==='Demo Call 3 Booked').length;
-      const ocl=or.filter(r=>r.ds==='CS - Closed Won').length;
+      const odc1=or.length;
+      const odc2plus=or.filter(r=>r.dc2||r.ds==='Demo Call 2 Booked'||r.ds==='Demo Call 3 Booked').length;
+      const owon=or.filter(r=>r.ds==='CS - Closed Won').length;
       const olost=or.filter(r=>r.ds==='Lost').length;
-      const oatt=or.filter(r=>['CS - Demo Call Completed','CS - Alignment Call Completed','CS - Closed Won','Demo Call 2 Booked','Demo Call 3 Booked','Nurture','Lost'].includes(r.ds)).length;
-      const ocr=oatt>0?(ocl/oatt*100).toFixed(0)+'%':'—';
-      const crClr=oatt>0?rateClr(ocl/oatt*100,30):'#94a3b8';
+      const oatt=odc1 - or.filter(r=>r.ds==='CS - No Show').length;
+      const ocr=oatt>0?(owon/oatt*100).toFixed(0)+'%':'—';
+      const crClr=oatt>0?rateClr(owon/oatt*100,30):'#94a3b8';
       return`<tr>
         <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${ownerClr[o.key]};color:#fff;font-size:0.65rem">${o.label}</span></td>
-        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${ob}</td>
-        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#2563eb">${odc2||'—'}</td>
-        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#7c3aed">${odc3||'—'}</td>
-        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;color:#059669">${ocl}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700">${odc1}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#2563eb">${odc2plus||'—'}</td>
+        <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;color:#059669">${owon}</td>
         <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;color:#dc2626">${olost||'—'}</td>
         <td style="padding:6px 6px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:700;color:${crClr}">${ocr}</td>
       </tr>`;
     }).join('')}</tbody></table>`;
 
-  // ── OPEN PIPELINE TABLE ───────────────────────────────────────────────────
-  const openStages=['Demo Call 2 Booked','Demo Call 3 Booked','CS - Demo Call Completed','CS - Alignment Call Completed','Nurture','CS - Deal Created',''];
-  const openDeals=recs.filter(r=>openStages.includes(r.ds)).sort((a,b)=>b.d.localeCompare(a.d));
+  // ── CALLS TO CLOSE (right panel) ─────────────────────────────────────────
+  const c2cEl=document.getElementById('plCallsToClose');
+  if(c2cEl){
+    const bigStat=(n,label,sub,color)=>`
+      <div style="text-align:center;padding:12px 8px;background:#f8fafc;border-radius:8px;margin-bottom:8px">
+        <div style="font-size:1.8rem;font-weight:900;color:${color};line-height:1">${n}</div>
+        <div style="font-size:0.7rem;font-weight:700;color:#374151;margin-top:3px">${label}</div>
+        <div style="font-size:0.65rem;color:#94a3b8">${sub}</div>
+      </div>`;
+    c2cEl.innerHTML=totalWon===0
+      ?'<div style="color:#94a3b8;font-size:0.75rem;text-align:center;padding:20px 0;font-style:italic">No closed deals in this period</div>'
+      :bigStat(wonDC1,'Closed on DC1','1 call · fastest path','#059669')
+       +bigStat(wonDC2,'Closed on DC2','2 calls','#2563eb')
+       +bigStat(wonDC3,'Closed on DC3','3 calls','#7c3aed')
+       +`<div style="padding:10px 12px;background:#f0fdf4;border-radius:8px;border-left:3px solid #059669;font-size:0.72rem;color:#166534;margin-top:4px">
+           Avg <strong>${avgCalls.toFixed(1)} calls</strong> to close
+           &nbsp;·&nbsp; target ≤ 1.5
+         </div>
+         <div style="padding:8px 12px;background:#fef3c7;border-radius:8px;border-left:3px solid #d97706;font-size:0.7rem;color:#92400e;margin-top:6px">
+           ${totalLost} lost · ${recs.filter(r=>r.ds==='Nurture').length} in nurture
+         </div>`;
+  }
+
+  // ── PIPELINE TABLE (all deals) ───────────────────────────────────────────
+  const openDeals=newRecs.slice().sort((a,b)=>b.d.localeCompare(a.d));
   const stgMap={
-    'Demo Call 2 Booked':     {l:'DC2 Booked',   c:'#2563eb'},
-    'Demo Call 3 Booked':     {l:'DC3 Booked',   c:'#7c3aed'},
-    'CS - Demo Call Completed':{l:'DC1 Done',    c:'#475569'},
-    'CS - Alignment Call Completed':{l:'Alignment Done',c:'#7c3aed'},
-    'Nurture':                {l:'Nurture',       c:'#d97706'},
-    'CS - Deal Created':      {l:'Deal Created',  c:'#94a3b8'},
-    '':                       {l:'No Stage',      c:'#e5e7eb'},
+    'CS - Closed Won':               {l:'Closed Won',      c:'#1e40af'},
+    'Demo Call 2 Booked':            {l:'DC2 Booked',      c:'#2563eb'},
+    'Demo Call 3 Booked':            {l:'DC3 Booked',      c:'#7c3aed'},
+    'CS - Demo Call Completed':      {l:'DC1 Done',        c:'#475569'},
+    'CS - Alignment Call Completed': {l:'Alignment Done',  c:'#64748b'},
+    'CS - No Show':                  {l:'No Show',         c:'#dc2626'},
+    'Nurture':                       {l:'Nurture',         c:'#d97706'},
+    'CS - Deal Created':             {l:'Deal Created',    c:'#94a3b8'},
+    '':                              {l:'No Stage',        c:'#e5e7eb'},
   };
+  // Existing client: subscription_start_date before DC1, OR closedate before reporting month start (fallback when ss not set)
+  const isExisting=isOldClient;
+  // Sort: existing clients to bottom, then by date desc
+  const sortedDeals=openDeals.slice().sort((a,b)=>{
+    const ae=isExisting(a),be=isExisting(b);
+    if(ae!==be)return ae?1:-1;
+    return b.d.localeCompare(a.d);
+  });
+
+  // Populate Closed Won Date month dropdown from all DS_DEALS Closed Won entries
+  const cwMonthSel=document.getElementById('plCwMonthSelect');
+  if(cwMonthSel){
+    const cwMonths=[...new Set(DS_DEALS
+      .filter(r=>r.ds==='CS - Closed Won')
+      .map(r=>{const d=r.ss||(r.cd?r.cd.slice(0,10):null);return d?d.slice(0,7):null;})
+      .filter(Boolean)
+    )].sort().reverse();
+    const monthLabel=m=>{const[y,mo]=m.split('-');return new Date(y,mo-1).toLocaleString('default',{month:'long',year:'numeric'});};
+    cwMonthSel.innerHTML='<option value="all">All CW Months</option>'+cwMonths.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+    cwMonthSel.value=state.plCwMonthFilter;
+  }
+
+  // Populate Subscription dropdown — unique individual products from all deals with sub field
+  const plSubSel=document.getElementById('plSubSelect');
+  if(plSubSel){
+    const subProducts=[...new Set(DS_DEALS
+      .filter(r=>r.sub)
+      .flatMap(r=>r.sub.split(';').map(v=>v.trim()))
+      .filter(Boolean)
+    )].sort();
+    plSubSel.innerHTML='<option value="all">All Subscriptions</option>'+subProducts.map(v=>`<option value="${v}">${v}</option>`).join('');
+    plSubSel.value=state.plSubFilter;
+  }
+
+  // Sync filter UI to state
+  const plCoInputEl=document.getElementById('plCoFilterInput');
+  const plOwnerSelectEl=document.getElementById('plOwnerSelect');
+  const plStageSelectEl=document.getElementById('plStageSelect');
+  if(plCoInputEl)plCoInputEl.value=state.plCoFilter;
+  if(plOwnerSelectEl)plOwnerSelectEl.value=state.plOwnerFilter;
+  if(plStageSelectEl)plStageSelectEl.value=state.plStageFilter;
+
+  // Apply filters
+  const filteredDeals=sortedDeals.filter(r=>{
+    const cwDate=r.ss||(r.cd?r.cd.slice(0,10):null);
+    const cwMonth=cwDate?cwDate.slice(0,7):null;
+    const subMatch=state.plSubFilter==='all'||(r.sub&&r.sub.split(';').map(v=>v.trim()).includes(state.plSubFilter));
+    return (state.plCoFilter===''||(r.co&&r.co.toLowerCase().includes(state.plCoFilter.toLowerCase())))&&
+           (state.plOwnerFilter==='all'||r.p===state.plOwnerFilter)&&
+           (state.plStageFilter==='all'||r.ds===state.plStageFilter)&&
+           (state.plCwMonthFilter==='all'||cwMonth===state.plCwMonthFilter)&&
+           subMatch;
+  });
+
   const plTableEl=document.getElementById('plPipelineTable');
-  if(plTableEl) plTableEl.innerHTML=openDeals.length===0
-    ?'<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:14px">No open deals in selected range</td></tr>'
-    :openDeals.map(r=>{
+  if(plTableEl) plTableEl.innerHTML=filteredDeals.length===0
+    ?'<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:14px">No deals match filters</td></tr>'
+    :filteredDeals.map(r=>{
+      const existing=isExisting(r);
       const sm=stgMap[r.ds]||{l:'Unknown',c:'#94a3b8'};
       const txtClr=['#94a3b8','#e5e7eb'].includes(sm.c)?'#1e293b':'#fff';
-      return`<tr>
+      const rowFade=existing?'opacity:.7;':'';
+      const cwDate=r.ss||(r.cd?r.cd.slice(0,10):null);
+      const subPills=r.sub?r.sub.split(';').map(v=>`<span style="display:inline-block;font-size:0.6rem;font-weight:600;color:#1e40af;background:#dbeafe;border-radius:4px;padding:1px 6px;margin:1px 2px 1px 0">${v.trim()}</span>`).join(''):'<span style="color:#94a3b8">—</span>';
+      return`<tr style="${rowFade}">
         <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.d}</td>
         <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.dc2||'—'}</td>
         <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.dc3||'—'}</td>
-        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><strong style="font-size:0.77rem">${r.co||'—'}</strong></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">
+          <strong style="font-size:0.77rem">${r.co||'—'}</strong>
+          ${existing?`<span style="font-size:0.6rem;font-weight:600;color:#059669;background:#d1fae5;border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle">Already a Client</span>`:''}
+        </td>
         <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${ownerClr[r.p]||'#64748b'};color:#fff">${r.p||'—'}</span></td>
         <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${sm.c};color:${txtClr}">${sm.l}</span></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${cwDate||'—'}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6">${subPills}</td>
+      </tr>`;
+    }).join('');
+
+  const exCard=document.getElementById('plExistingCard');
+  if(exCard) exCard.style.display='none';
+
+  // ── NEED UPDATE TABLE ────────────────────────────────────────────────────
+  const outcomeLabel={a:'Attended',n:'No Show',r:'Rescheduled',s:'Scheduled',c:'Cancelled'};
+  const repLabel={stef:'Stef',che:'Che',judy:'Judy',rochelle:'Rochelle'};
+  const needUpdateMtgs=dcFilter(s,e).filter(r=>r.nds);
+  const nuCard=document.getElementById('plNeedUpdateCard');
+  const nuTable=document.getElementById('plNeedUpdateTable');
+  const nuBadge=document.getElementById('plNeedUpdateBadge');
+  if(nuCard) nuCard.style.display=needUpdateMtgs.length>0?'block':'none';
+  if(nuBadge) nuBadge.textContent=needUpdateMtgs.length+' need update';
+  if(nuTable) nuTable.innerHTML=needUpdateMtgs.length===0
+    ?'<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:14px">All clear</td></tr>'
+    :needUpdateMtgs.slice().sort((a,b)=>a.d.localeCompare(b.d)).map(r=>{
+      const oc=outcomeLabel[r.o]||r.o||'—';
+      const ocClr={Attended:'#065f46',Scheduled:'#1e40af','No Show':'#991b1b',Rescheduled:'#92400e',Cancelled:'#374151'}[oc]||'#374151';
+      const ocBg={Attended:'#d1fae5',Scheduled:'#dbeafe','No Show':'#fee2e2',Rescheduled:'#fef3c7',Cancelled:'#f3f4f6'}[oc]||'#f3f4f6';
+      return`<tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#64748b;font-size:0.72rem">${r.d}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><strong style="font-size:0.77rem">${r.co||'—'}</strong></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${ownerClr[r.t]||'#64748b'};color:#fff">${repLabel[r.t]||r.t||'—'}</span></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6"><span class="pill" style="background:${ocBg};color:${ocClr}">${oc}</span></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#92400e;font-size:0.72rem">${r.nr||'—'}</td>
       </tr>`;
     }).join('');
 }
@@ -2647,6 +2896,11 @@ window.setLfCycleFilter=function(v){state.lfCycleFilter=v;renderLeadFulfillment(
 window.setLfTypeFilter=function(v){state.lfTypeFilter=v;renderLeadFulfillment();};
 window.setLfOwnerFilter=function(v){state.lfOwnerFilter=v;renderLeadFulfillment();};
 window.setLfSpFilter=function(v){state.lfSpFilter=v;renderLeadFulfillment();};
+window.setPlCoFilter=function(v){state.plCoFilter=v;renderPipeline();};
+window.setPlOwnerFilter=function(v){state.plOwnerFilter=v;renderPipeline();};
+window.setPlStageFilter=function(v){state.plStageFilter=v;renderPipeline();};
+window.setPlCwMonthFilter=function(v){state.plCwMonthFilter=v;renderPipeline();};
+window.setPlSubFilter=function(v){state.plSubFilter=v;renderPipeline();};
 function openPicker(){
   state.pickerOpen=true;
   // Show the month before startDate on the left so cross-month ranges are immediately visible
