@@ -46,7 +46,9 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f9fafb; color: #111827; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f9fafb; color: #111827; margin: 0; padding: 0; overflow: hidden; }
+    #sp-main-wrap { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    .app-body { flex: 1; min-height: 0; }
 
     /* ── Header ── */
     header {
