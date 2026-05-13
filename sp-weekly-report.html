@@ -1203,10 +1203,10 @@
         </div>
       </div>
 
-      <!-- Pipeline Deals — Need Update -->
+      <!-- Upcoming Meetings -->
       <div class="card" id="plNeedUpdateCard" style="margin-top:14px;border-top-color:#f59e0b;display:none">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Pipeline Deals — Need Update</div>
+          <div style="font-size:0.72rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Upcoming Meetings</div>
           <span style="font-size:0.65rem;font-weight:600;color:#b45309;background:#fef3c7;border-radius:99px;padding:2px 8px" id="plNeedUpdateBadge"></span>
         </div>
         <div style="overflow-x:auto">
@@ -1363,7 +1363,7 @@ const CS_DEMO_BOOKED = [
 // ─── DEMO CALLS DATA (117 records) ────────────────────────────────────────────
 // t: stef/che/judy/rochelle/discovery  o: a=attended, n=noshow, c=canceled, s=scheduled, r=rescheduled
 const MEETINGS = [
-  // May 2026 — live from HubSpot 2026-05-12
+  // May 2026 — live from HubSpot 2026-05-13
   {d:'2026-05-06',t:'stef',   o:'a',co:'USource'},
   {d:'2026-05-06',t:'rochelle',o:'a',co:'Outsourced'},
   {d:'2026-05-06',t:'stef',   o:'a',co:'Offshore 247 Pty Ltd'},
@@ -1378,8 +1378,16 @@ const MEETINGS = [
   {d:'2026-05-12',t:'rochelle',o:'s',co:'Elaxis',            nds:true,nr:'No CS pipeline deal with call date'},
   {d:'2026-05-12',t:'stef',   o:'s',co:'CCIG',               nds:true,nr:'No CS pipeline deal with call date'},
   {d:'2026-05-12',t:'che',    o:'s',co:'Workforce Africa',   nds:true,nr:'No CS pipeline deal with call date'},
-  {d:'2026-05-13',t:'che',    o:'r',co:'Better Support',     nds:true,nr:'No CS pipeline deal with call date'},
-  {d:'2026-05-14',t:'stef',   o:'s',co:'Tison',              nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-13',t:'che',    o:'r',co:'Better Support',          nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-13',t:'che',    o:'s',co:'Ascentia Core Consulting',nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-13',t:'che',    o:'s',co:'Booth',                   nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-13',t:'che',    o:'s',co:'Daythree Business Services',nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-14',t:'stef',   o:'s',co:'Tison',                   nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-14',t:'che',    o:'c',co:'Happlicant',              nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-14',t:'stef',   o:'s',co:'PANDR Outsourcing',       nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-15',t:'che',    o:'s',co:'Kmer Outsourcing',        nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-18',t:'che',    o:'s',co:'Yoummday',                nds:true,nr:'No CS pipeline deal with call date'},
+  {d:'2026-05-19',t:'che',    o:'c',co:'DME',                     nds:true,nr:'No CS pipeline deal with call date'},
   {"d":"2026-04-30","t":"discovery","o":"c"},{"d":"2026-04-30","t":"discovery","o":"s"},
   {"d":"2026-04-30","t":"discovery","o":"s"},{"d":"2026-04-30","t":"che","o":"c"},
   {"d":"2026-04-30","t":"rochelle","o":"a"},{"d":"2026-04-30","t":"rochelle","o":""},
@@ -1444,7 +1452,7 @@ const DS_DEALS = [
   // Judy (78367246)
   {p:'judy',d:'2026-04-01',co:'Robotronics.ai',ds:'CS - No Show'},
   {p:'judy',d:'2026-04-01',co:'Intelliworx PH',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Source Partner'},
-  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'CS - Closed Won',cd:'2026-04-13',ss:'2025-04-16'},
+  {p:'judy',d:'2026-04-02',co:'SEBPO',ds:'CS - Closed Won',cd:'2026-04-13',ss:'2025-04-16',sub:'Marketing Hub - Standard;Sales Hub'},
   {p:'judy',d:'2026-04-06',co:'Finserve Global',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-06',co:'Trainonex Solutions',ds:'CS - No Show'},
   {p:'judy',d:'2026-04-06',co:'Fusion CX',ds:'CS - Demo Call Completed'},
@@ -1464,7 +1472,7 @@ const DS_DEALS = [
   {p:'judy',d:'2026-04-16',co:'Peak Support',ds:'CS - Closed Won',cd:'2026-04-15',sub:'Marketing Hub - Standard'},
   {p:'judy',d:'2026-04-16',co:'CreaThink Solutions',ds:'CS - Deal Created'},
   {p:'judy',d:'2026-04-16',co:'Mesopotamia Trade (Aidey)',ds:'CS - Closed Won',ss:'2023-11-01'},
-  {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:''},
+  {p:'judy',d:'2026-04-16',co:'Innovative Work Solutions',ds:'CS - Closed Won',cd:'2026-05-04',sub:'Sales Hub'},
   {p:'judy',d:'2026-04-17',co:'Prime Bridge Solutions',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-17',co:'Prestige OSS',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-20',co:'CC.Talent',ds:'CS - Closed Won'},
@@ -1475,8 +1483,10 @@ const DS_DEALS = [
   {p:'judy',d:'2026-04-22',co:'MB Group',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-23',co:'Econx Group',ds:'CS - Deal Created'},
   {p:'judy',d:'2026-04-23',co:'CapActix Business Solutions',ds:'CS - Demo Call Completed'},
+  {p:'judy',d:'2026-04-23',co:'Clark Outsourcing',ds:'CS - Closed Won',cd:'2026-05-06',sub:'Marketing Hub'},
   {p:'judy',d:'2026-04-23',co:'HeyDelegate',ds:'',ss:'2025-10-25'},
   {p:'judy',d:'2026-04-24',co:'Alvi Global',ds:'CS - No Show'},
+  {p:'judy',d:'2026-04-24',co:'Afrishore BPO',ds:'CS - Closed Won',cd:'2026-03-09',sub:'Marketing Hub -Source Boost'},
   {p:'judy',d:'2026-04-24',co:'Exordiom',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-27',co:'Ekinova',ds:'CS - Demo Call Completed'},
   {p:'judy',d:'2026-04-28',co:'ContactPlus Spike',ds:'CS - Closed Won',cd:'2026-04-29',sub:'Sales Hub'},
@@ -1510,12 +1520,13 @@ const DS_DEALS = [
   {p:'che',d:'2026-04-28',co:'Novacomp',ds:''},
   // Rochelle (76241586)
   {p:'rochelle',d:'2026-04-01',co:'Goodland BPO',ds:'CS - Closed Won',cd:'2026-04-01',sub:'Sales Hub'},
+  {p:'rochelle',d:'2026-04-14',co:'Elaxis',ds:'CS - Closed Won',cd:'2025-09-01',sub:'Standard'},
   {p:'rochelle',d:'2026-04-20',co:'Success Link Outsourcing US',ds:'CS - Closed Won',ss:'2026-05-07',sub:'Sales Hub;Marketing Hub - Standard'},
   {p:'rochelle',d:'2026-04-22',co:'CnerG',ds:'CS - Demo Call Completed'},
   {p:'rochelle',d:'2026-04-24',co:'Proficient CS',ds:'CS - Demo Call Completed'},
   {p:'rochelle',d:'2026-04-29',co:'Brand Vantage',ds:'CS - Deal Created'},
-  {p:'rochelle',d:'2026-05-06',co:'Outsourced',ds:'CS - Closed Won',cd:'2022-01-17'},
-  {p:'rochelle',d:'2026-05-06',co:'Outsourced (2nd)',ds:'CS - Deal Created'},
+  {p:'rochelle',d:'2026-05-06',co:'Outsourced',ds:'CS - Closed Won',cd:'2022-01-17',sub:'Marketing Hub -Source Boost;Standard'},
+  {p:'rochelle',d:'2026-05-06',co:'Outsourced Global',ds:'CS - Closed Won',cd:'2026-05-13',sub:'Standard;Marketing Hub -Source Boost'},
   {p:'rochelle',d:'2026-05-06',co:'Mifin',ds:'CS - Demo Call Completed'},
 ];
 const DS_STATUSES = [
@@ -2794,7 +2805,7 @@ window.showView=function(view){
   const hidePicker=['source-partners','sp-forecast','lead-fulfillment'];
   document.getElementById('pickerWrapper').style.display=hidePicker.includes(view)?'none':'';
   if(view==='lead-fulfillment') renderLeadFulfillment();
-  if(view==='pipeline'){ if(state.activePreset==='mtd') setPreset('lm'); else renderPipeline(); }
+  if(view==='pipeline') renderPipeline();
 };
 
 // ─── PRESETS ─────────────────────────────────────────────────────────────────
