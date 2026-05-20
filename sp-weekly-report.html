@@ -408,6 +408,9 @@
       <!-- Closed Won Breakdown -->
       <div id="cpClosedWonSection" style="margin-bottom:14px"></div>
 
+      <!-- Outbound SDR Performance -->
+      <div id="cpSdrSection" style="margin-bottom:14px"></div>
+
       <!-- Deals table -->
       <div class="table-card">
         <div class="table-card-hdr">
@@ -463,100 +466,45 @@
 
     <!-- ════ ACTIVE PARTNERS VIEW ════════════════════════════════════════════ -->
     <div id="active-partners-view" class="view">
-      <div class="view-title">Active Partners <span class="tag" style="background:#1e40af;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:20px;font-weight:600;vertical-align:middle">97 Active</span></div>
+      <div class="view-title">Active Partners <span class="tag" style="background:#1e40af;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:20px;font-weight:600;vertical-align:middle" id="apActiveTag">96 Active</span></div>
 
-      <!-- Summary cards -->
-      <div class="summary-grid">
+      <!-- Row 1: Headline summary + MRR Bar -->
+      <div class="summary-grid" style="grid-template-columns:1fr 1fr 2fr;margin-bottom:14px">
         <div class="card" style="border-top-color:#1e40af">
           <div class="lbl">Total Active Partners</div>
-          <div class="big">97</div>
+          <div class="big" id="apTotalCount">–</div>
           <div class="sub">CS - Subscription Status: Active</div>
         </div>
-        <div class="card" style="border-top-color:#2563eb">
-          <div class="lbl">MRR</div>
-          <div class="big">$148,853</div>
-          <div class="sub">across paying partners</div>
+        <div class="card" style="border-top-color:#059669">
+          <div class="lbl">Total MRR</div>
+          <div class="big" id="apTotalMrr">–</div>
+          <div class="sub">across all active subscriptions</div>
         </div>
-        <div class="card" style="border-top-color:#475569">
-          <div class="lbl">Partners with Revenue</div>
-          <div class="big">71</div>
-          <div class="pct" style="color:#475569">73% of total</div>
-        </div>
-        <div class="card" style="border-top-color:#94a3b8">
-          <div class="lbl">Avg Revenue / Paying</div>
-          <div class="big">$2,096</div>
-          <div class="sub">among 71 with revenue</div>
+        <div class="card" style="border-top-color:#e5e7eb">
+          <div class="lbl">MRR Breakdown by Tier</div>
+          <div id="apMrrBar" style="height:20px;border-radius:6px;overflow:hidden;display:flex;margin:8px 0 10px"></div>
+          <div id="apMrrLegend" style="display:flex;gap:16px;flex-wrap:wrap"></div>
         </div>
       </div>
 
-      <!-- Subscription + Revenue breakdown (two-col) -->
-      <div class="charts-row two-col">
-        <div class="chart-card">
-          <h3>Subscription Breakdown <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">by partner count</span></h3>
-          <div style="height:250px"><canvas id="apSubCountChart"></canvas></div>
-        </div>
-        <div class="chart-card" style="margin-bottom:0">
-          <h3>Revenue by Subscription <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">total $ per plan</span></h3>
-          <div style="height:250px"><canvas id="apSubRevChart"></canvas></div>
-        </div>
-      </div>
+      <!-- Row 2: Tier breakdown cards -->
+      <div id="apTierCards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px"></div>
 
-      <!-- Partners & Revenue by Owner (two-col) -->
-      <div class="charts-row two-col">
-        <div class="chart-card">
-          <h3>Partners by Owner <span style="font-weight:400;color:#94a3b8;font-size:0.62rem">stacked by subscription</span></h3>
-          <div style="height:250px"><canvas id="apOwnerCountChart"></canvas></div>
-        </div>
-        <div class="chart-card" style="margin-bottom:0">
-          <h3>Revenue by Owner</h3>
-          <div style="height:250px"><canvas id="apOwnerRevChart"></canvas></div>
+      <!-- Row 3: Accordion sections -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <div class="tbl-filter-group">
+          <span class="tbl-filter-label">Owner</span>
+          <select class="tbl-filter-select" id="apOwnerFilter" onchange="setApFilter()">
+            <option value="all">All</option>
+            <option value="judy">Judy</option>
+            <option value="stef">Stef</option>
+            <option value="che">Che</option>
+            <option value="rochelle">Rochelle</option>
+          </select>
         </div>
       </div>
-
-      <!-- Partner list table -->
-      <div class="table-card">
-        <div class="table-card-hdr">
-          <h3>Active Partner List</h3>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <div class="tbl-filter-group">
-              <span class="tbl-filter-label">Subscription</span>
-              <select class="tbl-filter-select" id="apSubFilter" onchange="setApFilter()">
-                <option value="all">All</option>
-                <option value="Source Partner">Source Partner</option>
-                <option value="Marketing Hub - Source Boost">MH - Source Boost</option>
-                <option value="Sales Hub">Sales Hub</option>
-                <option value="Standard">Standard</option>
-                <option value="Marketing Hub">Marketing Hub</option>
-                <option value="Marketing Hub - Standard">MH - Standard</option>
-                <option value="">No Subscription</option>
-              </select>
-            </div>
-            <div class="tbl-filter-group">
-              <span class="tbl-filter-label">Owner</span>
-              <select class="tbl-filter-select" id="apOwnerFilter" onchange="setApFilter()">
-                <option value="all">All</option>
-                <option value="judy">Judy</option>
-                <option value="stef">Stef</option>
-                <option value="che">Che</option>
-                <option value="rochelle">Rochelle</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Subscription</th>
-              <th>Deal Owner</th>
-              <th>Revenue</th>
-            </tr>
-          </thead>
-          <tbody id="apPartnerTable"></tbody>
-        </table>
-      </div>
+      <div id="apAccordion"></div>
     </div>
-
 
 <!-- ══ Source Partners View ══════════════════════════════════════════════════ -->
 <div id="source-partners-view" class="view">
@@ -797,143 +745,156 @@ const state = {
 
 
 const AP_SUBS=[
-  {key:'Source Partner',               label:'Source Partner',        color:'#1e40af'},
-  {key:'Marketing Hub - Source Boost', label:'MH - Source Boost',     color:'#2563eb'},
-  {key:'Sales Hub',                    label:'Sales Hub',             color:'#475569'},
-  {key:'Marketing Hub',                label:'Marketing Hub',         color:'#7c3aed'},
-  {key:'Marketing Hub - Standard',     label:'MH - Standard',         color:'#94a3b8'},
-  {key:'Standard',                     label:'Standard',              color:'#d1d5db'},
+  {key:'Bronze Special',               tier:'sp',  label:'Bronze Special',        color:'#1e3a8a'},
+  {key:'Silver',                       tier:'sp',  label:'Silver',                color:'#1e40af'},
+  {key:'Silver Special',               tier:'sp',  label:'Silver Special',        color:'#1d4ed8'},
+  {key:'Gold',                         tier:'sp',  label:'Gold',                  color:'#1e40af'},
+  {key:'Gold Special',                 tier:'sp',  label:'Gold Special',          color:'#2563eb'},
+  {key:'Platinum + 2',                 tier:'sp',  label:'Platinum',              color:'#1e3a8a'},
+  {key:'Platinum + 3',                 tier:'sp',  label:'Platinum++',            color:'#172554'},
+  {key:'Sales Hub',                    tier:'sh',  label:'Sales Hub',             color:'#0369a1'},
+  {key:'Sales Hub - Source Call',      tier:'sh',  label:'SH - Source Call',      color:'#0284c7'},
+  {key:'Marketing Hub',                tier:'mh',  label:'Marketing Hub',         color:'#7c3aed'},
+  {key:'Marketing Hub - Standard',     tier:'mh',  label:'MH - Standard',         color:'#a78bfa'},
+  {key:'Marketing Hub - Source Boost', tier:'mh',  label:'MH - Source Boost',     color:'#6d28d9'},
+  {key:'Standard',                     tier:'std', label:'Standard',              color:'#64748b'},
+];
+const AP_TIERS=[
+  {key:'sp',  label:'Source Partner', color:'#1e40af'},
+  {key:'sh',  label:'Sales Hub',      color:'#0369a1'},
+  {key:'mh',  label:'Marketing Hub',  color:'#7c3aed'},
+  {key:'std', label:'Standard',       color:'#64748b', phasing:true},
 ];
 const AP_PARTNERS=[
-  {n:'123Employee',                            sub:'Standard',                    o:'judy',     rev:0},
-  {n:'Acquire Intelligence',                   sub:'Source Partner',               o:'stef',     rev:7089},
-  {n:'Affirm Data',                            sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Afrishore BPO',                          sub:'Marketing Hub - Source Boost', o:'judy',     rev:499},
-  {n:'Agility Staffing/Healthscope',           sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Ansafone',                               sub:'Standard',                    o:'judy',     rev:0},
-  {n:'Answering Service Care',                 sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Archers Contact Solutions',              sub:'Sales Hub',                   o:'judy',     rev:0},
-  {n:'Azendo',                                 sub:'Sales Hub',                   o:'stef',     rev:3499},
-  {n:'Better Support',                         sub:'Standard',                    o:'rochelle', rev:0},
-  {n:'Boomering',                              sub:'Standard',                    o:'stef',     rev:100},
-  {n:'Callmax Solutions',                      sub:'Source Partner',               o:'che',      rev:6599},
-  {n:'CCIG Group',                             sub:'Standard',                    o:'stef',     rev:0},
-  {n:'CDM Direct',                             sub:'Sales Hub',                   o:'rochelle', rev:100},
-  {n:'Cebu Telenet',                           sub:'Source Partner',               o:'judy',     rev:6070},
-  {n:'Clark Outsourcing',                      sub:'Marketing Hub',               o:'judy',     rev:29},
-  {n:'Cloudstaff',                             sub:'Standard',                    o:'stef',     rev:0},
-  {n:'Complete BPO',                           sub:'Sales Hub',                   o:'stef',     rev:277},
-  {n:'ConnectOS',                              sub:'Marketing Hub - Source Boost', o:'stef',     rev:7089},
-  {n:'Connext',                                sub:'Standard',                    o:'rochelle', rev:1000},
-  {n:'ContactPlus Spike',                      sub:'Sales Hub',                   o:'judy',     rev:199},
-  {n:'Contactpoint 360',                       sub:'Marketing Hub - Source Boost', o:'judy',     rev:499},
-  {n:'Corpshore Solutions',                    sub:'Marketing Hub - Source Boost', o:'stef',     rev:499},
-  {n:'CS-PAC Global Solutions',                sub:'Source Partner',               o:'rochelle', rev:3499},
-  {n:'Eastvantage',                            sub:'Source Partner',               o:'judy',     rev:6070},
-  {n:'EffectiveSoft',                          sub:'Standard',                    o:'stef',     rev:100},
-  {n:'Elaxis',                                 sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Enezync',                                sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Epic Outsourcing',                       sub:'Sales Hub',                   o:'stef',     rev:199},
-  {n:'Expedock',                               sub:'Source Partner',               o:'judy',     rev:3499},
-  {n:'FBSPL',                                  sub:'Standard',                    o:'stef',     rev:0},
-  {n:'Gloov Outsourcing',                      sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Goodland BPO',                           sub:'Sales Hub',                   o:'rochelle', rev:199},
-  {n:'H Connect International',                sub:'Standard',                    o:'rochelle', rev:0},
-  {n:'HGS',                                    sub:'Source Partner',               o:'che',      rev:0},
-  {n:'HGS OSS',                                sub:'Source Partner',               o:'che',      rev:0},
-  {n:'HGS UK',                                 sub:'Source Partner',               o:'che',      rev:6070},
-  {n:'HOPLA',                                  sub:'Source Partner',               o:'rochelle', rev:6599},
-  {n:'Hugo',                                   sub:'Marketing Hub - Source Boost', o:'judy',     rev:490},
-  {n:'iFive',                                  sub:'Standard',                    o:'judy',     rev:100},
-  {n:'IIMI Intelligent Image Management Inc.', sub:'Marketing Hub - Source Boost', o:'rochelle', rev:0},
-  {n:'Innovative Work Solutions',              sub:'Sales Hub',                   o:'judy',     rev:199},
-  {n:'Innovature',                             sub:'Standard',                    o:'stef',     rev:0},
-  {n:'IntegratedOS',                           sub:'Source Partner',               o:'stef',     rev:3135},
-  {n:'Intelliworx PH',                         sub:'Source Partner',               o:'judy',     rev:3499},
-  {n:'ISTA Solutions',                         sub:'Standard',                    o:'judy',     rev:0},
-  {n:'iTransition',                            sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Kamel BPO',                              sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Kinetic Innovative Staffing',            sub:'Marketing Hub',               o:'rochelle', rev:29},
-  {n:'LAdmins',                                sub:'Marketing Hub',               o:'judy',     rev:29},
-  {n:'Lynk Global',                            sub:'Marketing Hub',               o:'rochelle', rev:100},
-  {n:'Multinational Holdings',                 sub:'Sales Hub',                   o:'rochelle', rev:199},
-  {n:'NQX',                                    sub:'Standard',                    o:'judy',     rev:100},
-  {n:'OfficePartners360',                      sub:'Standard',                    o:'judy',     rev:0},
-  {n:'Origo BPO',                              sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Outposter',                              sub:'Source Partner',               o:'stef',     rev:14849},
-  {n:'Outsourcea',                             sub:'Marketing Hub',               o:'rochelle', rev:0},
-  {n:'Outsourced',                             sub:'Marketing Hub - Source Boost', o:'rochelle', rev:590},
-  {n:'Outsourced Global',                      sub:'Standard',                    o:'rochelle', rev:1100},
-  {n:'Pandr',                                  sub:'Source Partner',               o:'stef',     rev:3999},
-  {n:'Paragon Outsourcing',                    sub:'Standard',                    o:'judy',     rev:0},
-  {n:'Parkes BPO',                             sub:'Sales Hub',                   o:'rochelle', rev:199},
-  {n:'Peak Outsourcing',                       sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Peak Support',                           sub:'Marketing Hub - Standard',    o:'judy',     rev:29},
-  {n:'Pentwater',                              sub:'Source Partner',               o:'stef',     rev:3499},
-  {n:'Pentwater Connect',                      sub:'Sales Hub',                   o:'stef',     rev:199},
-  {n:'People Partners BPO',                    sub:'Source Partner',               o:'rochelle', rev:3699},
-  {n:'Platinum Outsourcing',                   sub:'Standard',                    o:'rochelle', rev:0},
-  {n:'Portland Outsource',                     sub:'Standard',                    o:'judy',     rev:0},
-  {n:'Prima Systems',                          sub:'Standard',                    o:'stef',     rev:100},
-  {n:'Remote Employee',                        sub:'Source Partner',               o:'stef',     rev:7089},
-  {n:'Remote Latinos',                         sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Remote People',                          sub:'Marketing Hub - Source Boost', o:'judy',     rev:199},
-  {n:'Remotify',                               sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Sagan Passport',                         sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Satellite Office',                       sub:'Source Partner',               o:'stef',     rev:3499},
-  {n:'ScalableOS',                             sub:'Standard',                    o:'rochelle', rev:0},
-  {n:'SEBPO',                                  sub:'Marketing Hub - Standard',    o:'judy',     rev:0},
-  {n:'Select Voicecom',                        sub:'Standard',                    o:'judy',     rev:0},
-  {n:'Sigli',                                  sub:'Standard',                    o:'stef',     rev:100},
-  {n:'Simply Contact',                         sub:'Sales Hub',                   o:'stef',     rev:100},
-  {n:'Six Eleven',                             sub:'Source Partner',               o:'che',      rev:18189},
-  {n:'Snapscale',                              sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Sourcefit',                              sub:'Marketing Hub - Source Boost', o:'rochelle', rev:3625},
-  {n:'Staff Outsourcing',                      sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Success Link Outsourcing US',            sub:'Sales Hub',                   o:'rochelle', rev:365},
-  {n:'SummitNext',                             sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'Talent Forge Group',                     sub:'Standard',                    o:'rochelle', rev:100},
-  {n:'The Remote Group',                       sub:'Sales Hub',                   o:'rochelle', rev:100},
-  {n:'Thrivin',                                sub:'Sales Hub',                   o:'judy',     rev:199},
-  {n:'Tison',                                  sub:'Marketing Hub',               o:'stef',     rev:0},
-  {n:'VA Platinum Pty Ltd',                    sub:'Source Partner',               o:'rochelle', rev:7698},
-  {n:'Virtual Latinos',                        sub:'Standard',                    o:'rochelle', rev:0},
-  {n:'VirtualStaff.ph',                        sub:'Marketing Hub - Source Boost', o:'judy',     rev:499},
-  {n:'vizx international staffing solutions',  sub:'Standard',                    o:'judy',     rev:100},
-  {n:'Xceed',                                  sub:'Standard',                    o:'stef',     rev:0},
-  {n:'ZigZag (Outposter)',                     sub:'Source Partner',               o:'stef',     rev:5801},
+  {n:"Complete BPO",o:'stef',s1:"Sales Hub",f1:199,s2:"Marketing Hub",f2:29,s3:"Sales Hub - Source Call",f3:49},
+  {n:"Better Support",o:'rochelle',s1:"Sales Hub",f1:100,s2:"Marketing Hub - Standard"},
+  {n:"Eastvantage",o:'judy',s1:"Silver Special",f1:6070},
+  {n:"Thrivin",o:'judy',s1:"Sales Hub",f1:199},
+  {n:"Contactpoint 360",o:'judy',s1:"Marketing Hub - Source Boost",f1:499},
+  {n:"Prima Systems",o:'stef',s1:"Standard",f1:100},
+  {n:"ContactPlus Spike",o:'judy',s1:"Sales Hub",f1:199},
+  {n:"Outsourced Global",o:'rochelle',s1:"Standard",f1:100,s2:"Marketing Hub - Source Boost",f2:1000},
+  {n:"Clark Outsourcing",o:'judy',s1:"Marketing Hub - Standard",f1:29},
+  {n:"Success Link Outsourcing US",o:'rochelle',s1:"Sales Hub",s2:"Marketing Hub"},
+  {n:"Innovative Work Solutions",o:'judy',s1:"Sales Hub",f1:199},
+  {n:"KMC Solutions",o:'che',s1:"Marketing Hub - Source Boost",f1:490},
+  {n:"Peak Support",o:'judy',s1:"Marketing Hub - Standard",f1:29},
+  {n:"Cebu Telenet",o:'judy',s1:"Silver Special",f1:6070},
+  {n:"H Connect International",o:'rochelle',s1:"Sales Hub",s2:"Marketing Hub"},
+  {n:"IIMI",o:'rochelle',s1:"Standard"},
+  {n:"Azendo",o:'stef',s1:"Silver",f1:3499},
+  {n:"Remote Latinos",o:'judy',s1:"Standard",f1:100},
+  {n:"Enezync",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Cloudstaff",o:'stef',s1:"Standard"},
+  {n:"Corpshore Solutions",o:'stef',s1:"Marketing Hub - Source Boost",f1:499},
+  {n:"Innovature",o:'stef',s1:"Standard"},
+  {n:"Goodland BPO",o:'rochelle',s1:"Sales Hub",f1:199},
+  {n:"ZigZag (Outposter)",o:'stef',s1:"Platinum + 2",f1:5801},
+  {n:"HGS UK",o:'che',s1:"Silver Special",f1:6070},
+  {n:"Intelliworx PH",o:'judy',s1:"Silver",f1:3499},
+  {n:"Multinational Holdings",o:'rochelle',s1:"Sales Hub",f1:199},
+  {n:"Afrishore BPO",o:'judy',s1:"Marketing Hub - Source Boost",f1:499},
+  {n:"Remote People",o:'judy',s1:"Marketing Hub - Source Boost",f1:199},
+  {n:"LAdmins",o:'judy',s1:"Marketing Hub - Standard",f1:29},
+  {n:"Kinetic Innovative Staffing",o:'rochelle',s1:"Marketing Hub - Standard",f1:29},
+  {n:"Portland Outsource",o:'judy',s1:"Standard"},
+  {n:"Talent Forge Group",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Parkes BPO",o:'rochelle',s1:"Sales Hub",f1:199},
+  {n:"Epic Outsourcing",o:'stef',s1:"Sales Hub",f1:199},
+  {n:"Ansafone",o:'judy',s1:"Standard"},
+  {n:"CS-PAC Global Solutions",o:'rochelle',s1:"Silver",f1:3499},
+  {n:"Pandr",o:'stef',s1:"Silver Special",f1:3999},
+  {n:"Kamel BPO",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Archers Contact Solutions",o:'judy',s1:"Sales Hub"},
+  {n:"Sagan Passport",o:'judy',s1:"Standard",f1:100},
+  {n:"Hugo",o:'judy',s1:"Marketing Hub - Source Boost",f1:490},
+  {n:"Expedock",o:'judy',s1:"Silver",f1:3499},
+  {n:"People Partners BPO",o:'rochelle',s1:"Silver",f1:3699,s2:"Sales Hub",f2:199},
+  {n:"Lynk Global",o:'rochelle',s1:"Sales Hub",f1:100,s2:"Marketing Hub"},
+  {n:"VA Platinum Pty Ltd",o:'rochelle',s1:"Gold Special",f1:7698},
+  {n:"iTransition",o:'judy',s1:"Standard",f1:100,s2:"Marketing Hub - Source Boost"},
+  {n:"Gloov Outsourcing",o:'judy',s1:"Standard",f1:100},
+  {n:"Peak Outsourcing",o:'judy',s1:"Standard",f1:100},
+  {n:"NQX",o:'judy',s1:"Standard",f1:100},
+  {n:"vizx international staffing solutions",o:'judy',s1:"Standard",f1:100},
+  {n:"EffectiveSoft",o:'stef',s1:"Standard",f1:100},
+  {n:"Callmax Solutions",o:'che',s1:"Gold",f1:6599},
+  {n:"VirtualStaff.ph",o:'judy',s1:"Marketing Hub - Source Boost",f1:499},
+  {n:"Elaxis",o:'rochelle',s1:"Standard",f1:100},
+  {n:"HOPLA",o:'rochelle',s1:"Gold",f1:6599},
+  {n:"Sigli",o:'stef',s1:"Standard",f1:100},
+  {n:"Outsourcea",o:'rochelle',s1:"Sales Hub",s2:"Marketing Hub"},
+  {n:"FBSPL",o:'stef',s1:"Standard"},
+  {n:"Select Voicecom",o:'judy',s1:"Standard"},
+  {n:"CCIG Group",o:'stef',s1:"Standard"},
+  {n:"Satellite Office",o:'stef',s1:"Silver"},
+  {n:"ScalableOS",o:'rochelle',s1:"Standard"},
+  {n:"Acquire Intelligence",o:'stef',s1:"Gold",f1:6599,s2:"Marketing Hub - Source Boost",f2:490},
+  {n:"SummitNext",o:'rochelle',s1:"Standard"},
+  {n:"Answering Service Care",o:'judy',s1:"Standard"},
+  {n:"Staff Outsourcing",o:'judy',s1:"Standard"},
+  {n:"IntegratedOS",o:'stef',s1:"Bronze Special",f1:3135},
+  {n:"Tison",o:'stef',s1:"Sales Hub",s2:"Marketing Hub"},
+  {n:"CDM Direct",o:'rochelle',s1:"Sales Hub",s2:"Marketing Hub"},
+  {n:"Pentwater",o:'stef',s1:"Silver",f1:3499,s2:"Sales Hub",f2:199},
+  {n:"Simply Contact",o:'stef',s1:"Sales Hub",f1:100,s2:"Marketing Hub"},
+  {n:"ISTA Solutions",o:'judy',s1:"Standard"},
+  {n:"Remotify",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Affirm Data",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Paragon Outsourcing",o:'judy',s1:"Standard"},
+  {n:"OfficePartners360",o:'judy',s1:"Standard"},
+  {n:"Outposter",o:'stef',s1:"Platinum + 2",f1:14849},
+  {n:"Platinum Outsourcing",o:'rochelle',s1:"Standard"},
+  {n:"Connext",o:'rochelle',s1:"Standard",f1:100,s2:"Marketing Hub - Source Boost",f2:1000},
+  {n:"Sourcefit",o:'rochelle',s1:"Bronze Special",f1:3135,s2:"Marketing Hub - Source Boost",f2:490},
+  {n:"Snapscale",o:'judy',s1:"Standard",f1:100},
+  {n:"Origo BPO",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Xceed",o:'stef',s1:"Standard"},
+  {n:"ConnectOS",o:'stef',s1:"Gold",f1:6599,s2:"Marketing Hub - Source Boost",f2:490},
+  {n:"Boomering",o:'stef',s1:"Standard",f1:100},
+  {n:"Agility Staffing/Healthscope",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Remote Employee",o:'stef',s1:"Gold",f1:6599,s2:"Marketing Hub - Source Boost",f2:490},
+  {n:"The Remote Group",o:'rochelle',s1:"Sales Hub",f1:100,s2:"Marketing Hub"},
+  {n:"Virtual Latinos",o:'rochelle',s1:"Standard",f1:100},
+  {n:"Outsourced",o:'rochelle',s1:"Standard",f1:100,s2:"Marketing Hub - Source Boost",f2:490},
+  {n:"123Employee",o:'judy',s1:"Standard"},
+  {n:"Six Eleven",o:'che',s1:"Platinum + 3",f1:18189,s2:"Marketing Hub - Source Boost"},
+  {n:"HGS OSS",o:'che',s1:"Bronze Special"},
+  {n:"HGS",o:'che',s1:"Bronze Special"},
+  {n:"SEBPO",o:'judy',s1:"Marketing Hub - Standard",f1:29}
 ];
 const PERSONS=[
   {key:'judy'},{key:'stef'},{key:'che'},{key:'rochelle'},
 ];
 
 const SP_CYCLES = [
-  // 1st cycle — May 1–31, 2026  (refreshed 2026-05-18 · live OA Hub)
-  {n:'Six Eleven Global Services', type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:65, alloc:36, done:32, leadOnly:0, spOnly:8,  sched:5,  resch:2, noshow:0, cancel:8, filter:'',            o:'che'},
-  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:30, done:19, leadOnly:3, spOnly:3,  sched:10, resch:2, noshow:2, cancel:6, filter:'',            o:'stef'},
-  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:12, done:15, leadOnly:1, spOnly:4,  sched:6,  resch:2, noshow:1, cancel:3, filter:'',            o:'stef'},
-  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:20, done:7,  leadOnly:1, spOnly:2,  sched:9,  resch:1, noshow:0, cancel:1, filter:'',            o:'stef'},
-  {n:'ConnectOS',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:20, done:6,  leadOnly:1, spOnly:1,  sched:9,  resch:1, noshow:0, cancel:3, filter:'',            o:'stef'},
-  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:21, done:7,  leadOnly:0, spOnly:3,  sched:7,  resch:2, noshow:0, cancel:2, filter:'',            o:'stef'},
-  {n:'People Partners',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:9,  done:5,  leadOnly:1, spOnly:0,  sched:1,  resch:2, noshow:0, cancel:2, filter:'',            o:'rochelle'},
-  {n:'HOPLA Online',               type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:24, done:9,  leadOnly:0, spOnly:2,  sched:10, resch:1, noshow:0, cancel:2, filter:'',            o:'rochelle'},
-  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:15, done:9,  leadOnly:0, spOnly:2,  sched:4,  resch:0, noshow:2, cancel:1, filter:'',            o:'rochelle'},
-  {n:'Cebu Tele-net',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:13, alloc:8,  done:3,  leadOnly:0, spOnly:1,  sched:3,  resch:0, noshow:0, cancel:2, filter:'',            o:'judy'},
-  {n:'Satellite Office',           type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:7,  done:2,  leadOnly:0, spOnly:1,  sched:4,  resch:1, noshow:0, cancel:0, filter:'',            o:'stef'},
-  {n:'Sourcefit',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:5,  done:6,  leadOnly:1, spOnly:2,  sched:2,  resch:0, noshow:0, cancel:1, filter:'Call Center',  o:'rochelle'},
-  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:3,  done:2,  leadOnly:0, spOnly:1,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
-  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:10, done:5,  leadOnly:0, spOnly:2,  sched:4,  resch:0, noshow:0, cancel:1, filter:'AU · NZ',     o:'stef'},
-  {n:'Pentwater Group',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:0,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'stef'},
-  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:3,  done:0,  leadOnly:0, spOnly:0,  sched:3,  resch:0, noshow:0, cancel:0, filter:'AU · NZ',     o:'stef'},
-  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:3,  done:1,  leadOnly:0, spOnly:0,  sched:1,  resch:0, noshow:0, cancel:1, filter:'Call Center',  o:'stef'},
-  {n:'Azendo',                     type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:12, done:3,  leadOnly:0, spOnly:0,  sched:9,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
-  // 15th cycle — Apr 15 – May 14, 2026  (refreshed 2026-05-17 · live OA Hub)
-  {n:'Callmax Solutions',          type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:20, alloc:41, done:17, leadOnly:0, spOnly:3,  sched:0,  resch:0, noshow:1, cancel:8, filter:'',            o:'che'},
-  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:26, alloc:28, done:12, leadOnly:0, spOnly:7,  sched:2,  resch:0, noshow:0, cancel:4, filter:'',            o:'rochelle'},
-  {n:'Team HGS UK',                type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:15, done:7,  leadOnly:2, spOnly:3,  sched:0,  resch:0, noshow:2, cancel:1, filter:'AU · NZ',     o:'che'},
-  {n:'Expedock',                   type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:16, done:9,  leadOnly:0, spOnly:2,  sched:0,  resch:0, noshow:0, cancel:4, filter:'',            o:'judy'},
-  {n:'Callmax Solutions',          type:'enterprise', cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:5,  alloc:0,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'che'},
-  {n:'Outsource Accelerator',      type:'outbound',   cycle:'15th', cs:'2026-04-15', ce:'2026-05-14', expDc:10, alloc:89, done:4,  leadOnly:0, spOnly:0,  sched:2,  resch:1, noshow:0, cancel:2, filter:'US · UK',     o:''},
+  // 1st cycle — May 1–31, 2026  (refreshed 2026-05-20 · live OA Hub)
+  {n:'Six Eleven Global Services', type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:65, alloc:43, done:32, leadOnly:0, spOnly:7,  sched:8,  resch:3, noshow:1, cancel:9, filter:'',            o:'che'},
+  {n:'Outposter',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:55, alloc:41, done:23, leadOnly:3, spOnly:3,  sched:15, resch:2, noshow:2, cancel:6, filter:'',            o:'stef'},
+  {n:'Remote Employee',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:23, alloc:15, done:19, leadOnly:1, spOnly:4,  sched:4,  resch:1, noshow:1, cancel:4, filter:'',            o:'stef'},
+  {n:'HOPLA Online',               type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:28, done:12, leadOnly:0, spOnly:3,  sched:10, resch:1, noshow:0, cancel:2, filter:'',            o:'rochelle'},
+  {n:'ZIGZAG Offshoring',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:33, done:10, leadOnly:1, spOnly:5,  sched:12, resch:4, noshow:0, cancel:2, filter:'',            o:'stef'},
+  {n:'ConnectOS',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:31, done:11, leadOnly:1, spOnly:2,  sched:12, resch:2, noshow:0, cancel:3, filter:'',            o:'stef'},
+  {n:'Acquire',                    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:20, alloc:23, done:13, leadOnly:0, spOnly:3,  sched:3,  resch:3, noshow:0, cancel:1, filter:'',            o:'stef'},
+  {n:'Cebu Tele-net',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:13, alloc:10, done:4,  leadOnly:0, spOnly:1,  sched:3,  resch:0, noshow:0, cancel:3, filter:'',            o:'judy'},
+  {n:'Satellite Office',           type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:11, done:3,  leadOnly:0, spOnly:1,  sched:6,  resch:1, noshow:1, cancel:0, filter:'',            o:'stef'},
+  {n:'People Partners',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:11, alloc:10, done:5,  leadOnly:1, spOnly:0,  sched:2,  resch:2, noshow:0, cancel:2, filter:'',            o:'rochelle'},
+  {n:'CS-PAC Global Solutions',    type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:19, done:10, leadOnly:0, spOnly:3,  sched:4,  resch:2, noshow:2, cancel:1, filter:'',            o:'rochelle'},
+  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:11, done:1,  leadOnly:0, spOnly:0,  sched:10, resch:0, noshow:0, cancel:0, filter:'AU · NZ',     o:'stef'},
+  {n:'Azendo',                     type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:10, alloc:15, done:5,  leadOnly:0, spOnly:0,  sched:5,  resch:3, noshow:0, cancel:1, filter:'',            o:'judy'},
+  {n:'Eastvantage Business Sol.',  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:8,  alloc:4,  done:2,  leadOnly:0, spOnly:1,  sched:1,  resch:0, noshow:0, cancel:0, filter:'',            o:'judy'},
+  {n:'Pentwater Group',            type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:1,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'stef'},
+  {n:'Sourcefit',                  type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:7,  alloc:6,  done:8,  leadOnly:1, spOnly:2,  sched:0,  resch:1, noshow:0, cancel:1, filter:'Call Center',  o:'rochelle'},
+  {n:'Integrated OS',              type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:12, done:6,  leadOnly:0, spOnly:3,  sched:3,  resch:0, noshow:0, cancel:2, filter:'AU · NZ',     o:'stef'},
+  {n:'Pandr Outsourcing',          type:'outbound',   cycle:'1st', cs:'2026-05-01', ce:'2026-05-31', expDc:5,  alloc:6,  done:3,  leadOnly:0, spOnly:0,  sched:2,  resch:0, noshow:0, cancel:1, filter:'Call Center',  o:'stef'},
+  // 15th cycle — May 15 – Jun 14, 2026  (refreshed 2026-05-20 · live OA Hub)
+  {n:'VA Platinum',                type:'outbound',   cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:33, alloc:4,  done:3,  leadOnly:0, spOnly:0,  sched:5,  resch:0, noshow:0, cancel:1, filter:'',            o:'rochelle'},
+  {n:'Callmax Solutions',          type:'outbound',   cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:20, alloc:0,  done:8,  leadOnly:0, spOnly:0,  sched:0,  resch:1, noshow:1, cancel:2, filter:'',            o:'che'},
+  {n:'Expedock',                   type:'outbound',   cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:10, alloc:3,  done:1,  leadOnly:0, spOnly:0,  sched:2,  resch:1, noshow:0, cancel:0, filter:'',            o:'judy'},
+  {n:'Outsource Accelerator',      type:'outbound',   cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:10, alloc:2,  done:2,  leadOnly:0, spOnly:0,  sched:3,  resch:0, noshow:0, cancel:2, filter:'US · UK',     o:''},
+  {n:'Team HGS UK',                type:'outbound',   cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:5,  alloc:1,  done:0,  leadOnly:0, spOnly:0,  sched:1,  resch:0, noshow:0, cancel:0, filter:'AU · NZ',     o:'che'},
+  {n:'Callmax Solutions',          type:'enterprise', cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:5,  alloc:0,  done:0,  leadOnly:0, spOnly:0,  sched:0,  resch:0, noshow:0, cancel:0, filter:'',            o:'che'},
+  {n:'CC.Talent',                  type:'outbound',   cycle:'15th', cs:'2026-05-15', ce:'2026-06-14', expDc:3,  alloc:1,  done:0,  leadOnly:0, spOnly:0,  sched:1,  resch:0, noshow:0, cancel:0, filter:'',            o:''},
 ];
 
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
@@ -1125,7 +1086,6 @@ if(typeof Chart==='undefined'){
   Chart.defaults.font.family="'Inter',system-ui,sans-serif";
   Chart.defaults.font.size=11;
 }
-let apSubCount,apSubRev,apOwnerCount,apOwnerRev;
 let cpStageChart=null;
 
 function initAll(){
@@ -1136,32 +1096,151 @@ function initAll(){
 }
 
 function renderApTable(){
-  const subF=document.getElementById('apSubFilter').value;
-  const ownerF=document.getElementById('apOwnerFilter').value;
-  const ownerLabels={'judy':'Judy','stef':'Stef','che':'Che','rochelle':'Rochelle','other':'Other'};
-  const ownerColors={'judy':'#2563eb','stef':'#1e40af','che':'#64748b','rochelle':'#94a3b8','other':'#d1d5db'};
+  const ownerF=document.getElementById('apOwnerFilter')?document.getElementById('apOwnerFilter').value:'all';
+  const ownerLabels={judy:'Judy',stef:'Stef',che:'Che',rochelle:'Rochelle'};
+  const ownerColors={judy:'#2563eb',stef:'#1e40af',che:'#64748b',rochelle:'#94a3b8'};
   const subColorMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.color]));
   const subLabelMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.label]));
-  const rows=AP_PARTNERS
-    .filter(r=>(subF==='all'||r.sub===subF)&&(ownerF==='all'||r.o===ownerF))
-    .slice().sort((a,b)=>a.n.localeCompare(b.n));
-  const tbody=document.getElementById('apPartnerTable');
-  if(!tbody)return;
-  tbody.innerHTML=rows.map(r=>{
-    const sc=subColorMap[r.sub]||'#e5e7eb';
-    const sl=subLabelMap[r.sub]||'No Subscription';
-    const oc=ownerColors[r.o]||'#94a3b8';
-    const ol=ownerLabels[r.o]||r.o;
-    const revStr=r.rev>0?'$'+r.rev.toLocaleString():'—';
-    const pillText=r.rev>0?`<strong style="color:#1e40af">${revStr}</strong>`:`<span style="color:#94a3b8">—</span>`;
-    return`<tr>
-      <td><strong>${r.n}</strong></td>
-      <td><span class="pill" style="background:${sc};color:${sc==='#e5e7eb'?'#475569':'#fff'}">${sl}</span></td>
-      <td><span class="pill" style="background:${oc};color:#fff">${ol}</span></td>
-      <td>${pillText}</td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#94a3b8">No partners match filters</td></tr>';
+  const subTierMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.tier]));
+  const fk=sk=>sk.replace('s','f');
+
+  // Compute tier stats
+  const tierParters={sp:new Set(),sh:new Set(),mh:new Set(),std:new Set()};
+  const tierMrr={sp:0,sh:0,mh:0,std:0};
+  let totalMrr=0,shSourceCall=0,mhSourceBoost=0;
+  AP_PARTNERS.forEach(p=>{
+    let pm=0;
+    ['s1','s2','s3'].forEach(sk=>{
+      const sv=p[sk];if(!sv)return;
+      const fv=p[fk(sk)]||0;
+      const t=subTierMap[sv];
+      if(t){tierParters[t].add(p.n);tierMrr[t]+=fv;}
+      if(sv==='Sales Hub - Source Call')shSourceCall++;
+      if(sv==='Marketing Hub - Source Boost')mhSourceBoost++;
+      pm+=fv;
+    });
+    totalMrr+=pm;
+  });
+
+  // Headline cards
+  const tc=document.getElementById('apTotalCount');
+  const tm=document.getElementById('apTotalMrr');
+  const at=document.getElementById('apActiveTag');
+  if(tc)tc.textContent=AP_PARTNERS.length;
+  if(tm)tm.textContent='$'+totalMrr.toLocaleString();
+  if(at)at.textContent=AP_PARTNERS.length+' Active';
+
+  // MRR bar + legend
+  const barEl=document.getElementById('apMrrBar');
+  const legEl=document.getElementById('apMrrLegend');
+  if(barEl&&totalMrr>0){
+    barEl.innerHTML=AP_TIERS.map(t=>{
+      const pct=tierMrr[t.key]/totalMrr*100;
+      if(pct<0.1)return'';
+      return`<div style="width:${pct}%;background:${t.color};min-width:4px" title="${t.label}: ${pct.toFixed(1)}%"></div>`;
+    }).join('');
+  }
+  if(legEl&&totalMrr>0){
+    legEl.innerHTML=AP_TIERS.map(t=>{
+      const pct=(tierMrr[t.key]/totalMrr*100).toFixed(1);
+      return`<span style="display:flex;align-items:center;gap:5px;font-size:0.72rem;color:#374151"><span style="width:8px;height:8px;border-radius:50%;background:${t.color};flex-shrink:0"></span><strong>${t.label}</strong> ${pct}%</span>`;
+    }).join('');
+  }
+
+  // Tier cards with % progress bar
+  const tierEl=document.getElementById('apTierCards');
+  if(tierEl){
+    tierEl.innerHTML=AP_TIERS.map(t=>{
+      const count=tierParters[t.key].size;
+      const mrr=tierMrr[t.key];
+      const pct=totalMrr>0?(mrr/totalMrr*100):0;
+      let detail='';
+      if(t.key==='sh')detail=`<div style="font-size:0.7rem;color:#64748b;margin-top:4px">↳ Source Call: ${shSourceCall}</div>`;
+      if(t.key==='mh')detail=`<div style="font-size:0.7rem;color:#64748b;margin-top:4px">↳ Source Boost: ${mhSourceBoost}</div>`;
+      const phaseTag=t.phasing?`<span style="font-size:0.6rem;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:99px;margin-left:6px">phasing out</span>`:'';
+      return`<div class="card" style="border-top-color:${t.color}">
+        <div class="lbl" style="font-weight:700;color:${t.color};margin-bottom:10px">${t.label}${phaseTag}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+          <div><div class="big" style="font-size:1.8rem">${count}</div><div class="sub">partners</div></div>
+          <div style="text-align:right"><div style="font-size:1.1rem;font-weight:700;color:${t.color}">$${mrr.toLocaleString()}</div><div class="sub">MRR / mo</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${t.color};border-radius:99px"></div></div>
+          <div style="font-size:0.85rem;font-weight:700;color:${t.color};min-width:38px;text-align:right">${pct.toFixed(1)}%</div>
+        </div>
+        ${detail}
+      </div>`;
+    }).join('');
+  }
+
+  // Accordion sections
+  const accEl=document.getElementById('apAccordion');
+  if(!accEl)return;
+  if(!window._apAccOpen)window._apAccOpen={sp:true,sh:true,mh:false,std:false};
+
+  accEl.innerHTML=AP_TIERS.map(t=>{
+    const count=tierParters[t.key].size;
+    const mrr=tierMrr[t.key];
+    const pct=totalMrr>0?(mrr/totalMrr*100).toFixed(1):0;
+    const isOpen=window._apAccOpen[t.key];
+    const phaseTag=t.phasing?`<span style="font-size:0.62rem;background:#fef3c7;color:#92400e;padding:1px 8px;border-radius:99px;margin-left:8px;font-weight:600">phasing out</span>`:'';
+    let subDetail='';
+    if(t.key==='sh'&&shSourceCall>0)subDetail=`<div style="font-size:0.72rem;color:#0369a1;background:#e0f2fe;padding:4px 12px;border-radius:6px;margin-bottom:10px;display:inline-block">↳ Includes ${shSourceCall} partner${shSourceCall>1?'s':''} on Source Call</div>`;
+    if(t.key==='mh'&&mhSourceBoost>0)subDetail=`<div style="font-size:0.72rem;color:#7c3aed;background:#ede9fe;padding:4px 12px;border-radius:6px;margin-bottom:10px;display:inline-block">↳ Includes ${mhSourceBoost} partner${mhSourceBoost>1?'s':''} on Source Boost</div>`;
+    const tierRows=AP_PARTNERS
+      .filter(p=>{
+        if(ownerF!=='all'&&p.o!==ownerF)return false;
+        return['s1','s2','s3'].some(sk=>p[sk]&&subTierMap[p[sk]]===t.key);
+      })
+      .slice().sort((a,b)=>((b.f1||0)+(b.f2||0)+(b.f3||0))-((a.f1||0)+(a.f2||0)+(a.f3||0)));
+    const tableRows=tierRows.map(p=>{
+      const oc=ownerColors[p.o]||'#94a3b8';
+      const ol=ownerLabels[p.o]||p.o;
+      const primaryPills=['s1','s2','s3'].filter(sk=>p[sk]&&subTierMap[p[sk]]===t.key).map(sk=>{
+        const sv=p[sk];const c=subColorMap[sv]||'#64748b';const l=subLabelMap[sv]||sv;
+        return`<span class="pill" style="background:${c};color:#fff;margin-right:3px">${l}</span>`;
+      }).join('');
+      const addonPills=['s1','s2','s3'].filter(sk=>p[sk]&&subTierMap[p[sk]]!==t.key).map(sk=>{
+        const sv=p[sk];const c=subColorMap[sv]||'#64748b';const l=subLabelMap[sv]||sv;
+        return`<span class="pill" style="background:${c};color:#fff;margin-right:3px">${l}</span>`;
+      }).join('');
+      const totalFee=(p.f1||0)+(p.f2||0)+(p.f3||0);
+      const mrrStr=totalFee>0?`<strong style="color:#1e40af">$${totalFee.toLocaleString()}</strong>`:`<span style="color:#94a3b8">—</span>`;
+      return`<tr><td><strong>${p.n}</strong></td><td><span class="pill" style="background:${oc};color:#fff">${ol}</span></td><td>${primaryPills||'<span style="color:#94a3b8">—</span>'}</td><td>${addonPills||'<span style="color:#94a3b8">—</span>'}</td><td style="text-align:right">${mrrStr}</td></tr>`;
+    }).join('')||`<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:12px">No partners match</td></tr>`;
+    return`<div style="background:white;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:10px;overflow:hidden">
+      <div onclick="window._apToggle('${t.key}')" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;border-left:4px solid ${t.color};user-select:none;background:white" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:0.65rem;color:#9ca3af;display:inline-block;transform:rotate(${isOpen?90:0}deg)">▶</span>
+          <span style="width:12px;height:12px;border-radius:2px;background:${t.color};flex-shrink:0"></span>
+          <span style="font-weight:700;font-size:0.82rem;letter-spacing:0.06em;color:${t.color};text-transform:uppercase">${t.label}</span>
+          ${phaseTag}
+        </div>
+        <span style="font-size:0.78rem;color:#6b7280">${count} partners &nbsp;·&nbsp; $${mrr.toLocaleString()} / mo &nbsp;·&nbsp; ${pct}% of MRR</span>
+      </div>
+      <div style="max-height:${isOpen?'3000px':'0'};overflow:hidden;transition:max-height 0.35s ease">
+        <div style="padding:14px 18px 6px">
+          ${subDetail}
+          <table style="width:100%;border-collapse:collapse;font-size:0.83rem">
+            <thead><tr>
+              <th style="text-align:left;padding:6px 12px;font-size:0.67rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;letter-spacing:0.04em;text-transform:uppercase">Company</th>
+              <th style="text-align:left;padding:6px 12px;font-size:0.67rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;letter-spacing:0.04em;text-transform:uppercase">Owner</th>
+              <th style="text-align:left;padding:6px 12px;font-size:0.67rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;letter-spacing:0.04em;text-transform:uppercase">Subscription</th>
+              <th style="text-align:left;padding:6px 12px;font-size:0.67rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;letter-spacing:0.04em;text-transform:uppercase">Add-on Subs</th>
+              <th style="text-align:right;padding:6px 12px;font-size:0.67rem;font-weight:600;color:#9ca3af;border-bottom:1px solid #e5e7eb;letter-spacing:0.04em;text-transform:uppercase">MRR / mo</th>
+            </tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
+window._apToggle=function(key){
+  if(!window._apAccOpen)window._apAccOpen={sp:true,sh:true,mh:false,std:false};
+  window._apAccOpen[key]=!window._apAccOpen[key];
+  renderApTable();
+};
 window.setApFilter=function(){renderApTable();};
 
 // ─── PIPELINE TRACKER ─────────────────────────────────────────────────────────
@@ -1186,6 +1265,7 @@ window.showView=function(view){
   document.getElementById('pickerWrapper').style.display=hidePicker.includes(view)?'none':'';
   if(view==='lead-fulfillment') renderLeadFulfillment();
   if(view==='cs-pipeline') renderCsPipeline();
+  if(view==='active-partners') renderApTable();
   if(view==='pipeline') setPreset('mtd');
 };
 
@@ -1493,99 +1573,91 @@ function spUpdateCharts(){
 
 // ─── CS PIPELINE ──────────────────────────────────────────────────────────────
 const CP_RECORDS=[
-  {co:'The Internet Service Pros',dc1:'2026-01-30',s1:'For nurture',ds:'No Show',o:'che'},
-  {co:'Epic Outsourcing',dc1:'2026-02-13',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2026-02-16',act:1},
-  {co:'Boomering',dc1:'2026-03-11',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2022-09-20',act:1},
-  {co:'ContactPlus Spike',dc1:'2026-03-17',s1:'Closed Won',ds:'Decision Maker Bought-in',o:'judy',ss:'2026-04-29',act:1},
-  {co:'Thrivin',dc1:'2026-03-25',ds:'Closed won',o:'judy',ss:'2026-04-08',act:1},
-  {co:'Prima Systems',dc1:'2026-03-27',ds:'Closed won',o:'stef',ss:'2026-01-06',act:1},
-  {co:'CION BPO',dc1:'2026-03-30',o:'che'},
-  {co:'ZigZag (Outposter)',dc1:'2026-03-30',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2026-04-01',act:1},
-  {co:'Azendo',dc1:'2026-03-31',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2026-04-01',act:1},
-  {co:'Eastvantage',ds:'Closed won',o:'judy',ss:'2026-04-01',act:1},
-  {co:'Goodland BPO',ds:'Closed won',o:'rochelle',ss:'2026-04-01',act:1},
-  {co:'HGS UK',ds:'Closed won',o:'che',ss:'2026-04-01',act:1},
-  {co:'Intelliworx PH',ds:'Closed won',o:'judy',ss:'2026-04-01',act:1},
-  {co:'Corpshore Solutions',ds:'Closed won',o:'stef',ss:'2026-04-02',act:1},
-  {co:'Welsend Global Services Inc',dc1:'2026-04-01',s1:'For Demo Call 2',ds:'Not the decision maker',o:'stef'},
   {co:'AAA Outsourcing - Client Services',dc1:'2026-04-01',s1:'No Show',o:'judy'},
-  {co:'Deployed',dc1:'2026-04-06',ds:'Decision Maker Bought-in',o:'stef'},
-  {co:'Virtual Experts PH',dc1:'2026-04-06',s1:'No Show',ds:'No Show',o:'stef'},
-  {co:'Robotronics.ai',dc1:'2026-04-06',s1:'No Show',ds:'No Show',o:'judy'},
-  {co:'Sparkbridge',dc1:'2026-04-07',s1:'No Show',ds:'No Show',o:'che'},
-  {co:'Finserve Global - Client Services',dc1:'2026-04-07',s1:'For Demo Call 2',ds:'Decision Maker Bought-in',o:'judy'},
-  {co:'Trainonex Solutions',dc1:'2026-04-07',ds:'No Show',o:'judy'},
-  {co:'Offshore 24/7',dc1:'2026-04-07',dc2:'2026-05-06',s1:'For Demo Call 2',s2:'For Demo Call 3',ds:'Decision Maker Bought-in',o:'stef'},
-  {co:'USA Outsource Today - Client Services',dc1:'2026-04-08',s1:'No Show',o:'che'},
-  {co:'Complete BPO',dc1:'2026-04-10',dc2:'2026-04-30',s1:'For Demo Call 2',ds:'Closed won',o:'stef',ss:'2026-05-12',act:1},
-  {co:'Titan Clarity',dc1:'2026-04-13',ds:'No Show',o:'judy'},
-  {co:'Releaf Claim',dc1:'2026-04-13',s1:'For Demo Call 2',ds:'With hesitations',o:'stef'},
-  {co:'Talent Connect Recruitment Agency',dc1:'2026-04-13',s1:'No Show',ds:'No Show',o:'judy'},
-  {co:'Innopact',dc1:'2026-04-13',s1:'For Demo Call 2',ds:'Not the decision maker',o:'judy'},
-  {co:'Peak Support',dc1:'2026-04-13',ds:'Closed won',o:'judy',ss:'2026-04-14',act:1},
-  {co:'Fusion CX - Client Services',dc1:'2026-04-13',s1:'For Demo Call 2',ds:'Not the decision maker',o:'judy'},
-  {co:'Pristine E Tele Services - Client Services',dc1:'2026-04-14',ds:'Not the decision maker;With hesitations',o:'judy'},
-  {co:'Elaxis',dc1:'2026-04-14',ds:'Closed won',o:'rochelle',ss:'2025-09-01',act:1},
-  {co:'CDM Direct',dc1:'2026-04-15',ds:'Closed won',o:'rochelle',ss:'2023-07-06',act:1},
-  {co:'Avata Technologies - Client Services',dc1:'2026-04-15',ds:'With hesitations',o:'judy'},
-  {co:'Black Seedspire Technologies Pvt Ltd',dc1:'2026-04-15',ds:'No Show',o:'stef'},
-  {co:'CreaThink Solutions',dc1:'2026-04-15',ds:'With hesitations',o:'judy'},
-  {co:'Alorica',dc1:'2026-04-15',s1:'For Demo Call 2',ds:'With hesitations',o:'judy'},
-  {co:'RND OptimazAR',dc1:'2026-04-15',o:'che',ss:'2023-07-01'},
-  {co:'Cost Solution Pty Ltd. - Client Services',dc1:'2026-04-15',ds:'Keen – Needs Internal Discussion',o:'che'},
-  {co:'SEBPO',dc1:'2026-04-15',ds:'Closed won',o:'judy',ss:'2025-04-16',act:1},
-  {co:'Netsmartz - Client Services',dc1:'2026-04-16',s1:'For Demo Call 2',ds:'With hesitations',o:'judy'},
-  {co:'KMC Solutions',dc1:'2026-04-16',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'che',ss:'2023-04-01'},
-  {co:'SkyOS BPO',dc1:'2026-04-17',s1:'No Show',ds:'No Show',o:'judy'},
-  {co:'Resource Consulting',dc1:'2026-04-17',s1:'For Demo Call 2',ds:'With hesitations',o:'stef'},
-  {co:'Prestige OSS - Client Services',dc1:'2026-04-20',s1:'For Demo Call 2',ds:'Not the decision maker',o:'judy'},
-  {co:'Prime Bridge Solutions - Client Services',dc1:'2026-04-20',s1:'For Demo Call 2',ds:'Decision Maker Bought-in',o:'judy'},
-  {co:'Innovative Work Solutions',dc1:'2026-04-21',s1:'For Demo Call 2',ds:'Not the decision maker',o:'judy',ss:'2026-05-01',act:1},
-  {co:'DialX - Client Services',dc1:'2026-04-22',ds:'With hesitations',o:'judy'},
-  {co:'Global IT Finest',dc1:'2026-04-22',ds:'Early Stage Startup',o:'stef'},
-  {co:'ICCS Digx Ltd - Client Services',dc1:'2026-04-22',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'judy'},
-  {co:'Success Link Outsourcing US',dc1:'2026-04-22',s1:'Closed Won',ds:'Closed won',o:'rochelle',ss:'2025-07-01',act:1},
-  {co:'CnerG',dc1:'2026-04-23',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'rochelle'},
-  {co:'Clark Outsourcing',dc1:'2026-04-23',s1:'Closed Won',ds:'Closed won',o:'judy',ss:'2026-05-06',act:1},
-  {co:'CapActix Business Solutions - Client Services',dc1:'2026-04-23',s1:'For Demo Call 2',ds:'With hesitations',o:'judy'},
-  {co:'Coderland - Client Services',dc1:'2026-04-23',s1:'For Demo Call 2',ds:'With hesitations',o:'judy',ss:'2025-02-15'},
+  {co:'Welsend Global Services Inc',dc1:'2026-04-01',s1:'For Demo Call 2',o:'stef'},
+  {co:'Robotronics.ai',dc1:'2026-04-06',s1:'No Show',o:'judy'},
+  {co:'Virtual Experts PH',dc1:'2026-04-06',s1:'No Show',o:'stef'},
+  {co:'Deployed',dc1:'2026-04-06',s1:'For Demo Call 2',o:'stef'},
+  {co:'Trainonex Solutions',dc1:'2026-04-07',s1:'No Show',o:'judy'},
+  {co:'Finserve Global- Client Services',dc1:'2026-04-07',s1:'For Demo Call 2',o:'judy'},
+  {co:'Offshore 24/7',dc1:'2026-04-07',dc2:'2026-05-06',s1:'For Demo Call 2',s2:'For Demo Call 3',o:'stef'},
+  {co:'Sparkbridge',dc1:'2026-04-07',s1:'No Show',o:'che'},
+  {co:'USA outsource Today - Client Services',dc1:'2026-04-08',s1:'No Show',o:'che'},
+  {co:'Aadi Business Solution LLC',dc1:'2026-04-10',s1:'No Show',o:'judy'},
+  {co:'Complete BPO',dc1:'2026-04-10',dc2:'2026-04-30',s1:'Closed Won',o:'stef',ss:'2026-05-12',act:1},
+  {co:'HGS UK',dc1:'2026-04-10',s1:'Closed Won',o:'che',ss:'2026-04-01',act:1},
+  {co:'Innopact',dc1:'2026-04-13',s1:'For Demo Call 2',o:'judy'},
+  {co:'Talent Connect Recruitment Agency',dc1:'2026-04-13',s1:'No Show',o:'judy'},
+  {co:'Peak Support',dc1:'2026-04-13',s1:'For Demo Call 2',o:'judy',ss:'2026-04-14',act:1},
+  {co:'Fusion CX - Client Services',dc1:'2026-04-13',s1:'For Demo Call 2',o:'judy'},
+  {co:'Releaf Claim',dc1:'2026-04-13',s1:'For Demo Call 2',o:'stef'},
+  {co:'Titan Clarity',dc1:'2026-04-13',s1:'No Show',o:'judy'},
+  {co:'Pristine E Tele Services Private Limited - Client Services',dc1:'2026-04-14',s1:'For Demo Call 2',o:'judy'},
+  {co:'Elaxis',dc1:'2026-04-14',s1:'Closed Won',o:'rochelle',ss:'2025-09-01',act:1},
+  {co:'SEBPO',dc1:'2026-04-15',s1:'Closed Won',o:'judy',ss:'2025-04-16',act:1},
+  {co:'Alorica',dc1:'2026-04-15',s1:'For Demo Call 2',o:'judy'},
+  {co:'CreaThink Solutions',dc1:'2026-04-15',s1:'For Demo Call 2',o:'judy'},
+  {co:'Black Seedspire Technologies Pvt Ltd',dc1:'2026-04-15',s1:'No Show',o:'stef'},
+  {co:'Avata Technologies - Client Services',dc1:'2026-04-15',s1:'For Demo Call 2',o:'judy'},
+  {co:'Cost Solution Pty Ltd. - Client Services',dc1:'2026-04-15',s1:'For Demo Call 2',o:'che'},
+  {co:'CDM Direct',dc1:'2026-04-15',s1:'Closed Won',o:'rochelle',ss:'2023-07-06',act:1},
+  {co:'Netsmartz - Client Services',dc1:'2026-04-16',s1:'For Demo Call 2',o:'judy'},
+  {co:'KMC Solutions',dc1:'2026-04-16',dc2:'2026-04-29',s1:'For Demo Call 2',s2:'Closed Won',o:'che',ss:'2026-05-18',act:1},
+  {co:'SkyOS BPO',dc1:'2026-04-17',s1:'No Show',o:'judy'},
+  {co:'Resource Consulting',dc1:'2026-04-17',s1:'For Demo Call 2',o:'stef'},
+  {co:'Prestige OSS - Client Services',dc1:'2026-04-20',s1:'For Demo Call 2',o:'judy'},
+  {co:'Prime Bridge Solutions - Client Services',dc1:'2026-04-20',s1:'For Demo Call 2',o:'judy'},
+  {co:'Innovative Work Solutions',dc1:'2026-04-21',s1:'For Demo Call 2',o:'judy',ss:'2026-05-01',act:1},
+  {co:'ICCS Digx Ltd - Client Services',dc1:'2026-04-22',s1:'For Demo Call 2',o:'judy'},
+  {co:'Global IT Finest',dc1:'2026-04-22',s1:'Lost',o:'stef'},
+  {co:'DialX - Client Services',dc1:'2026-04-22',s1:'For Demo Call 2',o:'judy'},
+  {co:'Success Link Outsourcing US',dc1:'2026-04-22',s1:'Closed Won',o:'rochelle',ss:'2025-07-01',act:1},
+  {co:'CapActix Business Solutions - Client Services',dc1:'2026-04-23',s1:'For Demo Call 2',o:'judy'},
+  {co:'CnerG',dc1:'2026-04-23',s1:'For Demo Call 2',o:'rochelle'},
+  {co:'Coderland - Client Services',dc1:'2026-04-23',s1:'For Demo Call 2',o:'judy',ss:'2025-02-15'},
+  {co:'Clark Outsourcing',dc1:'2026-04-23',s1:'Closed Won',o:'judy',ss:'2026-05-06',act:1},
+  {co:'External Input',dc1:'2026-04-24',s1:'For Demo Call 2',o:'che',ss:'2023-07-15'},
   {co:'Excelsior Servicez',dc1:'2026-04-24',s1:'For Demo Call 2',o:'che',ss:'2024-10-01'},
-  {co:'Afrishore BPO',dc1:'2026-04-24',s1:'Closed Won',ds:'Closed won',o:'judy',ss:'2026-03-09',act:1},
-  {co:'Revelo - Client Services',dc1:'2026-04-24',ds:'Not interested',o:'judy'},
-  {co:'External Input',dc1:'2026-04-24',o:'che',ss:'2023-07-15'},
-  {co:'MB Group - Client Services',dc1:'2026-04-27',s1:'For Demo Call 2',ds:'Not the decision maker',o:'judy'},
-  {co:'HeyDelegate - Client Services',dc1:'2026-04-27',s1:'For Demo Call 2',ds:'With hesitations',o:'judy',ss:'2025-10-25'},
-  {co:'Gobro Web Services',dc1:'2026-04-27',ds:'Keen – Needs Internal Discussion',o:'stef'},
-  {co:'Mesopotamia Trade Ltd. (Aidey)',dc1:'2026-04-27',ds:'Not interested',o:'judy',ss:'2023-11-01'},
-  {co:'Ellora',dc1:'2026-04-28',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'stef'},
-  {co:'Ekinova - Client Services',dc1:'2026-04-28',s1:'For Demo Call 2',ds:'Not the decision maker',o:'judy'},
-  {co:'Exordiom - Client Services',dc1:'2026-04-28',s1:'For Demo Call 2',ds:'Early Stage Startup',o:'judy'},
-  {co:'Proficient CS',dc1:'2026-04-28',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'rochelle'},
-  {co:'Econx Group',dc1:'2026-04-28',ds:'Keen – Needs Internal Discussion',o:'judy'},
-  {co:'Resolv Global',dc1:'2026-04-29',s1:'For Demo Call 2',ds:'Closed won;Not interested',o:'che',ss:'2025-03-01'},
-  {co:'EmpireOne Group - Client Services',dc1:'2026-04-29',s1:'For Demo Call 2',ds:'With hesitations',o:'judy'},
-  {co:'Yoummday',dc1:'2026-04-29',ds:'Keen – Needs Internal Discussion',o:'judy',ss:'2024-03-01'},
-  {co:'Contactpoint 360',dc1:'2026-04-29',ds:'Closed won',o:'judy',ss:'2026-04-23',act:1},
-  {co:'Pentwater Connect',dc1:'2026-04-29',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2026-05-11',act:1},
+  {co:'Kyniska',dc1:'2026-04-24',s1:'No Show',o:'stef'},
+  {co:'Revelo - Client Services',dc1:'2026-04-24',s1:'For Demo Call 2',o:'judy'},
+  {co:'Afrishore BPO',dc1:'2026-04-24',s1:'Closed Won',o:'judy',ss:'2026-03-09',act:1},
+  {co:'Gobro Web Services',dc1:'2026-04-27',s1:'For Demo Call 2',o:'stef'},
+  {co:'HeyDelegate - Client Services',dc1:'2026-04-27',s1:'For Demo Call 2',o:'judy',ss:'2025-10-25'},
+  {co:'MB Group - Client Services',dc1:'2026-04-27',s1:'For Demo Call 2',o:'judy'},
+  {co:'Mesopotamia Trade Ltd. (Aidey)',dc1:'2026-04-27',s1:'For Demo Call 2',o:'judy',ss:'2023-11-01'},
+  {co:'Ellora',dc1:'2026-04-28',s1:'For Demo Call 2',o:'stef'},
+  {co:'Ekinova - Client Services',dc1:'2026-04-28',s1:'For Demo Call 2',o:'judy'},
+  {co:'Exordiom - Client Services',dc1:'2026-04-28',s1:'For Demo Call 2',o:'judy'},
+  {co:'Econx Group',dc1:'2026-04-28',s1:'For Demo Call 2',o:'judy'},
+  {co:'Proficient CS',dc1:'2026-04-28',s1:'For Demo Call 2',o:'rochelle'},
+  {co:'EmpireOne Group of Companies - Client Services',dc1:'2026-04-29',s1:'For Demo Call 2',o:'judy'},
+  {co:'Yoummday',dc1:'2026-04-29',s1:'For Demo Call 2',o:'judy',ss:'2024-03-01'},
+  {co:'Resolv Global',dc1:'2026-04-29',s1:'For Demo Call 2',o:'che',ss:'2025-03-01'},
+  {co:'Contactpoint 360',dc1:'2026-04-29',s1:'Closed Won',o:'judy',ss:'2026-04-23',act:1},
   {co:'Alvi Global - Client Services',dc1:'2026-04-30',o:'judy'},
-  {co:'Onehalf',dc1:'2026-04-30',ds:'Keen – Needs Internal Discussion',o:'stef'},
-  {co:'Brand Vantage',dc1:'2026-04-30',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'rochelle'},
-  {co:'USource',dc1:'2026-05-06',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'stef'},
-  {co:'Outsourced Global',dc1:'2026-05-06',s1:'Closed Won',ds:'Decision Maker Bought-in',o:'rochelle',ss:'2024-10-15',act:1},
-  {co:'Outsourced',dc1:'2026-05-06',s1:'Closed Won',ds:'Closed won',o:'rochelle',ss:'2022-01-17',act:1},
-  {co:'WOW 24-7',dc1:'2026-05-06',dc2:'2026-05-13',s1:'For Demo Call 2',s2:'For Demo Call 3',ds:'Decision Maker Bought-in',o:'stef'},
+  {co:'Onehalf',dc1:'2026-04-30',s1:'For Demo Call 2',o:'stef'},
+  {co:'Brand Vantage',dc1:'2026-04-30',s1:'For Demo Call 2',o:'rochelle'},
+  {co:'Mifin',dc1:'2026-05-06',s1:'For Demo Call 2',o:'rochelle'},
   {co:'wgsindia',dc1:'2026-05-06',s1:'For nurture',o:'che'},
-  {co:'Mifin',dc1:'2026-05-06',s1:'For Demo Call 2',ds:'Keen – Needs Internal Discussion',o:'rochelle'},
-  {co:'Gurudev Software',dc1:'2026-05-11',s1:'No Show',ds:'No Show',o:'judy'},
-  {co:'Eclaro',dc1:'2026-05-11',s1:'For Demo Call 2',o:'judy'},
+  {co:'USource',dc1:'2026-05-06',s1:'For Demo Call 2',o:'stef'},
+  {co:'VensureHR',dc1:'2026-05-06',s1:'No Show',o:'judy'},
+  {co:'Outsourced',dc1:'2026-05-06',s1:'Closed Won',o:'rochelle',ss:'2022-01-17',act:1},
+  {co:'Outsourced Global',dc1:'2026-05-06',s1:'Closed Won',o:'rochelle',ss:'2024-10-15',act:1},
+  {co:'WOW 24-7',dc1:'2026-05-06',dc2:'2026-05-13',s1:'For Demo Call 2',s2:'For Demo Call 3',o:'stef'},
+  {co:'SummitNext',dc1:'2026-05-07',s1:'Closed Won',o:'rochelle',ss:'2025-05-08',act:1},
+  {co:'StaffHero',dc1:'2026-05-07',s1:'For Demo Call 2',o:'rochelle'},
+  {co:'Gurudev Software',dc1:'2026-05-11',s1:'No Show',o:'judy'},
+  {co:'Cloudstaff',dc1:'2026-05-11',s1:'Closed Won',o:'stef',ss:'2024-10-15',act:1},
   {co:'DME Service Solutions',dc1:'2026-05-11',s1:'For Demo Call 2',o:'judy'},
-  {co:'Cloudstaff',dc1:'2026-05-11',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2024-10-15',act:1},
-  {co:'CCIG Group',dc1:'2026-05-12',s1:'Closed Won',ds:'Closed won',o:'stef',ss:'2025-05-29',act:1},
-  {co:'Arcanys',dc1:'2026-05-12',dc2:'2026-05-19',s1:'For Demo Call 2',ds:'Decision Maker Bought-in',o:'stef'},
+  {co:'Eclaro',dc1:'2026-05-11',s1:'For Demo Call 2',o:'judy'},
+  {co:'Arcanys',dc1:'2026-05-12',dc2:'2026-05-19',s1:'For Demo Call 2',o:'stef'},
+  {co:'CCIG Group',dc1:'2026-05-12',s1:'Closed Won',o:'stef',ss:'2025-05-29',act:1},
+  {co:'AscentiaCore',dc1:'2026-05-13',dc2:'2026-05-20',s1:'For Demo Call 2',o:'che'},
   {co:'Booth',dc1:'2026-05-13',s1:'For Demo Call 2',o:'stef',ss:'2021-03-15'},
-  {co:'AscentiaCore',dc1:'2026-05-13',dc2:'2026-05-20',s1:'For Demo Call 2',ds:'Not the decision maker',o:'che'},
-  {co:'KMER Outsourcing',dc1:'2026-05-15',o:''},
-  {co:'Sudo Staff',dc1:'2026-05-15',dc2:'2026-05-29',s1:'For Demo Call 2',ds:'Not the decision maker',o:'stef',ss:'2023-08-15'},
+  {co:'Sudo Staff',dc1:'2026-05-15',dc2:'2026-05-29',s1:'For Demo Call 2',o:'stef',ss:'2023-08-15'},
+  {co:'KMER Outsourcing',dc1:'2026-05-15',s1:'No Show',o:'judy'},
+  {co:'Delegatin',dc1:'2026-05-18',s1:'Lost',o:'stef'},
+  {co:'Penbrothers',dc1:'2026-05-25',o:'stef'}
 ];
 const CF_RECORDS=[
   {iq:'2026-04-01',src:'in',qual:'notbpo'},
@@ -1593,8 +1665,8 @@ const CF_RECORDS=[
   {iq:'2026-04-01',src:'in',qual:'valid'},
   {iq:'2026-04-01',src:'in',qual:'preq'},
   {iq:'2026-04-01',src:'in',qual:'valid'},
-  {iq:'2026-04-01',src:'in',qual:'valid'},
   {iq:'2026-04-01',src:'in',qual:'preq'},
+  {iq:'2026-04-01',src:'in',qual:'valid'},
   {iq:'2026-04-01',src:'in',qual:'valid'},
   {iq:'2026-04-02',src:'in',qual:'notbpo'},
   {iq:'2026-04-02',src:'in',qual:'preq'},
@@ -1618,15 +1690,15 @@ const CF_RECORDS=[
   {iq:'2026-04-06',src:'in',qual:'preq'},
   {iq:'2026-04-07',src:'in',qual:'preq'},
   {iq:'2026-04-07',src:'in',qual:'preq'},
-  {iq:'2026-04-07',src:'in',qual:'valid'},
-  {iq:'2026-04-07',src:'in',qual:'preq'},
   {iq:'2026-04-07',src:'in',qual:'preq'},
   {iq:'2026-04-07',src:'in',qual:'valid'},
+  {iq:'2026-04-07',src:'in',qual:'preq'},
   {iq:'2026-04-07',src:'in',qual:'valid'},
+  {iq:'2026-04-07',src:'in',qual:'valid'},
+  {iq:'2026-04-08',src:'in',qual:'valid'},
   {iq:'2026-04-08',src:'in',qual:'valid'},
   {iq:'2026-04-08',src:'in',qual:'valid'},
   {iq:'2026-04-08',src:'in',qual:'notbpo'},
-  {iq:'2026-04-08',src:'in',qual:'valid'},
   {iq:'2026-04-08',src:'in',qual:'valid'},
   {iq:'2026-04-08',src:'in',qual:'preq'},
   {iq:'2026-04-08',src:'in',qual:'valid'},
@@ -1685,8 +1757,8 @@ const CF_RECORDS=[
   {iq:'2026-04-16',src:'in',qual:'valid'},
   {iq:'2026-04-16',src:'in',qual:'valid'},
   {iq:'2026-04-16',src:'in',qual:'valid'},
-  {iq:'2026-04-16',src:'in',qual:'valid'},
   {iq:'2026-04-16',src:'in',qual:'preq'},
+  {iq:'2026-04-16',src:'in',qual:'valid'},
   {iq:'2026-04-17',src:'in',qual:'preq'},
   {iq:'2026-04-17',src:'in',qual:'valid'},
   {iq:'2026-04-17',src:'in',qual:'valid'},
@@ -1696,14 +1768,14 @@ const CF_RECORDS=[
   {iq:'2026-04-17',src:'in',qual:'preq'},
   {iq:'2026-04-17',src:'in',qual:'valid'},
   {iq:'2026-04-18',src:'in',qual:'preq'},
-  {iq:'2026-04-18',src:'in',qual:'preq'},
   {iq:'2026-04-18',src:'in',qual:'valid'},
   {iq:'2026-04-18',src:'in',qual:'preq'},
+  {iq:'2026-04-18',src:'in',qual:'preq'},
   {iq:'2026-04-18',src:'in',qual:'valid'},
+  {iq:'2026-04-20',src:'in',qual:'preq'},
   {iq:'2026-04-20',src:'in',qual:'preq'},
   {iq:'2026-04-20',src:'in',qual:'preq'},
   {iq:'2026-04-20',src:'in',qual:'valid'},
-  {iq:'2026-04-20',src:'in',qual:'preq'},
   {iq:'2026-04-20',src:'in',qual:'valid'},
   {iq:'2026-04-20',src:'in',qual:'preq'},
   {iq:'2026-04-21',src:'in',qual:'notbpo'},
@@ -1715,69 +1787,69 @@ const CF_RECORDS=[
   {iq:'2026-04-21',src:'in',qual:'notbpo'},
   {iq:'2026-04-21',src:'in',qual:'valid'},
   {iq:'2026-04-22',src:'in',qual:'valid'},
+  {iq:'2026-04-22',src:'out',qual:'valid'},
   {iq:'2026-04-22',src:'in',qual:'valid'},
-  {iq:'2026-04-22',src:'in',qual:'valid'},
-  {iq:'2026-04-22',src:'in',qual:'valid'},
-  {iq:'2026-04-22',src:'in',qual:'valid'},
+  {iq:'2026-04-22',src:'out',qual:'valid'},
   {iq:'2026-04-22',src:'in',qual:'preq'},
+  {iq:'2026-04-22',src:'in',qual:'valid'},
   {iq:'2026-04-22',src:'in',qual:'valid'},
   {iq:'2026-04-22',src:'in',qual:'notbpo'},
   {iq:'2026-04-22',src:'in',qual:'notbpo'},
   {iq:'2026-04-22',src:'in',qual:'preq'},
   {iq:'2026-04-23',src:'in',qual:'valid'},
   {iq:'2026-04-23',src:'in',qual:'notbpo'},
-  {iq:'2026-04-23',src:'in',qual:'valid'},
+  {iq:'2026-04-23',src:'out',qual:'valid'},
   {iq:'2026-04-23',src:'in',qual:'preq'},
   {iq:'2026-04-23',src:'in',qual:'valid'},
-  {iq:'2026-04-23',src:'in',qual:'valid'},
+  {iq:'2026-04-23',src:'out',qual:'valid'},
   {iq:'2026-04-23',src:'in',qual:'preq'},
   {iq:'2026-04-23',src:'in',qual:'preq'},
-  {iq:'2026-04-23',src:'in',qual:'valid'},
   {iq:'2026-04-23',src:'in',qual:'valid'},
   {iq:'2026-04-23',src:'in',qual:'valid'},
   {iq:'2026-04-23',src:'out',qual:'valid'},
+  {iq:'2026-04-23',src:'out',qual:'valid'},
   {iq:'2026-04-24',src:'in',qual:'valid'},
-  {iq:'2026-04-24',src:'in',qual:'valid'},
-  {iq:'2026-04-24',src:'in',qual:'valid'},
+  {iq:'2026-04-24',src:'out',qual:'valid'},
   {iq:'2026-04-24',src:'in',qual:'preq'},
   {iq:'2026-04-24',src:'in',qual:'valid'},
-  {iq:'2026-04-24',src:'in',qual:'preq'},
-  {iq:'2026-04-24',src:'in',qual:'notbpo'},
-  {iq:'2026-04-24',src:'in',qual:'notbpo'},
   {iq:'2026-04-24',src:'in',qual:'valid'},
+  {iq:'2026-04-24',src:'in',qual:'notbpo'},
+  {iq:'2026-04-24',src:'in',qual:'preq'},
   {iq:'2026-04-24',src:'in',qual:'notbpo'},
   {iq:'2026-04-24',src:'out',qual:'valid'},
+  {iq:'2026-04-24',src:'in',qual:'notbpo'},
   {iq:'2026-04-24',src:'in',qual:'valid'},
+  {iq:'2026-04-24',src:'out',qual:'valid'},
   {iq:'2026-04-25',src:'in',qual:'valid'},
   {iq:'2026-04-25',src:'in',qual:'preq'},
   {iq:'2026-04-26',src:'in',qual:'preq'},
   {iq:'2026-04-26',src:'in',qual:'preq'},
   {iq:'2026-04-27',src:'in',qual:'preq'},
   {iq:'2026-04-27',src:'in',qual:'valid'},
-  {iq:'2026-04-27',src:'in',qual:'valid'},
   {iq:'2026-04-27',src:'in',qual:'preq'},
+  {iq:'2026-04-27',src:'out',qual:'valid'},
   {iq:'2026-04-27',src:'in',qual:'notbpo'},
   {iq:'2026-04-27',src:'in',qual:'preq'},
   {iq:'2026-04-27',src:'in',qual:'preq'},
   {iq:'2026-04-27',src:'in',qual:'preq'},
-  {iq:'2026-04-27',src:'in',qual:'valid'},
+  {iq:'2026-04-27',src:'out',qual:'valid'},
   {iq:'2026-04-28',src:'in',qual:'valid'},
   {iq:'2026-04-28',src:'in',qual:'valid'},
   {iq:'2026-04-28',src:'in',qual:'valid'},
-  {iq:'2026-04-28',src:'in',qual:'valid'},
+  {iq:'2026-04-28',src:'out',qual:'valid'},
   {iq:'2026-04-28',src:'in',qual:'preq'},
   {iq:'2026-04-28',src:'in',qual:'preq'},
   {iq:'2026-04-28',src:'in',qual:'valid'},
   {iq:'2026-04-28',src:'in',qual:'valid'},
   {iq:'2026-04-29',src:'out',qual:'valid'},
+  {iq:'2026-04-29',src:'out',qual:'valid'},
   {iq:'2026-04-29',src:'in',qual:'valid'},
-  {iq:'2026-04-29',src:'in',qual:'valid'},
-  {iq:'2026-04-29',src:'in',qual:'valid'},
+  {iq:'2026-04-29',src:'out',qual:'valid'},
   {iq:'2026-04-29',src:'in',qual:'valid'},
   {iq:'2026-04-29',src:'in',qual:'notbpo'},
   {iq:'2026-04-29',src:'in',qual:'valid'},
   {iq:'2026-04-29',src:'in',qual:'valid'},
-  {iq:'2026-04-30',src:'in',qual:'valid'},
+  {iq:'2026-04-30',src:'out',qual:'valid'},
   {iq:'2026-04-30',src:'in',qual:'valid'},
   {iq:'2026-04-30',src:'in',qual:'preq'},
   {iq:'2026-04-30',src:'in',qual:'notbpo'},
@@ -1794,10 +1866,10 @@ const CF_RECORDS=[
   {iq:'2026-05-04',src:'in',qual:'notbpo'},
   {iq:'2026-05-04',src:'in',qual:'preq'},
   {iq:'2026-05-05',src:'in',qual:'valid'},
-  {iq:'2026-05-05',src:'in',qual:'valid'},
+  {iq:'2026-05-05',src:'out',qual:'valid'},
   {iq:'2026-05-05',src:'in',qual:'preq'},
   {iq:'2026-05-05',src:'in',qual:'preq'},
-  {iq:'2026-05-06',src:'in',qual:'valid'},
+  {iq:'2026-05-06',src:'out',qual:'valid'},
   {iq:'2026-05-06',src:'in',qual:'valid'},
   {iq:'2026-05-06',src:'in',qual:'preq'},
   {iq:'2026-05-06',src:'in',qual:'notbpo'},
@@ -1829,8 +1901,8 @@ const CF_RECORDS=[
   {iq:'2026-05-14',src:'in',qual:'preq'},
   {iq:'2026-05-14',src:'in',qual:'valid'},
   {iq:'2026-05-14',src:'in',qual:'valid'},
-  {iq:'2026-05-14',src:'in',qual:'valid'},
   {iq:'2026-05-14',src:'in',qual:'preq'},
+  {iq:'2026-05-14',src:'in',qual:'valid'},
   {iq:'2026-05-14',src:'in',qual:'valid'},
   {iq:'2026-05-14',src:'in',qual:'valid'},
   {iq:'2026-05-14',src:'in',qual:'preq'},
@@ -1839,7 +1911,36 @@ const CF_RECORDS=[
   {iq:'2026-05-15',src:'in',qual:'valid'},
   {iq:'2026-05-15',src:'in',qual:'preq'},
   {iq:'2026-05-15',src:'in',qual:'valid'},
-  {iq:'2026-05-15',src:'in',qual:'preq'}
+  {iq:'2026-05-15',src:'in',qual:'preq'},
+  {iq:'2026-05-15',src:'in',qual:'valid'},
+  {iq:'2026-05-16',src:'in',qual:'preq'},
+  {iq:'2026-05-16',src:'in',qual:'preq'},
+  {iq:'2026-05-16',src:'in',qual:'preq'},
+  {iq:'2026-05-18',src:'in',qual:'valid'},
+  {iq:'2026-05-18',src:'in',qual:'preq'},
+  {iq:'2026-05-18',src:'in',qual:'valid'},
+  {iq:'2026-05-19',src:'in',qual:'valid'},
+  {iq:'2026-05-19',src:'in',qual:'valid'},
+  {iq:'2026-05-20',src:'in',qual:'preq'},
+  {iq:'2026-05-20',src:'in',qual:'valid'},
+  {iq:'2026-05-20',src:'in',qual:'preq'},
+  {iq:'2026-05-20',src:'in',qual:'valid'},
+  {iq:'2026-05-20',src:'in',qual:'notbpo'},
+  {iq:'2026-05-20',src:'in',qual:'preq'}
+];
+const SDR_DEALS=[
+  {sdr:'sheena',co:'wgsindia',dc1:'2026-05-06'},
+  {sdr:'sheena',co:'Proficient CS',dc1:'2026-04-28'},
+  {sdr:'sheena',co:'Ellora',dc1:'2026-04-28'},
+  {sdr:'sheena',co:'EmpireOne Group',dc1:'2026-04-29'},
+  {sdr:'chloe',co:'WOW 24-7',dc1:'2026-05-06',dc2:'2026-05-13'},
+  {sdr:'chloe',co:'HeyDelegate',dc1:'2026-04-27'},
+  {sdr:'chloe',co:'Coderland',dc1:'2026-04-23'},
+  {sdr:'chloe',co:'Excelsior Servicez',dc1:'2026-04-24'},
+  {sdr:'chloe',co:'Yoummday',dc1:'2026-04-29'},
+  {sdr:'chloe',co:"Mesopotamia (Aidey)",dc1:'2026-04-27'},
+  {sdr:'chloe',co:'External Input',dc1:'2026-04-24'},
+  {sdr:'chloe',co:'Afrishore BPO',dc1:'2026-04-24'},
 ];
 function renderCsPipeline(){
   const s=state.startDate,e=state.endDate;
@@ -1957,11 +2058,42 @@ function renderCsPipeline(){
   const cwDeals=CP_RECORDS.filter(r=>r.ss&&r.ss>=s&&r.ss<=e&&r.act)
                            .sort((a,b)=>(a.ss||'').localeCompare(b.ss||''));
   const numDCs=r=>r.dc3?3:r.dc2?2:r.dc1?1:'&ndash;';
+  // Cross-reference with AP_PARTNERS for subscription info
+  const cwSubColorMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.color]));
+  const cwSubLabelMap=Object.fromEntries(AP_SUBS.map(s=>[s.key,s.label]));
+  const findPartner=co=>{
+    if(!co)return null;
+    const exact=AP_PARTNERS.find(p=>p.n.toLowerCase()===co.toLowerCase());
+    if(exact)return exact;
+    return AP_PARTNERS.find(p=>co.toLowerCase().includes(p.n.toLowerCase())||p.n.toLowerCase().includes(co.toLowerCase()))||null;
+  };
   const cwEl=document.getElementById('cpClosedWonSection');
   if(cwEl){
     if(!cwDeals.length){
       cwEl.innerHTML='';
     }else{
+      let totalNewMrr=0;
+      const cwRows=cwDeals.map(r=>{
+        const dcs=numDCs(r);
+        const ap=findPartner(r.co);
+        const pills=ap?['s1','s2','s3'].map(sk=>{
+          const sv=ap[sk];if(!sv)return'';
+          const c=cwSubColorMap[sv]||'#64748b';
+          const l=cwSubLabelMap[sv]||sv;
+          return`<span class="pill" style="background:${c};color:#fff;margin-right:3px">${l}</span>`;
+        }).join(''):'<span style="color:#94a3b8;font-size:0.72rem">—</span>';
+        const fee=ap?(ap.f1||0)+(ap.f2||0)+(ap.f3||0):0;
+        totalNewMrr+=fee;
+        const feeStr=fee>0?`<strong style="color:#059669">$${fee.toLocaleString()}</strong>`:`<span style="color:#94a3b8">—</span>`;
+        return`<tr>
+          <td><strong style="font-size:0.77rem">${r.co||'&ndash;'}</strong></td>
+          <td><span class="pill" style="background:${ownerClr[r.o]||'#64748b'};color:#fff">${ownerLbl[r.o]||r.o||'&ndash;'}</span></td>
+          <td>${pills}</td>
+          <td style="text-align:right">${feeStr}</td>
+          <td style="text-align:center;font-weight:800;color:#059669">${dcs}</td>
+          <td style="font-weight:600;color:#059669;font-size:0.75rem">${r.ss}</td>
+        </tr>`;
+      });
       cwEl.innerHTML=`<div class="table-card">
         <div class="table-card-hdr">
           <div style="display:flex;align-items:center;gap:10px">
@@ -1973,24 +2105,21 @@ function renderCsPipeline(){
           <thead><tr>
             <th>Company</th>
             <th>Owner</th>
-            <th>DC1 Date</th>
-            <th>DC2 Date</th>
-            <th>DC3 Date</th>
+            <th>Subscription</th>
+            <th style="text-align:right">Fee / mo</th>
             <th style="text-align:center"># DCs</th>
             <th>Sub Start Date</th>
           </tr></thead>
-          <tbody>${cwDeals.map(r=>{
-            const dcs=numDCs(r);
-            return`<tr>
-              <td><strong style="font-size:0.77rem">${r.co||'&ndash;'}</strong></td>
-              <td><span class="pill" style="background:${ownerClr[r.o]||'#64748b'};color:#fff">${ownerLbl[r.o]||r.o||'&ndash;'}</span></td>
-              <td style="color:#64748b;font-size:0.72rem">${r.dc1||'&ndash;'}</td>
-              <td style="color:#64748b;font-size:0.72rem">${r.dc2||'&ndash;'}</td>
-              <td style="color:#64748b;font-size:0.72rem">${r.dc3||'&ndash;'}</td>
-              <td style="text-align:center;font-weight:800;color:#059669">${dcs}</td>
-              <td style="font-weight:600;color:#059669;font-size:0.75rem">${r.ss}</td>
-            </tr>`;
-          }).join('')}</tbody>
+          <tbody>
+            ${cwRows.join('')}
+            <tr style="border-top:2px solid #e5e7eb;background:#f9fafb">
+              <td colspan="2" style="font-size:0.72rem;font-weight:600;color:#6b7280;padding:10px 12px">Total New MRR This Period</td>
+              <td></td>
+              <td style="text-align:right;font-size:1rem;font-weight:800;color:#059669">$${totalNewMrr.toLocaleString()}</td>
+              <td style="text-align:center;font-size:0.72rem;color:#6b7280;font-weight:600">${cwDeals.length} wins</td>
+              <td></td>
+            </tr>
+          </tbody>
         </table>
       </div>`;
     }
@@ -2137,6 +2266,43 @@ function renderCsPipeline(){
       </div>
     </div>`;
   }
+  renderSdrScorecard();
+}
+function renderSdrScorecard(){
+  const s=state.startDate,e=state.endDate;
+  const inRange=d=>d&&d>=s&&d<=e;
+  const SDR_INFO={sheena:{name:'Sheena Abuyo'},chloe:{name:'Jan Chloe Alpay'}};
+  const stats={sheena:{leads:0,dcs:0},chloe:{leads:0,dcs:0}};
+  CF_RECORDS.forEach(r=>{if(r.src==='out'&&r.sdr&&r.iq>=s&&r.iq<=e)stats[r.sdr].leads++;});
+  SDR_DEALS.forEach(d=>{if(stats[d.sdr]!==undefined&&(inRange(d.dc1)||inRange(d.dc2)))stats[d.sdr].dcs++;});
+  const el=document.getElementById('cpSdrSection');
+  if(!el)return;
+  const cards=Object.entries(SDR_INFO).map(([key,info])=>{
+    const{leads,dcs}=stats[key];
+    const rate=leads>0?Math.round(dcs/leads*100):0;
+    const rateColor=rate>=60?'#059669':'#d97706';
+    return`<div class="card" style="border-top-color:#1e40af;flex:1">
+      <div class="lbl" style="font-weight:700;font-size:0.75rem;color:#1e40af;margin-bottom:8px">${info.name}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div style="text-align:center">
+          <div class="big" style="font-size:1.6rem">${leads}</div>
+          <div class="sub">Outbound Leads</div>
+        </div>
+        <div style="text-align:center">
+          <div class="big" style="font-size:1.6rem">${dcs}</div>
+          <div class="sub">DCs Booked</div>
+        </div>
+        <div style="text-align:center">
+          <div class="big" style="font-size:1.6rem;color:${rateColor}">${leads>0?rate+'%':'–'}</div>
+          <div class="sub">Booking Rate</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="table-card" style="padding:16px 20px">
+    <h3 style="margin-bottom:12px">Outbound SDR Performance</h3>
+    <div style="display:flex;gap:14px">${cards}</div>
+  </div>`;
 }
 window.setCpCoFilter=function(v){state.cpCoFilter=v;renderCsPipeline();};
 window.setCpOwnerFilter=function(v){state.cpOwnerFilter=v;renderCsPipeline();};
